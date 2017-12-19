@@ -31,6 +31,12 @@ func commandSchedule(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
+	// Check to see if this race has already been scheduled
+	if race.State != 0 {
+		discordSend(m.ChannelID, "The race has already been scheduled. To delete this time and start over, use the `!reschedule` command.")
+		return
+	}
+
 	// Check to see if this is a valid time
 	datetime := strings.Join(args, " ")
 	var datetimeScheduled time.Time

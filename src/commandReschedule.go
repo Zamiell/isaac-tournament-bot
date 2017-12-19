@@ -22,6 +22,12 @@ func commandReschedule(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
+	// Check to see if this race has already been scheduled
+	if race.State > 0 {
+		discordSend(m.ChannelID, "The race has already been scheduled. To delete this time and start over, use the `!reschedule` command.")
+		return
+	}
+
 	if !race.DatetimeScheduled.Valid {
 		discordSend(m.ChannelID, "There is not a time scheduled for this match yet, so there is no need to reschedule.")
 		return
