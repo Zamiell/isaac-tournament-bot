@@ -4,7 +4,15 @@ isaac-tournament-bot
 Description
 -----------
 
-This is a [Discord](https://discordapp.com/) bot written in [Go](https://golang.org/) that helps to run video game tournaments and leagues. It is specifically tailored for [The Binding of Isaac: Afterbirth+](http://store.steampowered.com/app/570660/The_Binding_of_Isaac_Afterbirth/) racing leagues.
+This is a [Discord](https://discordapp.com/) bot written in [Go](https://golang.org/) that helps to run video game tournaments and leagues by automatically interacting with [Challonge](http://challonge.com/). It is specifically tailored for [The Binding of Isaac: Afterbirth+](http://store.steampowered.com/app/570660/The_Binding_of_Isaac_Afterbirth/) racing leagues. It stores data in a [MariaDB](https://mariadb.org/) database.
+
+<br />
+
+
+Features
+--------
+
+The bot does many different things. You can get a sense of all of the features by taking a look at the [list of commands](https://github.com/Zamiell/isaac-tournament-bot/blob/master/src/command.go).
 
 <br />
 
