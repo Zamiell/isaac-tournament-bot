@@ -50,6 +50,7 @@ func commandTimezone(m *discordgo.MessageCreate, args []string) {
 	}
 	msg += strconv.Itoa(hours) + "**"
 	discordSend(m.ChannelID, msg)
+	log.Info("Timezone for \"" + m.Author.Username + "\" set to: " + strconv.Itoa(hours))
 }
 
 func commandTimezonePrint(m *discordgo.MessageCreate) {

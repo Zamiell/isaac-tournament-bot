@@ -1,12 +1,14 @@
 package main
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
 	"github.com/araddon/dateparse"
 	"github.com/bwmarrin/discordgo"
+	humanize "github.com/dustin/go-humanize"
 )
 
 func commandSchedule(m *discordgo.MessageCreate, args []string) {
@@ -65,28 +67,34 @@ func commandSchedule(m *discordgo.MessageCreate, args []string) {
 	} else if m.Author.ID == race.Racer2.DiscordID {
 		racer1 = race.Racer2
 		racer2 = race.Racer1
+	} else {
+		msg := "Failed to find the Discord ID for user \"" + m.Author.Username + "\"."
+		log.Error(msg)
+		discordSend(m.ChannelID, msg)
+		return
 	}
 
 	timezonesEqual := false
-	if racer1.Timezone.Valid && racer2.Timezone.Valid && racer1.Timezone.Int64 == racer2.Timezone.Int64 {
+	if racer1.Timezone.Valid &&
+		racer2.Timezone.Valid &&
+		racer1.Timezone.Int64 == racer2.Timezone.Int64 {
+
 		timezonesEqual = true
 	}
 
-	timeformatString := "Monday, January 2 @ 15:04"
-	msg := racer1.Mention() + " has suggested that the match be scheduled at: **" + datetimeScheduled.Format(timeformatString)
-	if racer1.Timezone.Valid && !timezonesEqual {
-		msg += " (" + getTimezone(racer1.Timezone.Int64) + ")**\n"
-	} else {
-		msg += "**\n"
-	}
-	if racer2.Timezone.Valid && !timezonesEqual {
-		msg += racer2.Mention() + ", this is equal to: **" + datetimeScheduled.Format(timeformatString)
-		msg += " (" + getTimezone(racer2.Timezone.Int64) + ")**\nIf"
+	msg := racer1.Mention() + " has suggested that the match be scheduled at: "
+	msg += getDate(datetimeScheduled, racer1.Timezone.Int64) + "\n"
+
+	if !timezonesEqual && racer2.Timezone.Valid {
+		msg += racer2.Mention() + ", this is equal to: "
+		msg += getDate(datetimeScheduled, racer2.Timezone.Int64) + "\n"
+		msg += "If"
 	} else {
 		msg += racer2.Mention() + ", if"
 	}
 	msg += " this time is good for you, please use the `!confirm` command. Otherwise, suggest a new time with: `!schedule [date and time]`"
 	discordSend(m.ChannelID, msg)
+	log.Info("Racer \"" + racer1.Username + "\" suggested the time of: ")
 }
 
 func commandSchedulePrint(m *discordgo.MessageCreate) {
@@ -121,4 +129,19 @@ func commandSchedulePrint(m *discordgo.MessageCreate) {
 		msg += "```"
 	}
 	discordSend(m.ChannelID, msg)
+}
+
+func getDate(datetime time.Time, timezone int64) string {
+	hourAdjustment := time.Hour * time.Duration(timezone)
+	adjustedTime := datetime.Add(-hourAdjustment) // e.g. GMT-5 would add 5 hours
+	dateFormatString := "Monday, January 2"
+	dateString := adjustedTime.Format(dateFormatString)
+	dateStringSlice := strings.Split(dateString, " ")
+	day, _ := strconv.Atoi(dateStringSlice[len(dateStringSlice)-1])
+	ordinal := humanize.Ordinal(day)
+	timeFormatString := "15:04"
+	timeString := adjustedTime.Format(timeFormatString)
+
+	msg := "**" + dateString + ordinal + " @ " + timeString + " (" + getTimezone(timezone) + ")**"
+	return msg
 }

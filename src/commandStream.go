@@ -49,6 +49,7 @@ func commandStream(m *discordgo.MessageCreate, args []string) {
 
 	msg := m.Author.Mention() + ", your stream has been set to: <" + streamURL + ">"
 	discordSend(m.ChannelID, msg)
+	log.Info("Stream for \"" + m.Author.Username + "\" set to: " + streamURL)
 }
 
 func commandStreamPrint(m *discordgo.MessageCreate) {

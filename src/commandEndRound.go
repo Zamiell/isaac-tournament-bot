@@ -1,12 +1,10 @@
 package main
 
 import (
-	"strings"
-
 	"github.com/bwmarrin/discordgo"
 )
 
-func commandRoundEnd(m *discordgo.MessageCreate, args []string) {
+func commandEndRound(m *discordgo.MessageCreate, args []string) {
 	// Get all of the channels
 	var channels []*discordgo.Channel
 	if v, err := discord.GuildChannels(discordGuildID); err != nil {
@@ -20,7 +18,7 @@ func commandRoundEnd(m *discordgo.MessageCreate, args []string) {
 
 	deletedChannels := false
 	for _, channel := range channels {
-		if !strings.HasPrefix(channel.Name, "round-") {
+		if channel.ParentID != discordChannelCategoryID {
 			continue
 		}
 
@@ -41,10 +39,14 @@ func commandRoundEnd(m *discordgo.MessageCreate, args []string) {
 			return
 		}
 
-		discordSend(m.ChannelID, "Deleted channel \""+channel.Name+"\".")
+		msg := "Deleted channel \"" + channel.Name + "\"."
+		discordSend(m.ChannelID, msg)
+		log.Info(msg)
 	}
 
 	if !deletedChannels {
-		discordSend(m.ChannelID, "I did not find any channels to clear up.")
+		msg := "There were no channels to clean up."
+		discordSend(m.ChannelID, msg)
+		log.Info(msg)
 	}
 }

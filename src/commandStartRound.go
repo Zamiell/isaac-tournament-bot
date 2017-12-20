@@ -9,7 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func commandRoundStart(m *discordgo.MessageCreate, args []string) {
+func commandStartRound(m *discordgo.MessageCreate, args []string) {
 	// Get the tournament from Challonge
 	apiURL := "https://api.challonge.com/v1/tournaments/" + floatToString(challongeTournamentID) + ".json?"
 	apiURL += "api_key=" + challongeAPIKey + "&include_participants=1&include_matches=1"
@@ -47,8 +47,7 @@ func commandRoundStart(m *discordgo.MessageCreate, args []string) {
 		player1Name := challongeGetParticipantName(tournament, match["player1_id"].(float64))
 		player2Name := challongeGetParticipantName(tournament, match["player2_id"].(float64))
 		round = floatToString(match["round"].(float64))
-		channelName := "round-" + round + "-" + player1Name + "-vs-" + player2Name
-		log.Info("Doing actions for:", channelName)
+		channelName := player1Name + "-vs-" + player2Name
 
 		// Get all of the users in the guild
 		var guild *discordgo.Guild
@@ -129,6 +128,11 @@ func commandRoundStart(m *discordgo.MessageCreate, args []string) {
 			channelID = v.ID
 		}
 
+		// Put the channel in the correct category
+		discord.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
+			ParentID: discordChannelCategoryID,
+		})
+
 		// Create the race in the database
 		race := models.Race{
 			ChannelID:    channelID,
@@ -176,22 +180,28 @@ func commandRoundStart(m *discordgo.MessageCreate, args []string) {
 			msg += discord1.Mention() + ", your stream is not currently set. Please set one with: `!stream [url]`\n"
 		}
 		if racer2.Timezone.Valid {
-			msg += discord2.Mention() + " has a stream of: <" + racer1.StreamURL.String + ">\n"
+			msg += discord2.Mention() + " has a stream of: <" + racer2.StreamURL.String + ">\n"
 		} else {
 			msg += discord2.Mention() + ", your stream is not currently set. Please set one with: `!stream [url]`\n"
 		}
 		msg += "\n"
 
 		// Give the welcome message
-		msg += "Please communicate with your opponent the times that you are available to play over the course of the week.\n"
+		msg += "Please discuss the times that each of you are available to play this week.\n"
 		msg += "You can use the bot to suggest a time to your opponent: `!schedule 02/06/2018 22:00`\n"
 		msg += "If they accept with `!confirm`, then the match will be officially scheduled."
 		discordSend(channelID, msg)
+
+		log.Info("Started race: " + race.Name())
 	}
 
 	if foundMatches {
-		discordSend(m.ChannelID, "Round "+round+" channels created.")
+		msg := "Round " + round + " channels created."
+		discordSend(m.ChannelID, msg)
+		log.Info(msg)
 	} else {
-		discordSend(m.ChannelID, "I was not able to find any open matches on the Challonge bracket.")
+		msg := "There are no open matches on the Challonge bracket, so you cannot start the round."
+		discordSend(m.ChannelID, msg)
+		log.Info(msg)
 	}
 }

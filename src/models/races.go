@@ -31,6 +31,10 @@ type Race struct {
 	Builds            string
 }
 
+func (r *Race) Name() string {
+	return "round-" + r.BracketRound + "-" + r.Racer1.Username + "-vs-" + r.Racer2.Username
+}
+
 func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
@@ -121,6 +125,26 @@ func (*Races) Get(channelID string) (Race, error) {
 	}
 
 	return race, nil
+}
+
+func (*Races) SetState(channelID string, state int) error {
+	var stmt *sql.Stmt
+	if v, err := db.Prepare(`
+		UPDATE races
+		SET state = ?
+		WHERE channel_id = ?
+	`); err != nil {
+		return err
+	} else {
+		stmt = v
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(state, channelID); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (*Races) SetDatetimeScheduled(channelID string, datetimeScheduled time.Time) error {

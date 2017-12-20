@@ -9,11 +9,12 @@ import (
 )
 
 var (
-	discord          *discordgo.Session
-	discordBotID     string
-	discordGuildName string
-	discordGuildID   string
-	commandMutex     = new(sync.Mutex)
+	discord                  *discordgo.Session
+	discordBotID             string
+	discordGuildName         string
+	discordChannelCategoryID string
+	discordGuildID           string
+	commandMutex             = new(sync.Mutex)
 )
 
 func discordInit() {
@@ -27,6 +28,12 @@ func discordInit() {
 	discordGuildName = os.Getenv("DISCORD_SERVER_NAME")
 	if len(discordGuildName) == 0 {
 		log.Fatal("The \"DISCORD_SERVER_NAME\" environment variable is blank. Set it in the \".env\" file.")
+		return
+	}
+
+	discordChannelCategoryID = os.Getenv("DISCORD_CHANNEL_CATEGORY_ID")
+	if len(discordChannelCategoryID) == 0 {
+		log.Fatal("The \"DISCORD_CHANNEL_CATEGORY_ID\" environment variable is blank. Set it in the \".env\" file.")
 		return
 	}
 

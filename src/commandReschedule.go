@@ -23,13 +23,8 @@ func commandReschedule(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this race has already been scheduled
-	if race.State > 0 {
-		discordSend(m.ChannelID, "The race has already been scheduled. To delete this time and start over, use the `!reschedule` command.")
-		return
-	}
-
-	if !race.DatetimeScheduled.Valid {
-		discordSend(m.ChannelID, "There is not a time scheduled for this match yet, so there is no need to reschedule.")
+	if race.State != 1 {
+		discordSend(m.ChannelID, "There is no need to rescheulde until both racers have already agreed to a time.")
 		return
 	}
 
@@ -41,5 +36,14 @@ func commandReschedule(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
+	// Set the state back to 0
+	if err := db.Races.SetState(m.ChannelID, 0); err != nil {
+		msg := "Failed to set the state: " + err.Error()
+		log.Error(msg)
+		discordSend(m.ChannelID, msg)
+		return
+	}
+
 	discordSend(m.ChannelID, "The currently scheduled time has been deleted. Please suggest a new time with the `!schedule` command.")
+	log.Info("Race \"" + race.Name() + "\" rescheduled; state set to 0.")
 }

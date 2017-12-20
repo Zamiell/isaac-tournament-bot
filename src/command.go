@@ -21,8 +21,9 @@ func commandInit() {
 	commandHandlerMap["reschedule"] = commandReschedule
 
 	// Admin-only commands
-	commandHandlerMap["roundstart"] = commandRoundStart
-	commandHandlerMap["roundend"] = commandRoundEnd
+	commandHandlerMap["startround"] = commandStartRound
+	commandHandlerMap["beginround"] = commandStartRound
+	commandHandlerMap["endround"] = commandEndRound
 }
 
 func commandHelpGetMsg() string {
@@ -37,13 +38,14 @@ func commandHelpGetMsg() string {
 	msg += "!schedule [date and time]  Suggest a time for the match to your opponent\n"
 	msg += "!confirm                   Confirm that the suggested time is good\n"
 	msg += "!reschedule                Delete the currently scheduled time\n"
+	msg += "!startbans                 Start choosing character and item bans\n"
 	msg += "```\n"
 	msg += "Admin-only commands:\n"
 	msg += "```\n"
 	msg += "Command                    Description\n"
 	msg += "----------------------------------------------------------------------------------\n"
-	msg += "!roundstart                Create channels for the current round of the tournament\n"
-	msg += "!roundend                  Delete all of the channels for this round\n"
+	msg += "!startround                Create channels for the current round of the tournament\n"
+	msg += "!endround                  Delete all of the channels for this round\n"
 	msg += "```"
 
 	return msg
