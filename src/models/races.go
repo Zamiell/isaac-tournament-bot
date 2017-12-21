@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"strconv"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
@@ -26,6 +27,8 @@ type Race struct {
 	DatetimeScheduled mysql.NullTime
 	Caster            Racer
 	CasterID          sql.NullInt64
+	CasterP1          bool
+	CasterP2          bool
 	ActivePlayer      int
 	Characters        string
 	Builds            string
@@ -104,6 +107,8 @@ func (*Races) Get(channelID string) (Race, error) {
 			state,
 			datetime_scheduled,
 			caster,
+			caster_p1,
+			caster_p2,
 			active_player,
 			characters,
 			builds
@@ -117,6 +122,8 @@ func (*Races) Get(channelID string) (Race, error) {
 		&race.State,
 		&race.DatetimeScheduled,
 		&race.CasterID,
+		&race.CasterP1,
+		&race.CasterP2,
 		&race.ActivePlayer,
 		&race.Characters,
 		&race.Builds,
@@ -172,6 +179,69 @@ func (*Races) UnsetDatetimeScheduled(channelID string) error {
 	if v, err := db.Prepare(`
 		UPDATE races
 		SET datetime_scheduled = NULL
+		WHERE channel_id = ?
+	`); err != nil {
+		return err
+	} else {
+		stmt = v
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(channelID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (*Races) SetCaster(channelID string, casterID string) error {
+	var stmt *sql.Stmt
+	if v, err := db.Prepare(`
+		UPDATE races
+		SET caster = (SELECT id FROM racers WHERE discord_id = ?)
+		WHERE channel_id = ?
+	`); err != nil {
+		return err
+	} else {
+		stmt = v
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(casterID, channelID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (*Races) UnsetCaster(channelID string) error {
+	var stmt *sql.Stmt
+	if v, err := db.Prepare(`
+		UPDATE races
+		SET
+			caster = NULL,
+			caster_p1 = 0,
+			caster_p2 = 0,
+		WHERE channel_id = ?
+	`); err != nil {
+		return err
+	} else {
+		stmt = v
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(channelID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (*Races) SetCasterApproval(channelID string, playerNum int) error {
+	var stmt *sql.Stmt
+	if v, err := db.Prepare(`
+		UPDATE races
+		SET caster_p` + strconv.Itoa(playerNum) + ` = 0
 		WHERE channel_id = ?
 	`); err != nil {
 		return err

@@ -21,6 +21,8 @@ CREATE TABLE races (
     datetime_created    TIMESTAMP      NOT NULL  DEFAULT NOW(),
     datetime_scheduled  TIMESTAMP      NULL      DEFAULT NULL,
     caster              INT            NULL      DEFAULT NULL,
+    caster_p1           INT            NOT NULL  DEFAULT 0,
+    caster_p2           INT            NOT NULL  DEFAULT 0,
     active_player       INT            NOT NULL  DEFAULT 1,
     characters          NVARCHAR(255)  NOT NULL,
     builds              NVARCHAR(500)  NOT NULL,
@@ -35,7 +37,7 @@ CREATE TABLE racers (
     id          INT            NOT NULL  PRIMARY KEY  AUTO_INCREMENT, /* PRIMARY KEY automatically creates a UNIQUE constraint */
     discord_id  NVARCHAR(100)  NOT NULL  UNIQUE,
     username    NVARCHAR(100)  NOT NULL,
-    timezone    INT            NULL      DEFAULT NULL, /* the number of hours adjusted from GMT */
+    timezone    NVARCHAR(100)  NULL      DEFAULT NULL, /* the number of hours adjusted from GMT */
     stream_url  NVARCHAR(255)  NULL      DEFAULT NULL
 );
 CREATE INDEX racers_index_discord_id ON racers (discord_id);

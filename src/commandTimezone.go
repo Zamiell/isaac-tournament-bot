@@ -1,12 +1,10 @@
 package main
 
 import (
-	"strconv"
-	"strings"
+	"time"
 
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
 	"github.com/bwmarrin/discordgo"
-	timezone "github.com/tkuchiki/go-timezone"
 )
 
 func commandTimezone(m *discordgo.MessageCreate, args []string) {
@@ -24,33 +22,26 @@ func commandTimezone(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// See if the submitted timezone is valid
-	newTimezone := strings.ToUpper(args[0])
-	var offset int
-	if v, err := timezone.GetOffset(newTimezone); err != nil {
-		discordSend(m.ChannelID, "That is not a valid timezone. For example, try using \"EST\", \"GMT-5\", or \"GMT+3\".")
+	newTimezone := args[0]
+	if _, err := time.LoadLocation(newTimezone); err != nil {
+		msg := "That is not a valid timezone. The submitted timezone has to exactly match the TZ column of the following page:\n"
+		msg += "<https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>\n"
+		msg += "e.g. `!timezone America/New_York`"
+		discordSend(m.ChannelID, msg)
 		return
-	} else {
-		offset = v
 	}
-	hours := offset / -3600
 
 	// Set the new timezone
-	if err := db.Racers.SetTimeZone(m.Author.ID, hours); err != nil {
+	if err := db.Racers.SetTimeZone(m.Author.ID, newTimezone); err != nil {
 		msg := "Failed to update the timezone: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	}
 
-	msg := m.Author.Mention() + ", your timezone has been set to: **GMT"
-	if hours < 0 {
-		msg += "-"
-	} else {
-		msg += "+"
-	}
-	msg += strconv.Itoa(hours) + "**"
+	msg := "The timezone for **" + m.Author.Username + "** has been set to: **" + getTimezone(newTimezone) + "**"
 	discordSend(m.ChannelID, msg)
-	log.Info("Timezone for \"" + m.Author.Username + "\" set to: " + strconv.Itoa(hours))
+	log.Info("Timezone for \"" + m.Author.Username + "\" set to: " + newTimezone)
 }
 
 func commandTimezonePrint(m *discordgo.MessageCreate) {
@@ -66,32 +57,13 @@ func commandTimezonePrint(m *discordgo.MessageCreate) {
 
 	msg := m.Author.Mention() + ", your timezone is "
 	if racer.Timezone.Valid {
-		msg += "currently set to: **" + getTimezone(racer.Timezone.Int64) + "**\n\n"
+		msg += "currently set to: **" + getTimezone(racer.Timezone.String) + "**\n\n"
 	} else {
 		msg += "**not currently set**.\n\n"
 	}
-	msg += "Set your timezone with:\n"
-	msg += "```\n"
-	msg += "!timezone [timezone]\n"
-	msg += "```\n"
-	msg += "For example:\n"
-	msg += "```\n"
-	msg += "!timezone EST\n"
-	msg += "```\n"
-	msg += "Or:\n"
-	msg += "```\n"
-	msg += "!timezone GMT+3\n"
-	msg += "```"
+	msg += "Set your timezone with: `!timezone [timezone]`\n"
+	msg += "For example: `!timezone America/New_York`\n"
+	msg += "The submitted timezone has to exactly match the TZ column of the following page:\n"
+	msg += "<https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>"
 	discordSend(m.ChannelID, msg)
-}
-
-func getTimezone(timezone int64) string {
-	timezoneString := "GMT"
-	if timezone < 0 {
-		timezoneString += "-"
-	} else {
-		timezoneString += "+"
-	}
-	timezoneString += strconv.Itoa(int(timezone))
-	return timezoneString
 }

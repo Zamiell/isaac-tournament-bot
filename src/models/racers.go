@@ -9,7 +9,9 @@ type Racers struct{}
 type Racer struct {
 	DiscordID string
 	Username  string
-	Timezone  sql.NullInt64 // Expressed in hours from GMT; e.g. -5 represents GMT-5
+	Timezone  sql.NullString
+	// Matches the TZ column of this page:
+	// https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 	StreamURL sql.NullString
 }
 
@@ -103,7 +105,7 @@ func (*Racers) GetID(racerID int) (Racer, error) {
 	return racer, nil
 }
 
-func (*Racers) SetTimeZone(discordID string, timezone int) error {
+func (*Racers) SetTimeZone(discordID string, timezone string) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
 		UPDATE racers

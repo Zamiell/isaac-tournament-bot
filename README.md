@@ -37,7 +37,7 @@ These instructions assume you are running Ubuntu 16.04 LTS. Some adjustment will
   * `sudo mysql -u root -p`
     * `CREATE DATABASE isaactournament;`
     * `CREATE USER 'isaacuser'@'localhost' IDENTIFIED BY '1234567890';` (change the password to something else)
-    * `GRANT ALL PRIVILEGES ON isaactournmanet.* to 'isaacuser'@'localhost';`
+    * `GRANT ALL PRIVILEGES ON isaactournament.* to 'isaacuser'@'localhost';`
     * `FLUSH PRIVILEGES;`
 * Clone the server:
   * `mkdir -p "$GOPATH/src/github.com/Zamiell"`

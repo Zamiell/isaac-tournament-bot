@@ -8,12 +8,17 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+const (
+	discordAdminRoleName = "Admins"
+)
+
 var (
 	discord                  *discordgo.Session
 	discordBotID             string
 	discordGuildName         string
 	discordChannelCategoryID string
 	discordGuildID           string
+	discordAdminRoleID       string
 	commandMutex             = new(sync.Mutex)
 )
 
@@ -87,6 +92,24 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 	if !foundGuild {
 		log.Fatal("Failed to find the ID of the \"" + discordGuildName + "\" Discord server.")
 	}
+
+	// Get the ID of the administrative role
+	var roles []*discordgo.Role
+	if v, err := discord.GuildRoles(discordGuildID); err != nil {
+		log.Fatal("Failed to get the roles for the guild: " + err.Error())
+		return
+	} else {
+		roles = v
+	}
+	for _, role := range roles {
+		if role.Name == discordAdminRoleName {
+			discordAdminRoleID = role.ID
+			break
+		}
+	}
+	if discordAdminRoleID == "" {
+		log.Fatal("Failed to find the role of \"" + discordAdminRoleName + "\".")
+	}
 }
 
 func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -105,14 +128,14 @@ func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	log.Info("[#" + channelName + "] <" + m.Author.Username + "#" + m.Author.Discriminator + "> " + m.Content)
 
 	// Commands for this bot will start with a "!", so we can ignore everything else
-	message := strings.ToLower(m.Content)
-	args := strings.SplitN(message, " ", 2) // We use SplitN because there
+	args := strings.Split(m.Content, " ")
 	command := args[0]
 	args = args[1:] // This will be an empty slice if there is nothing after the command
 	if !strings.HasPrefix(command, "!") {
 		return
 	}
 	command = strings.TrimPrefix(command, "!")
+	command = strings.ToLower(command) // Commands are case-insensitive
 
 	// Check to see if there is a command handler for this command
 	if _, ok := commandHandlerMap[command]; !ok {

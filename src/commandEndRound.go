@@ -5,6 +5,10 @@ import (
 )
 
 func commandEndRound(m *discordgo.MessageCreate, args []string) {
+	if !isAdmin(m) {
+		return
+	}
+
 	// Get all of the channels
 	var channels []*discordgo.Channel
 	if v, err := discord.GuildChannels(discordGuildID); err != nil {

@@ -5,7 +5,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func commandReschedule(m *discordgo.MessageCreate, args []string) {
+func commandTimeDelete(m *discordgo.MessageCreate, args []string) {
 	var race models.Race
 	if v, err := raceGet(m.ChannelID); err != nil {
 		msg := "Failed to get the race from the database: " + err.Error()
@@ -44,6 +44,6 @@ func commandReschedule(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	discordSend(m.ChannelID, "The currently scheduled time has been deleted. Please suggest a new time with the `!schedule` command.")
+	discordSend(m.ChannelID, "The currently scheduled time has been deleted. Please suggest a new time with the `!time` command.")
 	log.Info("Race \"" + race.Name() + "\" rescheduled; state set to 0.")
 }

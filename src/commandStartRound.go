@@ -4,12 +4,17 @@ import (
 	"encoding/json"
 	"math"
 	"strings"
+	"time"
 
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
 	"github.com/bwmarrin/discordgo"
 )
 
 func commandStartRound(m *discordgo.MessageCreate, args []string) {
+	if !isAdmin(m) {
+		return
+	}
+
 	// Get the tournament from Challonge
 	apiURL := "https://api.challonge.com/v1/tournaments/" + floatToString(challongeTournamentID) + ".json?"
 	apiURL += "api_key=" + challongeAPIKey + "&include_participants=1&include_matches=1"
@@ -140,10 +145,6 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 			Characters:   strings.Join(characters, ","),
 			Builds:       strings.Join(builds, ","),
 		}
-		log.Debug("-------------")
-		log.Debug(discord2.ID)
-		log.Debug(discord2.Username)
-		log.Debug("-------------")
 		if err := db.Races.Insert(racer1.DiscordID, racer2.DiscordID, race); err != nil {
 			msg := "Failed to create the race in the database: " + err.Error()
 			log.Error(msg)
@@ -154,21 +155,28 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 		// Find out if the players have set their timezone
 		msg := ""
 		if racer1.Timezone.Valid {
-			msg += discord1.Mention() + " has a timezone of: " + getTimezone(racer1.Timezone.Int64) + "\n"
+			msg += discord1.Mention() + " has a timezone of: **" + getTimezone(racer1.Timezone.String) + "**\n"
 		} else {
-			msg += discord1.Mention() + ", your timezone is not currently set. Please set one with: `!timezone [timezone]`\n"
+			msg += discord1.Mention() + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
 		}
 		if racer2.Timezone.Valid {
-			msg += discord2.Mention() + " has a timezone of: " + getTimezone(racer2.Timezone.Int64) + "\n"
+			msg += discord2.Mention() + " has a timezone of: **" + getTimezone(racer2.Timezone.String) + "**\n"
 		} else {
-			msg += discord2.Mention() + ", your timezone is not currently set. Please set one with: `!timezone [timezone]`\n"
+			msg += discord2.Mention() + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
 		}
+
+		// Calculate the difference between the two timezones
 		if racer1.Timezone.Valid && racer2.Timezone.Valid {
-			if racer1.Timezone.Int64 == racer2.Timezone.Int64 {
+			loc1, _ := time.LoadLocation(racer1.Timezone.String)
+			loc2, _ := time.LoadLocation(racer2.Timezone.String)
+			_, offset1 := time.Now().In(loc1).Zone()
+			_, offset2 := time.Now().In(loc2).Zone()
+			if offset1 == offset2 {
 				msg += "You both are in **the same timezone**. Great!\n"
 			} else {
-				difference := math.Abs(float64(racer1.Timezone.Int64 - racer2.Timezone.Int64))
-				msg += "You are **" + floatToString(difference) + " hours** away from each other.\n"
+				difference := math.Abs(float64(offset1 - offset2))
+				hours := difference / 3600
+				msg += "You are **" + floatToString(hours) + " hours** away from each other.\n"
 			}
 		}
 		msg += "\n"
@@ -177,22 +185,22 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 		if racer1.StreamURL.Valid {
 			msg += discord1.Mention() + " has a stream of: <" + racer1.StreamURL.String + ">\n"
 		} else {
-			msg += discord1.Mention() + ", your stream is not currently set. Please set one with: `!stream [url]`\n"
+			msg += discord1.Mention() + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"
 		}
 		if racer2.Timezone.Valid {
 			msg += discord2.Mention() + " has a stream of: <" + racer2.StreamURL.String + ">\n"
 		} else {
-			msg += discord2.Mention() + ", your stream is not currently set. Please set one with: `!stream [url]`\n"
+			msg += discord2.Mention() + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"
 		}
 		msg += "\n"
 
 		// Give the welcome message
 		msg += "Please discuss the times that each of you are available to play this week.\n"
-		msg += "You can use the bot to suggest a time to your opponent: `!schedule 02/06/2018 22:00`\n"
-		msg += "If they accept with `!confirm`, then the match will be officially scheduled."
+		msg += "You can use suggest a time to your opponent with something like: `!time 6pm sat`\n"
+		msg += "If they accept with `!timeok`, then the match will be officially scheduled."
 		discordSend(channelID, msg)
 
-		log.Info("Started race: " + race.Name())
+		log.Info("Started race: " + channelName)
 	}
 
 	if foundMatches {

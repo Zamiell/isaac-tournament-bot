@@ -47,7 +47,7 @@ func commandStream(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	msg := m.Author.Mention() + ", your stream has been set to: <" + streamURL + ">"
+	msg := "The stream for **" + m.Author.Username + "** has been set to: <" + streamURL + ">"
 	discordSend(m.ChannelID, msg)
 	log.Info("Stream for \"" + m.Author.Username + "\" set to: " + streamURL)
 }
@@ -69,13 +69,7 @@ func commandStreamPrint(m *discordgo.MessageCreate) {
 	} else {
 		msg += "**not currently set**.\n\n"
 	}
-	msg += "Set your stream with:\n"
-	msg += "```\n"
-	msg += "!stream [url]\n"
-	msg += "```\n"
-	msg += "For example:\n"
-	msg += "```\n"
-	msg += "!stream https://www.twitch.tv/zamiell\n"
-	msg += "```\n"
+	msg += "Set your stream with: `!stream [url]`\n"
+	msg += "For example: `!stream https://www.twitch.tv/zamiell`"
 	discordSend(m.ChannelID, msg)
 }
