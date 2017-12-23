@@ -187,7 +187,7 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 		} else {
 			msg += discord1.Mention() + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"
 		}
-		if racer2.Timezone.Valid {
+		if racer2.StreamURL.Valid {
 			msg += discord2.Mention() + " has a stream of: <" + racer2.StreamURL.String + ">\n"
 		} else {
 			msg += discord2.Mention() + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"

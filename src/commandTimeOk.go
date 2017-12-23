@@ -36,14 +36,18 @@ func commandTimeOk(m *discordgo.MessageCreate, args []string) {
 
 	// Set the state to 1
 	if err := db.Races.SetState(m.ChannelID, 1); err != nil {
-		msg := "Failed to set the state: " + err.Error()
+		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	}
 
-	msg := "The race time has been confirmed. Before the match begins, use the `!startbans` command to ban characters and items.\n"
+	msg := "The race time has been confirmed. I will notify you 5 minutes before the match begins.\n"
 	msg += "(To delete this time and start over, use the `!timedelete` command.)"
 	discordSend(m.ChannelID, msg)
 	log.Info("Race \"" + race.Name() + "\" confirmed; set to state 1.")
+
+	// Sleep until the match starts
+	// (use a goroutine so that the rest of the program doesn't block)
+	go matchStart(race)
 }

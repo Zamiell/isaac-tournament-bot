@@ -7,6 +7,7 @@ import (
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
 	"github.com/bwmarrin/discordgo"
 	"github.com/kierdavis/dateparser"
+	timezone "github.com/tkuchiki/go-timezone"
 )
 
 func commandTime(m *discordgo.MessageCreate, args []string) {
@@ -56,11 +57,12 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 
 	// Check to see if this is a valid time
 	input := strings.Join(args, " ")
-	//input += " " + getGMT(racer.Timezone.String)
-	input += " PST"
-	log.Info("input:", input)
+	input += " " + getTimezoneShort(racer.Timezone.String)
+	parser := &dateparser.Parser{
+		TZInfos: timezone.GetAllOffsets(),
+	}
 	var datetime time.Time
-	if t, err := dateparser.Parse(input); err != nil {
+	if t, err := parser.Parse(input); err != nil {
 		msg := "Failed to parse the time: " + err.Error()
 		discordSend(m.ChannelID, msg)
 		return
@@ -70,6 +72,13 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 
 	// Change it to UTC
 	datetimeUTC := datetime.UTC()
+
+	// Check to see if it is in the future
+	difference := datetimeUTC.Sub(time.Now().UTC())
+	if difference < 0 {
+		discordSend(m.ChannelID, "You must schedule a date in the future.")
+		return
+	}
 
 	// Set the new scheduled time
 	if err := db.Races.SetDatetimeScheduled(m.ChannelID, datetimeUTC); err != nil {

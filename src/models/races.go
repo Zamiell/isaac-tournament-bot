@@ -12,7 +12,7 @@ type Races struct{}
 
 // State 0 is freshly created before both players have confirmed a scheduled time
 // State 1 is confirmed but before it starts
-// State 2 is banning characters (5 minutes before starting)
+// State 2 is banning characters (triggered 5 minutes before starting)
 // State 3 is banning items
 // State 4 is in progress
 // State 5 is completed
@@ -32,6 +32,8 @@ type Race struct {
 	ActivePlayer      int
 	Characters        string
 	Builds            string
+	Racer1Veto        bool
+	Racer2Veto        bool
 }
 
 func (r *Race) Name() string {
@@ -41,7 +43,7 @@ func (r *Race) Name() string {
 func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		INSERT INTO races (
+		INSERT INTO tournament_races (
 			racer1,
 			racer2,
 			channel_id,
@@ -49,8 +51,8 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 			characters,
 			builds
 		) VALUES (
-			(SELECT id FROM racers WHERE discord_id = ?),
-			(SELECT id FROM racers WHERE discord_id = ?),
+			(SELECT id FROM tournament_racers WHERE discord_id = ?),
+			(SELECT id FROM tournament_racers WHERE discord_id = ?),
 			?,
 			?,
 			?,
@@ -80,7 +82,7 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 func (*Races) Delete(channelID string) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		DELETE FROM races
+		DELETE FROM tournament_races
 		WHERE channel_id = ?
 	`); err != nil {
 		return err
@@ -111,8 +113,10 @@ func (*Races) Get(channelID string) (Race, error) {
 			caster_p2,
 			active_player,
 			characters,
-			builds
-		FROM races
+			builds,
+			racer1_veto,
+			racer2_veto
+		FROM tournament_races
 		WHERE channel_id = ?
 	`, channelID).Scan(
 		&race.Racer1ID,
@@ -127,6 +131,8 @@ func (*Races) Get(channelID string) (Race, error) {
 		&race.ActivePlayer,
 		&race.Characters,
 		&race.Builds,
+		&race.Racer1Veto,
+		&race.Racer2Veto,
 	); err != nil {
 		return race, err
 	}
@@ -137,7 +143,7 @@ func (*Races) Get(channelID string) (Race, error) {
 func (*Races) SetState(channelID string, state int) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE races
+		UPDATE tournament_races
 		SET state = ?
 		WHERE channel_id = ?
 	`); err != nil {
@@ -157,7 +163,7 @@ func (*Races) SetState(channelID string, state int) error {
 func (*Races) SetDatetimeScheduled(channelID string, datetimeScheduled time.Time) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE races
+		UPDATE tournament_races
 		SET datetime_scheduled = ?
 		WHERE channel_id = ?
 	`); err != nil {
@@ -177,7 +183,7 @@ func (*Races) SetDatetimeScheduled(channelID string, datetimeScheduled time.Time
 func (*Races) UnsetDatetimeScheduled(channelID string) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE races
+		UPDATE tournament_races
 		SET datetime_scheduled = NULL
 		WHERE channel_id = ?
 	`); err != nil {
@@ -197,8 +203,8 @@ func (*Races) UnsetDatetimeScheduled(channelID string) error {
 func (*Races) SetCaster(channelID string, casterID string) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE races
-		SET caster = (SELECT id FROM racers WHERE discord_id = ?)
+		UPDATE tournament_races
+		SET caster = (SELECT id FROM tournament_racers WHERE discord_id = ?)
 		WHERE channel_id = ?
 	`); err != nil {
 		return err
@@ -217,7 +223,7 @@ func (*Races) SetCaster(channelID string, casterID string) error {
 func (*Races) UnsetCaster(channelID string) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE races
+		UPDATE tournament_races
 		SET
 			caster = NULL,
 			caster_p1 = 0,
@@ -240,8 +246,8 @@ func (*Races) UnsetCaster(channelID string) error {
 func (*Races) SetCasterApproval(channelID string, playerNum int) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE races
-		SET caster_p` + strconv.Itoa(playerNum) + ` = 0
+		UPDATE tournament_races
+		SET caster_p` + strconv.Itoa(playerNum) + ` = 1
 		WHERE channel_id = ?
 	`); err != nil {
 		return err
@@ -251,6 +257,66 @@ func (*Races) SetCasterApproval(channelID string, playerNum int) error {
 	defer stmt.Close()
 
 	if _, err := stmt.Exec(channelID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (*Races) SetActivePlayer(channelID string, activePlayer int) error {
+	var stmt *sql.Stmt
+	if v, err := db.Prepare(`
+		UPDATE tournament_races
+		SET active_player = ?
+		WHERE channel_id = ?
+	`); err != nil {
+		return err
+	} else {
+		stmt = v
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(activePlayer, channelID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (*Races) SetCharacters(channelID string, characters string) error {
+	var stmt *sql.Stmt
+	if v, err := db.Prepare(`
+		UPDATE tournament_races
+		SET characters = ?
+		WHERE channel_id = ?
+	`); err != nil {
+		return err
+	} else {
+		stmt = v
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(characters, channelID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (*Races) SetBuilds(channelID string, builds string) error {
+	var stmt *sql.Stmt
+	if v, err := db.Prepare(`
+		UPDATE tournament_races
+		SET builds = ?
+		WHERE channel_id = ?
+	`); err != nil {
+		return err
+	} else {
+		stmt = v
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(builds, channelID); err != nil {
 		return err
 	}
 

@@ -2,7 +2,7 @@
     Setting up the database is covered in the README.md file
 */
 
-USE isaactournament;
+USE isaac;
 
 /*
     We have to disable foreign key checks so that we can drop the tables;
@@ -10,8 +10,8 @@ USE isaactournament;
  */
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS races;
-CREATE TABLE races (
+DROP TABLE IF EXISTS tournament_races;
+CREATE TABLE tournament_races (
     id                  INT            NOT NULL  PRIMARY KEY  AUTO_INCREMENT, /* PRIMARY KEY automatically creates a UNIQUE constraint */
     racer1              INT            NOT NULL,
     racer2              INT            NOT NULL,
@@ -26,19 +26,21 @@ CREATE TABLE races (
     active_player       INT            NOT NULL  DEFAULT 1,
     characters          NVARCHAR(255)  NOT NULL,
     builds              NVARCHAR(500)  NOT NULL,
-    FOREIGN KEY (racer1) REFERENCES racers (id) ON DELETE CASCADE,
-    FOREIGN KEY (racer2) REFERENCES racers (id) ON DELETE CASCADE,
-    FOREIGN KEY (caster) REFERENCES racers (id) ON DELETE CASCADE
+    racer1_veto         INT            NOT NULL  DEFAULT 0,
+    racer2_veto         INT            NOT NULL  DEFAULT 0,
+    FOREIGN KEY (racer1) REFERENCES tournament_racers (id) ON DELETE CASCADE,
+    FOREIGN KEY (racer2) REFERENCES tournament_racers (id) ON DELETE CASCADE,
+    FOREIGN KEY (caster) REFERENCES tournament_racers (id) ON DELETE CASCADE
 );
-CREATE INDEX races_index_channel_id ON races (channel_id);
+CREATE INDEX tournament_races_index_channel_id ON tournament_races (channel_id);
 
-DROP TABLE IF EXISTS racers;
-CREATE TABLE racers (
+DROP TABLE IF EXISTS tournament_racers;
+CREATE TABLE tournament_racers (
     id          INT            NOT NULL  PRIMARY KEY  AUTO_INCREMENT, /* PRIMARY KEY automatically creates a UNIQUE constraint */
     discord_id  NVARCHAR(100)  NOT NULL  UNIQUE,
     username    NVARCHAR(100)  NOT NULL,
     timezone    NVARCHAR(100)  NULL      DEFAULT NULL, /* the number of hours adjusted from GMT */
     stream_url  NVARCHAR(255)  NULL      DEFAULT NULL
 );
-CREATE INDEX racers_index_discord_id ON racers (discord_id);
-CREATE INDEX racers_index_username ON racers (username);
+CREATE INDEX tournament_racers_index_discord_id ON tournament_racers (discord_id);
+CREATE INDEX tournament_racers_index_username ON tournament_racers (username);

@@ -1,10 +1,12 @@
 package main
 
 import (
+	"strings"
 	"time"
 
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
 	"github.com/bwmarrin/discordgo"
+	timezone "github.com/tkuchiki/go-timezone"
 )
 
 func commandTimezone(m *discordgo.MessageCreate, args []string) {
@@ -21,8 +23,32 @@ func commandTimezone(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// See if the submitted timezone is valid
+	// See if the submitted timezone is a short timezone
 	newTimezone := args[0]
+	if _, err := timezone.GetOffset(strings.ToUpper(newTimezone)); err == nil {
+		newTimezone = strings.ToUpper(newTimezone)
+		msg := "That is not specific enough. Please use `!timezone [timezone]` and select from the following list of timezones inside " + newTimezone + ":\n"
+		msg += "```\n"
+		var timezones []string
+		if v, err := timezone.GetTimezones(newTimezone); err != nil {
+			msg := "Failed to get the list of timezones for " + newTimezone + ": " + err.Error()
+			discordSend(m.ChannelID, msg)
+			return
+		} else {
+			timezones = v
+		}
+		for _, zone := range timezones {
+			if strings.HasPrefix(zone, newTimezone) {
+				continue
+			}
+			msg += zone + "\n"
+		}
+		msg += "```"
+		discordSend(m.ChannelID, msg)
+		return
+	}
+
+	// See if the submitted timezone is valid
 	if _, err := time.LoadLocation(newTimezone); err != nil {
 		msg := "That is not a valid timezone. The submitted timezone has to exactly match the TZ column of the following page:\n"
 		msg += "<https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>\n"

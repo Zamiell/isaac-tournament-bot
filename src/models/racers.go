@@ -23,7 +23,7 @@ func (*Racers) Exists(discordID string) (bool, error) {
 	var id int
 	if err := db.QueryRow(`
 		SELECT id
-		FROM racers
+		FROM tournament_racers
 		WHERE discord_id = ?
 	`, discordID).Scan(&id); err == sql.ErrNoRows {
 		return false, nil
@@ -37,7 +37,7 @@ func (*Racers) Exists(discordID string) (bool, error) {
 func (*Racers) Insert(racer Racer) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		INSERT INTO racers (
+		INSERT INTO tournament_racers (
 			discord_id,
 			username
 		) VALUES (
@@ -69,7 +69,7 @@ func (*Racers) Get(discordID string) (Racer, error) {
 			username,
 			timezone,
 			stream_url
-		FROM racers
+		FROM tournament_racers
 		WHERE discord_id = ?
 	`, discordID).Scan(
 		&racer.DiscordID,
@@ -91,7 +91,7 @@ func (*Racers) GetID(racerID int) (Racer, error) {
 			username,
 			timezone,
 			stream_url
-		FROM racers
+		FROM tournament_racers
 		WHERE id = ?
 	`, racerID).Scan(
 		&racer.DiscordID,
@@ -108,7 +108,7 @@ func (*Racers) GetID(racerID int) (Racer, error) {
 func (*Racers) SetTimeZone(discordID string, timezone string) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE racers
+		UPDATE tournament_racers
 		SET timezone = ?
 		WHERE discord_id = ?
 	`); err != nil {
@@ -128,7 +128,7 @@ func (*Racers) SetTimeZone(discordID string, timezone string) error {
 func (*Racers) SetStreamURL(discordID string, streamURL string) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE racers
+		UPDATE tournament_racers
 		SET stream_url = ?
 		WHERE discord_id = ?
 	`); err != nil {

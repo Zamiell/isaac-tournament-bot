@@ -152,9 +152,9 @@ func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	Miscellaneous functions
 */
 
-func discordSend(channelID string, message string) {
-	if _, err := discord.ChannelMessageSend(channelID, message); err != nil {
-		log.Error("Failed to send \"" + message + "\" to \"" + channelID + "\": " + err.Error())
+func discordSend(channelID string, msg string) {
+	if _, err := discord.ChannelMessageSend(channelID, msg); err != nil {
+		log.Error("Failed to send \"" + msg + "\" to \"" + channelID + "\": " + err.Error())
 		return
 	}
 }

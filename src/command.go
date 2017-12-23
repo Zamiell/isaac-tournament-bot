@@ -18,6 +18,9 @@ func commandInit() {
 	commandHandlerMap["gettimezone"] = commandGetTimezone
 	commandHandlerMap["stream"] = commandStream
 	commandHandlerMap["getstream"] = commandGetStream
+	commandHandlerMap["random"] = commandRandom
+	commandHandlerMap["rand"] = commandRandom
+	commandHandlerMap["roll"] = commandRandom
 
 	// Match commands
 	commandHandlerMap["time"] = commandTime
@@ -28,18 +31,25 @@ func commandInit() {
 	commandHandlerMap["caster"] = commandCaster
 	commandHandlerMap["casterok"] = commandCasterOk
 	commandHandlerMap["casternotok"] = commandCasterNotOk
-	commandHandlerMap["startbans"] = commandStartBans
-	commandHandlerMap["bansstart"] = commandStartBans
+	commandHandlerMap["ban"] = commandBan
+	commandHandlerMap["yes"] = commandYes
+	commandHandlerMap["no"] = commandNo
+	commandHandlerMap["score"] = commandScore
 
 	// Admin-only commands
 	commandHandlerMap["settimezone"] = commandSetTimezone
 	commandHandlerMap["timezoneset"] = commandSetTimezone
+	commandHandlerMap["setstream"] = commandSetStream
+	commandHandlerMap["streamset"] = commandSetStream
 	commandHandlerMap["startround"] = commandStartRound
 	commandHandlerMap["roundstart"] = commandStartRound
+	commandHandlerMap["start"] = commandStartRound
 	commandHandlerMap["beginround"] = commandStartRound
 	commandHandlerMap["roundbegin"] = commandStartRound
+	commandHandlerMap["begin"] = commandStartRound
 	commandHandlerMap["endround"] = commandEndRound
 	commandHandlerMap["roundend"] = commandEndRound
+	commandHandlerMap["end"] = commandEndRound
 }
 
 func commandHelpGetMsg() string {
@@ -55,6 +65,7 @@ func commandHelpGetMsg() string {
 	msg += "!stream                  Get your stored stream URL\n"
 	msg += "!stream [url]            Set your stored stream URL\n"
 	msg += "!getstream [username]    Get the stream of the specified person\n"
+	msg += "!random [min] [max]      Get a random number\n"
 	msg += "```\n"
 	msg += "Match commands (in a match channel):\n"
 	msg += "```\n"
@@ -69,7 +80,6 @@ func commandHelpGetMsg() string {
 	msg += "!caster                  Get the person who volunteered to cast\n"
 	msg += "!casterok                Confirm that you are okay with the caster rebroadcasting\n"
 	msg += "!casternotok             Undo your caster confirmation or deny the current caster\n"
-	msg += "!startbans               Start choosing character and item bans\n"
 	msg += "```\n"
 	msg += "Admin-only commands:\n"
 	msg += "```\n"

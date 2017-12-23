@@ -57,6 +57,7 @@ func main() {
 	discordInit()
 	defer discord.Close()
 	challongeInit()
+	matchInit()
 
 	// Wait here until CTRL-C or other term signal is received
 	sc := make(chan os.Signal, 1)
