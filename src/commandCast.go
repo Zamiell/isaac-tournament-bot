@@ -40,7 +40,7 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this race has already been scheduled
-	if race.State != 1 {
+	if race.State != "scheduled" {
 		discordSend(m.ChannelID, "You cannot volunteer to cast a match until a time has been scheduled by both of the racers.")
 		return
 	}

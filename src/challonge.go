@@ -3,18 +3,26 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
+// Valid rulesets are "seeded" and "unseeded"
+type Tournament struct {
+	ChallongeID       float64
+	Ruleset           string
+	DiscordCategoryID string
+}
+
 var (
-	challongeUsername       string
-	challongeAPIKey         string
-	challongeTournamentName string
-	challongeTournamentID   float64
+	challongeUsername string
+	challongeAPIKey   string
+	tournaments       = make(map[string]Tournament)
 
 	// We don't want to use the default http.Client structure because it has no default timeout set
 	myHTTPClient = &http.Client{
@@ -23,7 +31,7 @@ var (
 )
 
 func challongeInit() {
-	// Read the Challonge API key from the environment variable
+	// Read the Challonge configuration from the environment variables
 	challongeUsername = os.Getenv("CHALLONGE_USERNAME")
 	if len(challongeUsername) == 0 {
 		log.Fatal("The \"CHALLONGE_USERNAME\" environment variable is blank. Set it in the \".env\" file.")
@@ -36,49 +44,80 @@ func challongeInit() {
 		return
 	}
 
-	challongeTournamentName = os.Getenv("CHALLONGE_TOURNAMENT_NAME")
-	if len(challongeTournamentName) == 0 {
-		log.Fatal("The \"CHALLONGE_TOURNAMENT_NAME\" environment variable is blank. Set it in the \".env\" file.")
+	tournamentNamesString := os.Getenv("TOURNAMENT_NAMES")
+	if len(tournamentNamesString) == 0 {
+		log.Fatal("The \"TOURNAMENT_NAMES\" environment variable is blank. Set it in the \".env\" file.")
 		return
 	}
+	tournamentNames := strings.Split(tournamentNamesString, ",")
 
-	// Figure out the ID of this tournament by getting all of the Challonge user's tournaments
+	tournamentRulesetsString := os.Getenv("TOURNAMENT_RULESETS")
+	if len(tournamentRulesetsString) == 0 {
+		log.Fatal("The \"TOURNAMENT_RULESETS\" environment variable is blank. Set it in the \".env\" file.")
+		return
+	}
+	tournamentRulesets := strings.Split(tournamentRulesetsString, ",")
+
+	discordCategoryIDsString := os.Getenv("DISCORD_CATEGORY_IDS")
+	if len(discordCategoryIDsString) == 0 {
+		log.Fatal("The \"DISCORD_CATEGORY_IDS\" environment variable is blank. Set it in the \".env\" file.")
+		return
+	}
+	discordCategoryIDs := strings.Split(discordCategoryIDsString, ",")
+
+	// Get all of the Challonge user's tournaments
 	apiURL := "https://api.challonge.com/v1/tournaments.json?"
 	apiURL += "api_key=" + challongeAPIKey
 	var raw []byte
-	if v, err := challongeGetJSON(apiURL); err != nil {
+	if v, err := challongeGetJSON("GET", apiURL, nil); err != nil {
 		log.Fatal("Failed to get the tournament from Challonge:", err)
 		return
 	} else {
 		raw = v
 	}
 
-	tournaments := make([]interface{}, 0)
-	if err := json.Unmarshal(raw, &tournaments); err != nil {
+	jsonTournaments := make([]interface{}, 0)
+	if err := json.Unmarshal(raw, &jsonTournaments); err != nil {
 		log.Fatal("Failed to unmarshal the Challonge JSON:", err)
 	}
 
-	found := false
-	for _, v := range tournaments {
-		vMap := v.(map[string]interface{})
-		tournament := vMap["tournament"].(map[string]interface{})
-		if tournament["url"] == challongeTournamentName {
-			found = true
-			challongeTournamentID = tournament["id"].(float64)
-			break
+	// Figure out the ID for all the tournaments listed in the environment variable
+	for i, _ := range tournamentNames {
+		found := false
+		for _, v := range jsonTournaments {
+			vMap := v.(map[string]interface{})
+			jsonTournament := vMap["tournament"].(map[string]interface{})
+			if jsonTournament["url"] == tournamentNames[i] {
+				found = true
+				tournaments[tournamentNames[i]] = Tournament{
+					ChallongeID:       jsonTournament["id"].(float64),
+					Ruleset:           tournamentRulesets[i],
+					DiscordCategoryID: discordCategoryIDs[i],
+				}
+				break
+			}
 		}
-	}
-	if !found {
-		log.Fatal("Failed to find the \"" + challongeTournamentName + "\" tournament in this Challonge user's tournament list.")
+		if !found {
+			log.Fatal("Failed to find the \"" + tournamentNames[i] + "\" tournament in this Challonge user's tournament list.")
+		}
 	}
 }
 
-func challongeGetJSON(apiURL string) ([]byte, error) {
-	// log.Info("Making a POST request to Challonge:", apiURL) // Uncomment when debugging
+func challongeGetJSON(method string, apiURL string, data io.Reader) ([]byte, error) {
+	//log.Info("Making a "+method+" request to Challonge:", apiURL) // Uncomment when debugging
 
-	resp, err := myHTTPClient.Get(apiURL)
-	if err != nil {
+	var req *http.Request
+	if v, err := http.NewRequest(method, apiURL, data); err != nil {
 		return nil, err
+	} else {
+		req = v
+	}
+
+	var resp *http.Response
+	if v, err := myHTTPClient.Do(req); err != nil {
+		return nil, err
+	} else {
+		resp = v
 	}
 	defer resp.Body.Close()
 

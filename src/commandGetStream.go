@@ -11,7 +11,7 @@ func commandGetStream(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Get all of the users in the guild
+	// Get the Discord guild object
 	var guild *discordgo.Guild
 	if v, err := discord.Guild(discordGuildID); err != nil {
 		msg := "Failed to get the Discord guild: " + err.Error()
@@ -62,6 +62,6 @@ func commandGetStream(m *discordgo.MessageCreate, args []string) {
 
 func commandGetStreamPrint(m *discordgo.MessageCreate) {
 	msg := "Get another player's stream with: `!getstream [username]`\n"
-	msg += "For example: `!getstream Zamiel`"
+	msg += "e.g. `!getstream Zamiel`"
 	discordSend(m.ChannelID, msg)
 }

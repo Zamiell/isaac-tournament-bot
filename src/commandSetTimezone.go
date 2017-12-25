@@ -14,7 +14,7 @@ func commandSetTimezone(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Get all of the users in the guild
+	// Get the Discord guild object
 	var guild *discordgo.Guild
 	if v, err := discord.Guild(discordGuildID); err != nil {
 		msg := "Failed to get the Discord guild: " + err.Error()
@@ -51,7 +51,7 @@ func commandSetTimezone(m *discordgo.MessageCreate, args []string) {
 
 func commandSetTimezonePrint(m *discordgo.MessageCreate) {
 	msg := "Set another player's timezone with: `!settimezone [username] [timezone]`\n"
-	msg += "For example: `!settimezone Zamiel America/New_York`\n"
+	msg += "e.g. `!settimezone Zamiel America/New_York`\n"
 	msg += "The submitted timezone has to exactly match the TZ column of the following page:\n"
 	msg += "<https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>"
 	discordSend(m.ChannelID, msg)

@@ -22,7 +22,14 @@ func commandEndRound(m *discordgo.MessageCreate, args []string) {
 
 	deletedChannels := false
 	for _, channel := range channels {
-		if channel.ParentID != discordChannelCategoryID {
+		raceChannel := false
+		for _, tournament := range tournaments {
+			if tournament.DiscordCategoryID == channel.ParentID {
+				raceChannel = true
+				break
+			}
+		}
+		if !raceChannel {
 			continue
 		}
 

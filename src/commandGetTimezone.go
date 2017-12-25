@@ -11,7 +11,7 @@ func commandGetTimezone(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Get all of the users in the guild
+	// Get the Discord guild object
 	var guild *discordgo.Guild
 	if v, err := discord.Guild(discordGuildID); err != nil {
 		msg := "Failed to get the Discord guild: " + err.Error()
@@ -62,6 +62,6 @@ func commandGetTimezone(m *discordgo.MessageCreate, args []string) {
 
 func commandGetTimezonePrint(m *discordgo.MessageCreate) {
 	msg := "Get another player's timezone with: `!gettimezone [username]`\n"
-	msg += "For example: `!gettimezone Zamiel`"
+	msg += "e.g. `!gettimezone Zamiel`"
 	discordSend(m.ChannelID, msg)
 }

@@ -17,22 +17,38 @@ func commandNo(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this person is one of the two racers
-	if m.Author.ID != race.Racer1.DiscordID && m.Author.ID != race.Racer2.DiscordID {
+	var playerNum int
+	if m.Author.ID == race.Racer1.DiscordID {
+		playerNum = 1
+	} else if m.Author.ID == race.Racer2.DiscordID {
+		playerNum = 2
+	} else {
 		discordSend(m.ChannelID, "Only \""+race.Racer1.Username+"\" and \""+race.Racer2.Username+"\" can veto a build.")
 		return
 	}
 
 	// Check to see if this race is in the item banning phase
-	if race.State != 3 {
+	if race.State != "vetoBuilds" {
 		discordSend(m.ChannelID, "You can only veto something once the match has started.")
 		return
 	}
 
 	// Check to see if it is their turn
-	if (race.ActivePlayer == 1 && m.Author.ID != race.Racer2.DiscordID) ||
-		(race.ActivePlayer == 2 && m.Author.ID != race.Racer1.DiscordID) {
-
+	if race.ActivePlayer != playerNum {
 		discordSend(m.ChannelID, "It is not your turn.")
 		return
 	}
+
+	// Set the number of people who have voted on this build
+	race.NumVoted++
+	if err := db.Races.SetNumVoted(race.ChannelID, race.NumVoted); err != nil {
+		msg := "Failed to set the NumVoted for race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(m.ChannelID, msg)
+		return
+	}
+
+	incrementActivePlayer(&race)
+	buildsRound(race, "")
+	log.Info("Racer \"" + m.Author.Username + "\" declined to veto.")
 }

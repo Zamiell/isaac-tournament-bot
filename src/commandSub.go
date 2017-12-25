@@ -3,7 +3,6 @@ package main
 import (
 	"math"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
@@ -68,44 +67,67 @@ func getTimezoneGMT(timezone string) string {
 func getDate(datetime time.Time, timezone string) string {
 	loc, _ := time.LoadLocation(timezone)
 	datetimeLocal := datetime.In(loc)
-	dateFormatString := "Monday, January "
-	dateString := datetimeLocal.Format(dateFormatString)
+	dateFormatString2 := "Monday, January "
+	dateString := datetimeLocal.Format(dateFormatString2)
 	dateString += humanize.Ordinal(datetimeLocal.Day())
 	timeFormatString := "3:04 PM"
 	timeString := datetimeLocal.Format(timeFormatString)
 
-	msg := "**" + dateString + " @ " + timeString + " (" + getTimezoneShort(timezone) + ")**"
+	msg := dateString + " @ " + timeString + " (" + getTimezoneShort(timezone) + ")"
 	return msg
 }
 
 /*
-	Ban subroutines
+	Match subroutines
 */
 
-func getRemaining(race models.Race, thing string) string {
-	// Characters and builds are stored in the array as a comma delimited string,
-	// so we must convert it back into a slice
-	var thingArray string
-	var thingsFull []string
+func getBansRemaining(race models.Race, thing string) string {
+	bansLeft := race.Racer1Bans + race.Racer2Bans
+	msg := "**" + strconv.Itoa(bansLeft) + " ban"
+	if bansLeft > 1 {
+		msg += "s"
+	}
+	msg += " to go.**\n"
+	return msg
+}
+
+func getPicksRemaining(race models.Race, thing string) string {
+	var things []string
 	if thing == "characters" {
-		thingArray = race.Characters
-		thingsFull = characters
+		things = race.Characters
 	} else if thing == "builds" {
-		thingArray = race.Builds
-		thingsFull = builds
+		things = race.Builds
 	} else {
-		log.Error("The \"getRemaining\" function was passed an invalid phase.")
+		log.Error("The \"getPicksRemaining\" function was passed an invalid thing.")
 		return ""
 	}
-	things := strings.Split(thingArray, ",")
+
+	picksLeft := bestOf - len(things)
+	msg := "**" + strconv.Itoa(picksLeft) + " pick"
+	if picksLeft > 1 {
+		msg += "s"
+	}
+	msg += " to go.**\n"
+	return msg
+}
+
+func getRemaining(race models.Race, thing string) string {
+	var thingsRemaining []string
+	if thing == "characters" {
+		thingsRemaining = race.CharactersRemaining
+	} else if thing == "builds" {
+		thingsRemaining = race.BuildsRemaining
+	} else {
+		log.Error("The \"getRemaining\" function was passed an invalid thing.")
+		return ""
+	}
 
 	// Build column 1
 	lines := make([]string, 0)
 	column1length := 0
-	halfwayPoint := int(math.Floor(float64((len(things) - 1) / 2)))
-	log.Info("halfwayPoint:", halfwayPoint)
+	halfwayPoint := int(math.Floor(float64((len(thingsRemaining) - 1) / 2)))
 	for i := 0; i <= halfwayPoint; i++ {
-		line := strconv.Itoa(i+1) + " - " + things[i]
+		line := strconv.Itoa(i+1) + " - " + thingsRemaining[i]
 		lines = append(lines, line)
 		if len(line) > column1length {
 			column1length = len(line)
@@ -122,20 +144,14 @@ func getRemaining(race models.Race, thing string) string {
 
 	// Build column 2
 	lineCounter := 0
-	for i := halfwayPoint + 1; i < len(things); i++ {
-		line := strconv.Itoa(i+1) + " - " + things[i]
+	for i := halfwayPoint + 1; i < len(thingsRemaining); i++ {
+		line := strconv.Itoa(i+1) + " - " + thingsRemaining[i]
 		lines[lineCounter] += line
 		lineCounter += 1
 	}
 
 	// Make the string
-	bansLeft := len(things) - len(thingsFull) + bansNum
-	msg := "**" + strconv.Itoa(bansLeft) + " ban"
-	if bansLeft > 0 {
-		msg += "s"
-	}
-	msg += " to go.**\n"
-	msg += "Current " + thing + " remaining:\n\n"
+	msg := "Current " + thing + " remaining:\n\n"
 	msg += "```\n"
 	for _, line := range lines {
 		msg += line + "\n"
@@ -153,4 +169,18 @@ func getNext(race models.Race) string {
 	}
 	msg += ", you're next!\n\n"
 	return msg
+}
+
+func incrementActivePlayer(race *models.Race) {
+	// Increment the active player
+	race.ActivePlayer++
+	if race.ActivePlayer > 2 {
+		race.ActivePlayer = 1
+	}
+	if err := db.Races.SetActivePlayer(race.ChannelID, race.ActivePlayer); err != nil {
+		msg := "Failed to set the active player for race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(race.ChannelID, msg)
+		return
+	}
 }

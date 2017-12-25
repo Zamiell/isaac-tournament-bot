@@ -1,9 +1,11 @@
 package main
 
 /*
-	TODO:
-	- caster request
-	- caster ok
+	Notes:
+	!timezone America/New_York
+	!settimezone Zamiel2 America/Los_Angeles
+	!stream twitch.tv/Zamiell
+	!setstream Zamiel2 twitch.tv/CobaltStreak
 */
 
 import (
@@ -19,9 +21,10 @@ import (
 )
 
 var (
-	projectPath = path.Join(os.Getenv("GOPATH"), "src", "github.com", "Zamiell", "isaac-tournament-bot")
-	log         *logging.Logger
-	db          *models.Models
+	projectPath     = path.Join(os.Getenv("GOPATH"), "src", "github.com", "Zamiell", "isaac-tournament-bot")
+	log             *logging.Logger
+	db              *models.Models
+	racingPlusEmote = "<:RacingPlus:394342809802506240>"
 )
 
 func main() {

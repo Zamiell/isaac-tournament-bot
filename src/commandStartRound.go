@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"math"
-	"strings"
 	"time"
 
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
@@ -15,11 +14,20 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
+	// Go through all of the tournaments
+	for tournamentName, _ := range tournaments {
+		startRound(m, tournamentName)
+	}
+
+}
+
+func startRound(m *discordgo.MessageCreate, tournamentName string) {
 	// Get the tournament from Challonge
+	challongeTournamentID := tournaments[tournamentName].ChallongeID
 	apiURL := "https://api.challonge.com/v1/tournaments/" + floatToString(challongeTournamentID) + ".json?"
 	apiURL += "api_key=" + challongeAPIKey + "&include_participants=1&include_matches=1"
 	var raw []byte
-	if v, err := challongeGetJSON(apiURL); err != nil {
+	if v, err := challongeGetJSON("GET", apiURL, nil); err != nil {
 		msg := "Failed to get the tournament from Challonge: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
@@ -35,12 +43,12 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 		discordSend(m.ChannelID, msg)
 		return
 	}
-	tournament := vMap["tournament"].(map[string]interface{})
+	jsonTournament := vMap["tournament"].(map[string]interface{})
 
 	// Get all of the open matches
 	foundMatches := false
 	var round string
-	for _, v := range tournament["matches"].([]interface{}) {
+	for _, v := range jsonTournament["matches"].([]interface{}) {
 		vMap := v.(map[string]interface{})
 		match := vMap["match"].(map[string]interface{})
 		if match["state"] != "open" {
@@ -49,12 +57,13 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 
 		// Local variables
 		foundMatches = true
-		player1Name := challongeGetParticipantName(tournament, match["player1_id"].(float64))
-		player2Name := challongeGetParticipantName(tournament, match["player2_id"].(float64))
+		player1Name := challongeGetParticipantName(jsonTournament, match["player1_id"].(float64))
+		player2Name := challongeGetParticipantName(jsonTournament, match["player2_id"].(float64))
 		round = floatToString(match["round"].(float64))
+		challongeID := floatToString(match["id"].(float64))
 		channelName := player1Name + "-vs-" + player2Name
 
-		// Get all of the users in the guild
+		// Get the Discord guild object
 		var guild *discordgo.Guild
 		if v, err := discord.Guild(discordGuildID); err != nil {
 			msg := "Failed to get the Discord guild: " + err.Error()
@@ -133,17 +142,19 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 			channelID = v.ID
 		}
 
-		// Put the channel in the correct category
-		discord.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
-			ParentID: discordChannelCategoryID,
-		})
-
 		// Create the race in the database
 		race := models.Race{
-			ChannelID:    channelID,
-			BracketRound: round,
-			Characters:   strings.Join(characters, ","),
-			Builds:       strings.Join(builds, ","),
+			TournamentName:      tournamentName,
+			ChannelID:           channelID,
+			ChallongeID:         challongeID,
+			BracketRound:        round,
+			State:               "initial",
+			CharactersRemaining: characters,
+			BuildsRemaining:     builds,
+			Racer1Bans:          numBans,
+			Racer2Bans:          numBans,
+			Racer1Vetos:         numVetos,
+			Racer2Vetos:         numVetos,
 		}
 		if err := db.Races.Insert(racer1.DiscordID, racer2.DiscordID, race); err != nil {
 			msg := "Failed to create the race in the database: " + err.Error()
@@ -152,15 +163,20 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 			return
 		}
 
+		// Put the channel in the correct category
+		discord.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
+			ParentID: tournaments[race.TournamentName].DiscordCategoryID,
+		})
+
 		// Find out if the players have set their timezone
 		msg := ""
 		if racer1.Timezone.Valid {
-			msg += discord1.Mention() + " has a timezone of: **" + getTimezone(racer1.Timezone.String) + "**\n"
+			msg += discord1.Mention() + " has a timezone of: " + getTimezone(racer1.Timezone.String) + "\n"
 		} else {
 			msg += discord1.Mention() + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
 		}
 		if racer2.Timezone.Valid {
-			msg += discord2.Mention() + " has a timezone of: **" + getTimezone(racer2.Timezone.String) + "**\n"
+			msg += discord2.Mention() + " has a timezone of: " + getTimezone(racer2.Timezone.String) + "\n"
 		} else {
 			msg += discord2.Mention() + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
 		}
@@ -203,12 +219,17 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 		log.Info("Started race: " + channelName)
 	}
 
+	// Rename the channel category
+	tournament := tournaments[tournamentName]
+	categoryName := "Round " + round + " - " + tournament.Ruleset
+	discord.ChannelEdit(tournament.DiscordCategoryID, categoryName)
+
 	if foundMatches {
-		msg := "Round " + round + " channels created."
+		msg := "Round " + round + " channels created for tournament \"" + tournamentName + "\"."
 		discordSend(m.ChannelID, msg)
 		log.Info(msg)
 	} else {
-		msg := "There are no open matches on the Challonge bracket, so you cannot start the round."
+		msg := "There are no open matches on the Challonge bracket for tournament \"" + tournamentName + "\"."
 		discordSend(m.ChannelID, msg)
 		log.Info(msg)
 	}

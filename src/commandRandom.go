@@ -36,6 +36,6 @@ func commandRandom(m *discordgo.MessageCreate, args []string) {
 
 func commandRandomPrint(m *discordgo.MessageCreate) {
 	msg := "Get a random number with: `!random [min] [max]`\n"
-	msg += "For example: `!random 1 2`"
+	msg += "e.g. `!random 1 2`"
 	discordSend(m.ChannelID, msg)
 }

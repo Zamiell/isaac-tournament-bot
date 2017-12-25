@@ -47,13 +47,13 @@ func commandCasterOk(m *discordgo.MessageCreate, args []string) {
 		if race.CasterP2 {
 			msg += "Both racers have now approved this caster."
 		} else {
-			msg += race.Racer2.Mention() + " still needs to approve to disapprove this caster."
+			msg += race.Racer2.Mention() + " still needs to approve or disapprove this caster."
 		}
 	} else if playerNum == 2 {
 		if race.CasterP1 {
 			msg += "Both racers have now approved this caster."
 		} else {
-			msg += race.Racer1.Mention() + " still needs to approve to disapprove this caster."
+			msg += race.Racer1.Mention() + " still needs to approve or disapprove this caster."
 		}
 	}
 	discordSend(m.ChannelID, msg)

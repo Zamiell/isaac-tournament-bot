@@ -9,22 +9,76 @@ import (
 )
 
 var (
-	bansNum int
+	bestOf   int
+	numBans  int
+	numVetos int
 )
 
 func matchInit() {
-	// Read the OAuth secret from the environment variable
-	bansNumString := os.Getenv("BANS_NUM")
-	if len(bansNumString) == 0 {
-		log.Fatal("The \"BANS_NUM\" environment variable is blank. Set it in the \".env\" file.")
+	// Read the configuration from environment variables
+	bestOfString := os.Getenv("BEST_OF")
+	if len(bestOfString) == 0 {
+		log.Fatal("The \"BEST_OF\" environment variable is blank. Set it in the \".env\" file.")
 		return
 	}
 
-	if v, err := strconv.Atoi(bansNumString); err != nil {
-		log.Fatal("The \"BANS_NUM\" environment variable is not a number.")
+	if v, err := strconv.Atoi(bestOfString); err != nil {
+		log.Fatal("The \"BEST_OF\" environment variable is not a number.")
 		return
 	} else {
-		bansNum = v
+		bestOf = v
+	}
+
+	numBansString := os.Getenv("NUM_BANS")
+	if len(numBansString) == 0 {
+		log.Fatal("The \"NUM_BANS\" environment variable is blank. Set it in the \".env\" file.")
+		return
+	}
+
+	if v, err := strconv.Atoi(numBansString); err != nil {
+		log.Fatal("The \"NUM_BANS\" environment variable is not a number.")
+		return
+	} else {
+		numBans = v
+	}
+
+	numVetosString := os.Getenv("NUM_VETOS")
+	if len(numBansString) == 0 {
+		log.Fatal("The \"NUM_VETOS\" environment variable is blank. Set it in the \".env\" file.")
+		return
+	}
+
+	if v, err := strconv.Atoi(numVetosString); err != nil {
+		log.Fatal("The \"NUM_VETOS\" environment variable is not a number.")
+		return
+	} else {
+		numVetos = v
+	}
+
+	// Make sure the build exceptions match the builds
+	if len(builds) != len(buildExceptions) {
+		log.Fatal("The builds were updated without also modifying the build exceptions.")
+		return
+	}
+
+	// Schedule Discord pings for when each scheduled match starts
+	var channelIDs []string
+	if v, err := db.Races.GetAllScheduled(); err != nil {
+		log.Fatal("Failed to get the scheduled races: " + err.Error())
+		return
+	} else {
+		channelIDs = v
+	}
+	for _, channelID := range channelIDs {
+		var race models.Race
+		if v, err := raceGet(channelID); err != nil {
+			log.Fatal("Failed to get the race from the database: " + err.Error())
+			return
+		} else {
+			race = v
+		}
+
+		go matchStart(race)
 	}
 }
 
@@ -50,18 +104,20 @@ func matchStart(race models.Race) {
 	}
 
 	// Check to see if this match has started already
-	if race.State != 1 {
-		log.Info("Reached the \"matchStart\" function when the state was " + strconv.Itoa(race.State) + ". Doing nothing.")
+	if race.State != "scheduled" {
+		log.Info("Reached the \"matchStart\" function when the state was " + race.State + ". Doing nothing.")
 		return
 	}
 
 	// Set the state to 2
-	if err := db.Races.SetState(race.ChannelID, 2); err != nil {
+	race.State = "banningCharacters"
+	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(race.ChannelID, msg)
 		return
 	}
+	log.Info("Race \"" + race.Name() + "\" beginning in 5 minutes; set to state \"" + race.State + "\".")
 
 	// Randomly decide who starts
 	race.ActivePlayer = getRandom(1, 2)
@@ -72,9 +128,51 @@ func matchStart(race models.Race) {
 		return
 	}
 
-	charactersStart(race)
+	charactersBanStart(race)
 }
 
-func matchBansEnd(race models.Race) {
+func matchEnd(race models.Race, msg string) {
+	race.State = "inProgress"
+	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
+		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(race.ChannelID, msg)
+		return
+	}
 
+	msg += "```\n"
+	msg += "+---------------+\n"
+	msg += "| Match Summary |\n"
+	msg += "+---------------+\n"
+	msg += "```\n\n"
+
+	msg += "**Racer 1: **" + race.Racer1.Mention() + " - <" + race.Racer1.StreamURL.String + ">\n"
+	msg += "**Racer 2: **" + race.Racer2.Mention() + " - <" + race.Racer2.StreamURL.String + ">\n"
+	if race.CasterID.Valid {
+		msg += "**Caster:** " + race.Caster.Mention() + " - <" + race.Caster.StreamURL.String + ">\n"
+	}
+	msg += "\n"
+
+	ruleset := tournaments[race.TournamentName].Ruleset
+	for i := 0; i < bestOf; i++ {
+		msg += "**Round " + strconv.Itoa(i+1) + "**:\n"
+		msg += "- Character: *" + race.Characters[i] + "*\n"
+		if ruleset == "seeded" {
+			msg += "- Build: *" + race.Builds[i] + "*\n"
+		}
+		msg += "\n"
+	}
+	msg += "If I made a mistake, you can use `!randchar` "
+	if ruleset == "seeded" {
+		msg += "or `!randbuild` "
+	}
+	msg += "to manually get random characters"
+	if ruleset == "seeded" {
+		msg += " and builds"
+	}
+	msg += ".\n"
+	msg += "When the race is over, please use the `!score [score]` command to report the results.\n"
+	msg += "e.g. `!score 3-2`\n\n"
+	msg += "Good luck and have fun! " + racingPlusEmote
+	discordSend(race.ChannelID, msg)
 }

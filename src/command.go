@@ -21,6 +21,10 @@ func commandInit() {
 	commandHandlerMap["random"] = commandRandom
 	commandHandlerMap["rand"] = commandRandom
 	commandHandlerMap["roll"] = commandRandom
+	commandHandlerMap["randchar"] = commandRandChar
+	commandHandlerMap["randbuild"] = commandRandBuild
+	commandHandlerMap["randitem"] = commandRandBuild
+	commandHandlerMap["getnext"] = commandGetNext
 
 	// Match commands
 	commandHandlerMap["time"] = commandTime
@@ -32,6 +36,7 @@ func commandInit() {
 	commandHandlerMap["casterok"] = commandCasterOk
 	commandHandlerMap["casternotok"] = commandCasterNotOk
 	commandHandlerMap["ban"] = commandBan
+	commandHandlerMap["pick"] = commandPick
 	commandHandlerMap["yes"] = commandYes
 	commandHandlerMap["no"] = commandNo
 	commandHandlerMap["score"] = commandScore
@@ -50,13 +55,26 @@ func commandInit() {
 	commandHandlerMap["endround"] = commandEndRound
 	commandHandlerMap["roundend"] = commandEndRound
 	commandHandlerMap["end"] = commandEndRound
+	commandHandlerMap["forcetime"] = commandForceTime
+	commandHandlerMap["timeforce"] = commandForceTime
+	commandHandlerMap["forceban"] = commandForceBan
+	commandHandlerMap["banforce"] = commandForceBan
+	commandHandlerMap["forcepick"] = commandForcePick
+	commandHandlerMap["pickforce"] = commandForcePick
+	commandHandlerMap["forceyes"] = commandForceYes
+	commandHandlerMap["yesforce"] = commandForceYes
+	commandHandlerMap["forceno"] = commandForceNo
+	commandHandlerMap["noforce"] = commandForceNo
+
+	commandHandlerMap["getchannelid"] = commandGetChannelID
+	commandHandlerMap["debug"] = commandDebug
 }
 
 func commandHelpGetMsg() string {
 	msg := "General commands (all channels):\n"
 	msg += "```\n"
 	msg += "Command                  Description\n"
-	msg += "---------------------------------------------------------------------------------\n"
+	msg += "-----------------------------------------------------------------------\n"
 	msg += "!help                    Get a list of all of the commands\n"
 	msg += "!r+                      Get info about the Racing+ mod\n"
 	msg += "!timezone                Get your stored timezone\n"
@@ -66,29 +84,47 @@ func commandHelpGetMsg() string {
 	msg += "!stream [url]            Set your stored stream URL\n"
 	msg += "!getstream [username]    Get the stream of the specified person\n"
 	msg += "!random [min] [max]      Get a random number\n"
+	msg += "!randchar                Get a random character\n"
+	msg += "!randbuild               Get a random build\n"
+	msg += "!getnext                 Get the time of the next scheduled match\n"
 	msg += "```\n"
 	msg += "Match commands (in a match channel):\n"
 	msg += "```\n"
 	msg += "Command                  Description\n"
-	msg += "---------------------------------------------------------------------------------\n"
-	msg += "!time                    Get the currently scheduled time for the match"
+	msg += "-----------------------------------------------------------------------\n"
+	msg += "!time                    Get the currently scheduled time for the match\n"
 	msg += "!time [date & time]      Suggest a time for the match to your opponent\n"
 	msg += "!timeok                  Confirm that the suggested time is good\n"
 	msg += "!timedelete              Delete the currently scheduled time\n"
-	msg += "!cast                    Volunteer to be the caster to rebroadcast this match\n"
-	msg += "!castcancel              Unvolunteer to be the caster"
+	msg += "!cast                    Volunteer to be the caster for the match\n"
+	msg += "!castcancel              Unvolunteer to be the caster\n"
 	msg += "!caster                  Get the person who volunteered to cast\n"
-	msg += "!casterok                Confirm that you are okay with the caster rebroadcasting\n"
-	msg += "!casternotok             Undo your caster confirmation or deny the current caster\n"
-	msg += "```\n"
-	msg += "Admin-only commands:\n"
-	msg += "```\n"
-	msg += "Command               Description\n"
-	msg += "---------------------------------------------------------------------------------\n"
-	msg += "!settimezone             Set a player's timezone for them\n"
-	msg += "!startround              Create channels for the current round of the tournament\n"
-	msg += "!endround                Delete all of the channels for this round\n"
+	msg += "!casterok                Confirm that you are okay with the caster\n"
+	msg += "!casternotok             Reject the current caster\n"
+	msg += "!ban [num]               Ban something\n"
+	msg += "!pick [num]              Pick something\n"
+	msg += "!yes                     Veto the selected thing\n"
+	msg += "!no                      Do not veto the selected thing\n"
+	msg += "!score                   Report the score after the match has completed\n"
 	msg += "```"
+	/*
+		msg += "Admin-only commands:\n"
+		msg += "```\n"
+		msg += "Command               Description\n"
+		msg += "-----------------------------------------------------------------------\n"
+		msg += "!settimezone             Set a player's timezone for them\n"
+		msg += "!setstream               Set a player's stream for them\n"
+		msg += "!startround              Start the current round of the tournament\n"
+		msg += "!endround                Delete all of the channels for this round\n"
+		msg += "!forcetime               Force the scheduled time to be ok\n"
+		msg += "!forceban [num]          Force the current player to ban\n"
+		msg += "!forcepick [num]         Force the current player to pick\n"
+		msg += "!forceyes                Force the current player to veto\n"
+		msg += "!forceno                 Force the current player to not veto\n"
+		msg += "!getchannelid [name]     Get the ID of the specified Discord channel\n"
+		msg += "!debug                   Execute the debug function\n"
+		msg += "```"
+	*/
 
 	return msg
 }

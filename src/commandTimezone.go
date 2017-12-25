@@ -88,7 +88,7 @@ func commandTimezonePrint(m *discordgo.MessageCreate) {
 		msg += "**not currently set**.\n\n"
 	}
 	msg += "Set your timezone with: `!timezone [timezone]`\n"
-	msg += "For example: `!timezone America/New_York`\n"
+	msg += "e.g. `!timezone America/New_York`\n"
 	msg += "The submitted timezone has to exactly match the TZ column of the following page:\n"
 	msg += "<https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>"
 	discordSend(m.ChannelID, msg)

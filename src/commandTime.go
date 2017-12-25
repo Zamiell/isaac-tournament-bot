@@ -38,20 +38,31 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this person is one of the two racers
-	if m.Author.ID != race.Racer1.DiscordID && m.Author.ID != race.Racer2.DiscordID {
+	var activePlayer int
+	if m.Author.ID == race.Racer1.DiscordID {
+		activePlayer = 1
+	} else if m.Author.ID == race.Racer2.DiscordID {
+		activePlayer = 2
+	} else {
 		discordSend(m.ChannelID, "Only \""+race.Racer1.Username+"\" and \""+race.Racer2.Username+"\" can schedule a time for this match.")
 		return
 	}
 
 	// Check to see if this race has already been scheduled
-	if race.State != 0 {
+	if race.State != "initial" {
 		discordSend(m.ChannelID, "The race has already been scheduled. To delete this time and start over, use the `!timedelete` command.")
 		return
 	}
 
-	// Check to see if this person already has a timezone specified
+	// Check to see if this person has a timezone specified
 	if !racer.Timezone.Valid {
 		discordSend(m.ChannelID, "You must specify a timezone with the `!timezone` command before you can suggest a time for the match.")
+		return
+	}
+
+	// Check to see if this person has a stream specified
+	if !racer.StreamURL.Valid {
+		discordSend(m.ChannelID, "You must specify a stream URL with the `!stream` command before you can suggest a time for the match.")
 		return
 	}
 
@@ -81,7 +92,7 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Set the new scheduled time
-	if err := db.Races.SetDatetimeScheduled(m.ChannelID, datetimeUTC); err != nil {
+	if err := db.Races.SetDatetimeScheduled(m.ChannelID, datetimeUTC, activePlayer); err != nil {
 		msg := "Failed to update the scheduled time: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
@@ -110,12 +121,12 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 		}
 	}
 
-	msg := racer1.Mention() + " has suggested that the match be scheduled at: "
-	msg += getDate(datetimeUTC, racer1.Timezone.String) + "\n"
+	msg := racer1.Mention() + " has suggested that the match be scheduled at: *"
+	msg += getDate(datetimeUTC, racer1.Timezone.String) + "*\n"
 
 	if !timezonesEqual && racer2.Timezone.Valid {
-		msg += racer2.Mention() + ", this is equal to: "
-		msg += getDate(datetimeUTC, racer2.Timezone.String) + "\n"
+		msg += racer2.Mention() + ", this is equal to: *"
+		msg += getDate(datetimeUTC, racer2.Timezone.String) + "*\n"
 		msg += "If"
 	} else {
 		msg += racer2.Mention() + ", if"
@@ -123,13 +134,21 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	msg += " this time is good for you, please use the `!timeok` command. Otherwise, suggest a new time with: `!time [date & time]`"
 	discordSend(m.ChannelID, msg)
 
-	// Convert it to their timezone
-	dateFormatString := "Monday, January 2 @ 15:04"
-
-	log.Info("Racer \"" + m.Author.Username + "\" suggested the time of: " + datetimeUTC.Format(dateFormatString))
+	log.Info("Racer \"" + m.Author.Username + "\" suggested the time of: " + getDate(datetimeUTC, "UTC"))
 }
 
 func commandSchedulePrint(m *discordgo.MessageCreate) {
+	// Create the user in the database if it does not already exist
+	var racer models.Racer
+	if v, err := racerGet(m.Author); err != nil {
+		msg := "Failed to get the racer from the database: " + err.Error()
+		log.Error(msg)
+		discordSend(m.ChannelID, msg)
+		return
+	} else {
+		racer = v
+	}
+
 	var race models.Race
 	if v, err := raceGet(m.ChannelID); err != nil {
 		msg := "Failed to get the race from the database: " + err.Error()
@@ -142,17 +161,23 @@ func commandSchedulePrint(m *discordgo.MessageCreate) {
 
 	msg := ""
 	if race.DatetimeScheduled.Valid {
-		msg += "The currently scheduled time is: " + race.DatetimeScheduled.Time.String() + "\n"
+		var timezone string
+		if racer.Timezone.Valid {
+			timezone = racer.Timezone.String
+		} else {
+			timezone = "UTC"
+		}
+		msg += "The currently scheduled time for the match is: *" + getDate(race.DatetimeScheduled.Time, timezone) + "*\n"
 	} else {
 		msg += "This match is not scheduled yet.\n"
 	}
 
-	if race.State > 0 {
+	if race.State != "initial" {
 		msg += "Both racers have agreed to this time.\n"
 		msg += "To delete this time and start over, use the `!timedelete` command."
 	} else {
 		msg += "You can suggest a new time with: `!time [date & time]`\n"
-		msg += "For example: `!time 6pm sat`"
+		msg += "e.g. `!time 6pm sat`"
 	}
 	discordSend(m.ChannelID, msg)
 }

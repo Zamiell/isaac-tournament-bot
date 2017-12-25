@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"os"
+	"strings"
 
 	// This is the documented way to use the driver
 	_ "github.com/go-sql-driver/mysql"
@@ -60,4 +61,20 @@ func Init() (*Models, error) {
 // Close exposes the ability to close the underlying database connection
 func (*Models) Close() {
 	db.Close()
+}
+
+/*
+	Misc. subroutines
+*/
+
+func stringToSlice(a string) []string {
+	slice := strings.Split(a, ",")
+	if a == "" {
+		slice = make([]string, 0)
+	}
+	return slice
+}
+
+func sliceToString(slice []string) string {
+	return strings.Join(slice, ",")
 }

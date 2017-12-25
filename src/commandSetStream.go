@@ -14,7 +14,7 @@ func commandSetStream(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Get all of the users in the guild
+	// Get the Discord guild object
 	var guild *discordgo.Guild
 	if v, err := discord.Guild(discordGuildID); err != nil {
 		msg := "Failed to get the Discord guild: " + err.Error()
@@ -51,6 +51,6 @@ func commandSetStream(m *discordgo.MessageCreate, args []string) {
 
 func commandSetStreamPrint(m *discordgo.MessageCreate) {
 	msg := "Set another player's stream with: `!setstream [username] [stream URL]`\n"
-	msg += "For example: `!settimezone Zamiel twitch.tv/Zamiel`"
+	msg += "e.g. `!settimezone Zamiel twitch.tv/Zamiel`"
 	discordSend(m.ChannelID, msg)
 }

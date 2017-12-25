@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/url"
 	"strings"
 
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
@@ -22,7 +23,10 @@ func commandStream(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Validate that the stream is a full URL
+	// Lower-case the URL
+	streamURL = strings.ToLower(streamURL)
+
+	// Fill in the URL in case they were lazy when typing it
 	if strings.HasPrefix(streamURL, "http://") {
 		streamURL = strings.Replace(streamURL, "http://", "https://", -1)
 	}
@@ -37,6 +41,13 @@ func commandStream(m *discordgo.MessageCreate, args []string) {
 	}
 	if strings.HasSuffix(streamURL, "/") {
 		streamURL = strings.TrimSuffix(streamURL, "/")
+	}
+
+	// Validate that the stream is a full URL
+	if _, err := url.ParseRequestURI(streamURL); err != nil {
+		msg := "That is not a valid URL."
+		discordSend(m.ChannelID, msg)
+		return
 	}
 
 	// Set the new stream
@@ -70,6 +81,6 @@ func commandStreamPrint(m *discordgo.MessageCreate) {
 		msg += "**not currently set**.\n\n"
 	}
 	msg += "Set your stream with: `!stream [url]`\n"
-	msg += "For example: `!stream https://www.twitch.tv/zamiell`"
+	msg += "e.g. `!stream https://www.twitch.tv/zamiell`"
 	discordSend(m.ChannelID, msg)
 }
