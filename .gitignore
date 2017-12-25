@@ -31,3 +31,7 @@ isaac-tournament-bot
 # Helper scripts
 database_shell.sh
 make_database_dump.sh
+start.sh
+stop.sh
+run.sh
+restart.sh
