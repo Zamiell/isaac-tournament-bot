@@ -35,3 +35,4 @@ start.sh
 stop.sh
 run.sh
 restart.sh
+tail.sh
