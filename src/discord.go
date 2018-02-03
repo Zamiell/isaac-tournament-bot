@@ -121,7 +121,7 @@ func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	log.Info("[#" + channelName + "] <" + m.Author.Username + "#" + m.Author.Discriminator + "> " + m.Content)
 
 	// First, look for people mentioning the bot
-	if strings.Contains(m.Content, "<@"+discordBotID+">") {
+	if strings.Contains(m.Content, "<@!"+discordBotID+">") {
 		discordSend(m.ChannelID, "ping me again\nI DARE YOU")
 		return
 	}
