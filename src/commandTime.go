@@ -31,7 +31,7 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	// Check to see if this is a race channel (and get the race from the database)
 	var race models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
-		discordSend(m.ChannelID, "You cannot use that command in a race channel.")
+		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
 	} else if err != nil {
 		msg := "Failed to get the race from the database: " + err.Error()
