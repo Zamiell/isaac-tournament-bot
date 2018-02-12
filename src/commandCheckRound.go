@@ -10,7 +10,7 @@ func commandCheckRound(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Go through all of the tournaments
-	for tournamentName, _ := range tournaments {
-		startRound(m, tournamentName, true) // The third argument is "dryRun"
+	for _, tournament := range tournaments {
+		startRound(m, tournament, true) // The third argument is "dryRun"
 	}
 }

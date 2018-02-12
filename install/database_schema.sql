@@ -14,11 +14,12 @@ DROP TABLE IF EXISTS tournament_races;
 CREATE TABLE tournament_races (
     id                    INT            NOT NULL  PRIMARY KEY  AUTO_INCREMENT,
     /* PRIMARY KEY automatically creates a UNIQUE constraint */
-    challonge_url         NVARCHAR(100)  NOT NULL,
+    tournament_name       NVARCHAR(500)  NOT NULL,
     racer1                INT            NOT NULL,
     racer2                INT            NOT NULL,
     channel_id            NVARCHAR(100)  NOT NULL,
-    challonge_id          NVARCHAR(100)  NOT NULL,
+    challonge_url         NVARCHAR(100)  NOT NULL,
+    challonge_match_id    NVARCHAR(100)  NOT NULL,
     bracket_round         NVARCHAR(10)   NOT NULL,
     state                 NVARCHAR(50)   NOT NULL, /* definitions are listed in the "Race" struct */
     datetime_created      TIMESTAMP      NOT NULL  DEFAULT NOW(),

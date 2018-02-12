@@ -9,16 +9,21 @@ import (
 )
 
 const (
-	discordAdminRoleName = "Admins"
+	discordAdminRoleName  = "Admins"
+	discordBotRoleName    = "Bots"
+	discordCasterRoleName = "Casters"
 )
 
 var (
-	discord            *discordgo.Session
-	discordBotID       string
-	discordGuildName   string
-	discordGuildID     string
-	discordAdminRoleID string
-	commandMutex       = new(sync.Mutex)
+	discord               *discordgo.Session
+	discordBotID          string
+	discordGuildName      string
+	discordGuildID        string
+	discordAdminRoleID    string
+	discordBotRoleID      string
+	discordCasterRoleID   string
+	discordEveryoneRoleID string
+	commandMutex          = new(sync.Mutex)
 )
 
 func discordInit() {
@@ -86,7 +91,7 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 		log.Fatal("Failed to find the ID of the \"" + discordGuildName + "\" Discord server.")
 	}
 
-	// Get the ID of the administrative role
+	// Get the ID of the administrative role and the "Everyone" role
 	var roles []*discordgo.Role
 	if v, err := discord.GuildRoles(discordGuildID); err != nil {
 		log.Fatal("Failed to get the roles for the guild: " + err.Error())
@@ -97,7 +102,12 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 	for _, role := range roles {
 		if role.Name == discordAdminRoleName {
 			discordAdminRoleID = role.ID
-			break
+		} else if role.Name == discordBotRoleName {
+			discordBotRoleID = role.ID
+		} else if role.Name == discordCasterRoleName {
+			discordCasterRoleID = role.ID
+		} else if role.Name == "@everyone" {
+			discordEveryoneRoleID = role.ID
 		}
 	}
 	if discordAdminRoleID == "" {

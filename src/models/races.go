@@ -25,6 +25,7 @@ type Race struct {
 	Racer2              Racer
 	Racer2ID            int
 	ChannelID           string
+	ChallongeURL        string
 	ChallongeMatchID    string
 	BracketRound        string
 	State               string
@@ -60,6 +61,7 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 			racer1,
 			racer2,
 			channel_id,
+			challonge_url,
 			challonge_match_id,
 			bracket_round,
 			state,
@@ -73,6 +75,7 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 			?,
 			(SELECT id FROM tournament_racers WHERE discord_id = ?),
 			(SELECT id FROM tournament_racers WHERE discord_id = ?),
+			?,
 			?,
 			?,
 			?,
@@ -96,6 +99,7 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 		racer1DiscordID,
 		racer2DiscordID,
 		race.ChannelID,
+		race.ChallongeURL,
 		race.ChallongeMatchID,
 		race.BracketRound,
 		race.State,
@@ -140,6 +144,7 @@ func (*Races) Get(channelID string) (Race, error) {
 			racer1,
 			racer2,
 			channel_id,
+			challonge_url,
 			challonge_match_id,
 			bracket_round,
 			state,
@@ -164,6 +169,7 @@ func (*Races) Get(channelID string) (Race, error) {
 		&race.Racer1ID,
 		&race.Racer2ID,
 		&race.ChannelID,
+		&race.ChallongeURL,
 		&race.ChallongeMatchID,
 		&race.BracketRound,
 		&race.State,

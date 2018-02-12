@@ -14,6 +14,8 @@ import (
 
 // Valid rulesets are "seeded" and "unseeded"
 type Tournament struct {
+	Name              string
+	ChallongeURL      string
 	ChallongeID       float64
 	Ruleset           string
 	DiscordCategoryID string
@@ -51,6 +53,13 @@ func challongeInit() {
 	}
 	tournamentNames := strings.Split(tournamentNamesString, ",")
 
+	tournamentURLsString := os.Getenv("TOURNAMENT_CHALLONGE_URLS")
+	if len(tournamentURLsString) == 0 {
+		log.Fatal("The \"TOURNAMENT_CHALLONGE_URLS\" environment variable is blank. Set it in the \".env\" file.")
+		return
+	}
+	tournamentURLs := strings.Split(tournamentURLsString, ",")
+
 	tournamentRulesetsString := os.Getenv("TOURNAMENT_RULESETS")
 	if len(tournamentRulesetsString) == 0 {
 		log.Fatal("The \"TOURNAMENT_RULESETS\" environment variable is blank. Set it in the \".env\" file.")
@@ -58,12 +67,12 @@ func challongeInit() {
 	}
 	tournamentRulesets := strings.Split(tournamentRulesetsString, ",")
 
-	discordCategoryIDsString := os.Getenv("DISCORD_CATEGORY_IDS")
-	if len(discordCategoryIDsString) == 0 {
-		log.Fatal("The \"DISCORD_CATEGORY_IDS\" environment variable is blank. Set it in the \".env\" file.")
+	tournamentDiscordCategoryIDsString := os.Getenv("TOURNAMENT_DISCORD_CATEGORY_IDS")
+	if len(tournamentDiscordCategoryIDsString) == 0 {
+		log.Fatal("The \"TOURNAMENT_DISCORD_CATEGORY_IDS\" environment variable is blank. Set it in the \".env\" file.")
 		return
 	}
-	discordCategoryIDs := strings.Split(discordCategoryIDsString, ",")
+	tournamentDiscordCategoryIDs := strings.Split(tournamentDiscordCategoryIDsString, ",")
 
 	// Get all of the Challonge user's tournaments
 	apiURL := "https://api.challonge.com/v1/tournaments.json?"
@@ -87,12 +96,14 @@ func challongeInit() {
 		for _, v := range jsonTournaments {
 			vMap := v.(map[string]interface{})
 			jsonTournament := vMap["tournament"].(map[string]interface{})
-			if jsonTournament["url"] == tournamentNames[i] {
+			if jsonTournament["url"] == tournamentURLs[i] {
 				found = true
-				tournaments[tournamentNames[i]] = Tournament{
+				tournaments[tournamentURLs[i]] = Tournament{
+					Name:              tournamentNames[i],
+					ChallongeURL:      tournamentURLs[i],
 					ChallongeID:       jsonTournament["id"].(float64),
 					Ruleset:           tournamentRulesets[i],
-					DiscordCategoryID: discordCategoryIDs[i],
+					DiscordCategoryID: tournamentDiscordCategoryIDs[i],
 				}
 				break
 			}

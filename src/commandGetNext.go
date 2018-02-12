@@ -37,13 +37,16 @@ func commandGetNext(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	msg := "The next scheduled match is: **" + race.Name() + "**\n"
+	msg := "The next scheduled match is:\n"
+	msg += "**" + race.TournamentName + "**\n"
+	msg += "**" + race.Name() + "**\n"
 	var timezone string
 	if racer.Timezone.Valid {
 		timezone = racer.Timezone.String
 	} else {
 		timezone = "UTC"
 	}
+	msg += ""
 	msg += "It is scheduled to begin at: **" + getDate(race.DatetimeScheduled.Time, timezone) + "**"
 	discordSend(m.ChannelID, msg)
 }

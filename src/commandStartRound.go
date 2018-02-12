@@ -15,15 +15,14 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Go through all of the tournaments
-	for tournamentName, _ := range tournaments {
-		startRound(m, tournamentName, false)
+	for _, tournament := range tournaments {
+		startRound(m, tournament, false)
 	}
 }
 
-func startRound(m *discordgo.MessageCreate, tournamentName string, dryRun bool) {
+func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) {
 	// Get the tournament from Challonge
-	challongeTournamentID := tournaments[tournamentName].ChallongeID
-	apiURL := "https://api.challonge.com/v1/tournaments/" + floatToString(challongeTournamentID) + ".json?"
+	apiURL := "https://api.challonge.com/v1/tournaments/" + floatToString(tournament.ChallongeID) + ".json?"
 	apiURL += "api_key=" + challongeAPIKey + "&include_participants=1&include_matches=1"
 	var raw []byte
 	if v, err := challongeGetJSON("GET", apiURL, nil); err != nil {
@@ -59,7 +58,7 @@ func startRound(m *discordgo.MessageCreate, tournamentName string, dryRun bool) 
 		player1Name := challongeGetParticipantName(jsonTournament, match["player1_id"].(float64))
 		player2Name := challongeGetParticipantName(jsonTournament, match["player2_id"].(float64))
 		round = floatToString(match["round"].(float64))
-		challongeID := floatToString(match["id"].(float64))
+		challongeMatchID := floatToString(match["id"].(float64))
 		channelName := player1Name + "-vs-" + player2Name
 
 		// Get the Discord guild object
@@ -147,9 +146,10 @@ func startRound(m *discordgo.MessageCreate, tournamentName string, dryRun bool) 
 
 		// Create the race in the database
 		race := models.Race{
-			TournamentName:      tournamentName,
+			TournamentName:      tournament.Name,
 			ChannelID:           channelID,
-			ChallongeID:         challongeID,
+			ChallongeURL:        tournament.ChallongeURL,
+			ChallongeMatchID:    challongeMatchID,
 			BracketRound:        round,
 			State:               "initial",
 			CharactersRemaining: characters,
@@ -167,26 +167,48 @@ func startRound(m *discordgo.MessageCreate, tournamentName string, dryRun bool) 
 		}
 
 		// Put the channel in the correct category and give access to the two racers
-		// (channels in this category have "Read Text Channels & See Voice Channels" disabled for everyone except for admins/casters)
-		permissions := discordgo.PermissionReadMessages |
+		// (channels in this category have "Read Text Channels & See Voice Channels" disabled for everyone except for admins/casters/bots)
+		permissionsReadWrite := discordgo.PermissionReadMessages |
 			discordgo.PermissionSendMessages |
 			discordgo.PermissionEmbedLinks |
 			discordgo.PermissionAttachFiles |
 			discordgo.PermissionReadMessageHistory
 		discord.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
 			PermissionOverwrites: []*discordgo.PermissionOverwrite{
+				// Deny everyone from seeing this channel
+				&discordgo.PermissionOverwrite{
+					ID:   discordEveryoneRoleID,
+					Type: "role",
+					Deny: permissionsReadWrite,
+				},
+
+				// Allow bots to see + talk in this channel
+				&discordgo.PermissionOverwrite{
+					ID:    discordBotRoleID,
+					Type:  "role",
+					Allow: permissionsReadWrite,
+				},
+
+				// Allow all casters to see + talk in this channel
+				&discordgo.PermissionOverwrite{
+					ID:    discordCasterRoleID,
+					Type:  "role",
+					Allow: permissionsReadWrite,
+				},
+
+				// Allow the two racers to see + talk in this channel
 				&discordgo.PermissionOverwrite{
 					ID:    racer1.DiscordID,
 					Type:  "member",
-					Allow: permissions,
+					Allow: permissionsReadWrite,
 				},
 				&discordgo.PermissionOverwrite{
 					ID:    racer2.DiscordID,
 					Type:  "member",
-					Allow: permissions,
+					Allow: permissionsReadWrite,
 				},
 			},
-			ParentID: tournaments[race.TournamentName].DiscordCategoryID,
+			ParentID: tournament.DiscordCategoryID,
 		})
 
 		// Find out if the players have set their timezone
@@ -241,23 +263,22 @@ func startRound(m *discordgo.MessageCreate, tournamentName string, dryRun bool) 
 	}
 
 	if dryRun {
-		msg := "Tournament \"" + tournamentName + "\" looks good."
+		msg := "Tournament \"" + tournament.Name + "\" looks good."
 		discordSend(m.ChannelID, msg)
 		log.Info(msg)
 		return
 	}
 
 	// Rename the channel category
-	tournament := tournaments[tournamentName]
 	categoryName := "Round " + round + " - " + tournament.Ruleset
 	discord.ChannelEdit(tournament.DiscordCategoryID, categoryName)
 
 	if foundMatches {
-		msg := "Round " + round + " channels created for tournament \"" + tournamentName + "\"."
+		msg := "Round " + round + " channels created for tournament \"" + tournament.Name + "\"."
 		discordSend(m.ChannelID, msg)
 		log.Info(msg)
 	} else {
-		msg := "There are no open matches on the Challonge bracket for tournament \"" + tournamentName + "\"."
+		msg := "There are no open matches on the Challonge bracket for tournament \"" + tournament.Name + "\"."
 		discordSend(m.ChannelID, msg)
 		log.Info(msg)
 	}
