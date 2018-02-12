@@ -55,8 +55,10 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 
 		// Local variables
 		foundMatches = true
-		player1Name := challongeGetParticipantName(jsonTournament, match["player1_id"].(float64))
-		player2Name := challongeGetParticipantName(jsonTournament, match["player2_id"].(float64))
+		player1ID := match["player1_id"].(float64)
+		player2ID := match["player2_id"].(float64)
+		player1Name := challongeGetParticipantName(jsonTournament, player1ID)
+		player2Name := challongeGetParticipantName(jsonTournament, player2ID)
 		round = floatToString(match["round"].(float64))
 		challongeMatchID := floatToString(match["id"].(float64))
 		channelName := player1Name + "-vs-" + player2Name
@@ -147,6 +149,8 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		// Create the race in the database
 		race := models.Race{
 			TournamentName:      tournament.Name,
+			Racer1ChallongeID:   player1ID,
+			Racer2ChallongeID:   player2ID,
 			ChannelID:           channelID,
 			ChallongeURL:        tournament.ChallongeURL,
 			ChallongeMatchID:    challongeMatchID,

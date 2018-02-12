@@ -15,18 +15,20 @@ CREATE TABLE tournament_races (
     id                    INT            NOT NULL  PRIMARY KEY  AUTO_INCREMENT,
     /* PRIMARY KEY automatically creates a UNIQUE constraint */
     tournament_name       NVARCHAR(500)  NOT NULL,
-    racer1                INT            NOT NULL,
-    racer2                INT            NOT NULL,
-    channel_id            NVARCHAR(100)  NOT NULL,
-    challonge_url         NVARCHAR(100)  NOT NULL,
+    racer1                INT            NOT NULL, /* The "tournament_racers" database ID */
+    racer1_challonge_id   INT            NOT NULL, /* The "participant" ID; needed to automatically set the winner through the Challonge API */
+    racer2                INT            NOT NULL, /* The "tournament_racers" database ID */
+    racer2_challonge_id   INT            NOT NULL, /* The "participant" ID; needed to automatically set the winner through the Challonge API */
+    channel_id            NVARCHAR(100)  NOT NULL, /* The Discord channel ID that was automatically created for this race */
+    challonge_url         NVARCHAR(100)  NOT NULL, /* The suffix of the Challonge URL for this tournament */
     challonge_match_id    NVARCHAR(100)  NOT NULL,
     bracket_round         NVARCHAR(10)   NOT NULL,
-    state                 NVARCHAR(50)   NOT NULL, /* definitions are listed in the "Race" struct */
+    state                 NVARCHAR(50)   NOT NULL, /* Definitions are listed in the "Race" struct */
     datetime_created      TIMESTAMP      NOT NULL  DEFAULT NOW(),
     datetime_scheduled    TIMESTAMP      NULL      DEFAULT NULL,
     caster                INT            NULL      DEFAULT NULL,
-    caster_p1             INT            NOT NULL  DEFAULT 0,
-    caster_p2             INT            NOT NULL  DEFAULT 0,
+    caster_p1             INT            NOT NULL  DEFAULT 0, /* Whether or not player 1 approves of the caster who volunteered */
+    caster_p2             INT            NOT NULL  DEFAULT 0, /* Whether or not player 2 approves of the caster who volunteered */
     active_player         INT            NOT NULL  DEFAULT 1,
     characters_remaining  NVARCHAR(500)  NOT NULL,
     characters            NVARCHAR(500)  NOT NULL  DEFAULT "",
@@ -51,7 +53,7 @@ CREATE TABLE tournament_racers (
     discord_id  NVARCHAR(100)  NOT NULL  UNIQUE,
     username    NVARCHAR(100)  NOT NULL,
     timezone    NVARCHAR(100)  NULL      DEFAULT NULL,
-    /* the TZ column of: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones */
+    /* The TZ column of: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones */
     stream_url  NVARCHAR(255)  NULL      DEFAULT NULL
 );
 CREATE INDEX tournament_racers_index_discord_id ON tournament_racers (discord_id);

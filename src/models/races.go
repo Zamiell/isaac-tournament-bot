@@ -20,20 +20,22 @@ type Races struct{}
 // - "completed" (after a score is reported)
 type Race struct {
 	TournamentName      string
+	Racer1ID            int     // The "tournament_racers" database ID
+	Racer1ChallongeID   float64 // The "participant" ID; needed to automatically set the winner through the Challonge API
 	Racer1              Racer
-	Racer1ID            int
+	Racer2ID            int     // The "tournament_racers" database ID
+	Racer2ChallongeID   float64 // The "participant" ID; needed to automatically set the winner through the Challonge API
 	Racer2              Racer
-	Racer2ID            int
-	ChannelID           string
-	ChallongeURL        string
+	ChannelID           string // The Discord channel ID that was automatically created for this race
+	ChallongeURL        string // The suffix of the Challonge URL for this tournament
 	ChallongeMatchID    string
 	BracketRound        string
 	State               string
 	DatetimeScheduled   mysql.NullTime
-	Caster              Racer
 	CasterID            sql.NullInt64
-	CasterP1            bool
-	CasterP2            bool
+	Caster              Racer
+	CasterP1            bool // Whether or not player 1 approves of the caster who volunteered
+	CasterP2            bool // Whether or not player 2 approves of the caster who volunteered
 	ActivePlayer        int
 	CharactersRemaining []string
 	Characters          []string
@@ -59,7 +61,9 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 		INSERT INTO tournament_races (
 			tournament_name,
 			racer1,
+			racer1_challonge_id,
 			racer2,
+			racer2_challonge_id,
 			channel_id,
 			challonge_url,
 			challonge_match_id,
@@ -74,7 +78,9 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 		) VALUES (
 			?,
 			(SELECT id FROM tournament_racers WHERE discord_id = ?),
+			?,
 			(SELECT id FROM tournament_racers WHERE discord_id = ?),
+			?,
 			?,
 			?,
 			?,
@@ -97,7 +103,9 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 	if _, err := stmt.Exec(
 		race.TournamentName,
 		racer1DiscordID,
+		race.Racer1ChallongeID,
 		racer2DiscordID,
+		race.Racer2ChallongeID,
 		race.ChannelID,
 		race.ChallongeURL,
 		race.ChallongeMatchID,

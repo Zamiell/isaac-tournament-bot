@@ -80,11 +80,21 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 	// (player 1 must be first)
 	score = strconv.Itoa(p1Wins) + "-" + strconv.Itoa(p2Wins)
 
+	// Get the Challonge participant ID of the winner
+	var winnerID float64
+	if p1Wins > p2Wins {
+		winnerID = race.Racer1ChallongeID
+	} else {
+		winnerID = race.Racer2ChallongeID
+	}
+
 	// Update the match on Challonge
 	// https://api.challonge.com/v1/documents/matches/update
 	challongeTournamentID := floatToString(tournaments[race.TournamentName].ChallongeID)
-	apiURL := "https://api.challonge.com/v1/tournaments/" + challongeTournamentID + "/matches/" + race.ChallongeMatchID + ".json?"
-	apiURL += "api_key=" + challongeAPIKey + "&match[scores_csv]=" + score
+	apiURL := "https://api.challonge.com/v1/tournaments/" + challongeTournamentID + "/matches/" + race.ChallongeMatchID + ".json"
+	apiURL += "?api_key=" + challongeAPIKey
+	apiURL += "&match[scores_csv]=" + score
+	apiURL += "&match[winner_id]=" + floatToString(winnerID)
 	if _, err := challongeGetJSON("PUT", apiURL, nil); err != nil {
 		msg := "Failed to get the tournament from Challonge: " + err.Error()
 		log.Error(msg)
