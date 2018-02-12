@@ -16,12 +16,11 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 
 	// Go through all of the tournaments
 	for tournamentName, _ := range tournaments {
-		startRound(m, tournamentName)
+		startRound(m, tournamentName, false)
 	}
-
 }
 
-func startRound(m *discordgo.MessageCreate, tournamentName string) {
+func startRound(m *discordgo.MessageCreate, tournamentName string, dryRun bool) {
 	// Get the tournament from Challonge
 	challongeTournamentID := tournaments[tournamentName].ChallongeID
 	apiURL := "https://api.challonge.com/v1/tournaments/" + floatToString(challongeTournamentID) + ".json?"
@@ -131,6 +130,10 @@ func startRound(m *discordgo.MessageCreate, tournamentName string) {
 			racer2 = v
 		}
 
+		if dryRun {
+			continue
+		}
+
 		// Create a channel for this match
 		var channelID string
 		if v, err := discord.GuildChannelCreate(discordGuildID, channelName, "text"); err != nil {
@@ -163,8 +166,26 @@ func startRound(m *discordgo.MessageCreate, tournamentName string) {
 			return
 		}
 
-		// Put the channel in the correct category
+		// Put the channel in the correct category and give access to the two racers
+		// (channels in this category have "Read Text Channels & See Voice Channels" disabled for everyone except for admins/casters)
+		permissions := discordgo.PermissionReadMessages |
+			discordgo.PermissionSendMessages |
+			discordgo.PermissionEmbedLinks |
+			discordgo.PermissionAttachFiles |
+			discordgo.PermissionReadMessageHistory
 		discord.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
+			PermissionOverwrites: []*discordgo.PermissionOverwrite{
+				&discordgo.PermissionOverwrite{
+					ID:    racer1.DiscordID,
+					Type:  "member",
+					Allow: permissions,
+				},
+				&discordgo.PermissionOverwrite{
+					ID:    racer2.DiscordID,
+					Type:  "member",
+					Allow: permissions,
+				},
+			},
 			ParentID: tournaments[race.TournamentName].DiscordCategoryID,
 		})
 
@@ -217,6 +238,13 @@ func startRound(m *discordgo.MessageCreate, tournamentName string) {
 		discordSend(channelID, msg)
 
 		log.Info("Started race: " + channelName)
+	}
+
+	if dryRun {
+		msg := "Tournament \"" + tournamentName + "\" looks good."
+		discordSend(m.ChannelID, msg)
+		log.Info(msg)
+		return
 	}
 
 	// Rename the channel category

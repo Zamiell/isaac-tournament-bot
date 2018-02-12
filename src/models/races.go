@@ -25,7 +25,7 @@ type Race struct {
 	Racer2              Racer
 	Racer2ID            int
 	ChannelID           string
-	ChallongeID         string
+	ChallongeMatchID    string
 	BracketRound        string
 	State               string
 	DatetimeScheduled   mysql.NullTime
@@ -60,7 +60,7 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 			racer1,
 			racer2,
 			channel_id,
-			challonge_id,
+			challonge_match_id,
 			bracket_round,
 			state,
 			characters_remaining,
@@ -96,7 +96,7 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 		racer1DiscordID,
 		racer2DiscordID,
 		race.ChannelID,
-		race.ChallongeID,
+		race.ChallongeMatchID,
 		race.BracketRound,
 		race.State,
 		charactersRemaining,
@@ -140,7 +140,7 @@ func (*Races) Get(channelID string) (Race, error) {
 			racer1,
 			racer2,
 			channel_id,
-			challonge_id,
+			challonge_match_id,
 			bracket_round,
 			state,
 			datetime_scheduled,
@@ -164,7 +164,7 @@ func (*Races) Get(channelID string) (Race, error) {
 		&race.Racer1ID,
 		&race.Racer2ID,
 		&race.ChannelID,
-		&race.ChallongeID,
+		&race.ChallongeMatchID,
 		&race.BracketRound,
 		&race.State,
 		&race.DatetimeScheduled,
@@ -325,7 +325,7 @@ func (*Races) UnsetCaster(channelID string) error {
 		SET
 			caster = NULL,
 			caster_p1 = 0,
-			caster_p2 = 0,
+			caster_p2 = 0
 		WHERE channel_id = ?
 	`); err != nil {
 		return err

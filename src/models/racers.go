@@ -9,9 +9,9 @@ type Racers struct{}
 type Racer struct {
 	DiscordID string
 	Username  string
-	Timezone  sql.NullString
 	// Matches the TZ column of this page:
 	// https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	Timezone  sql.NullString
 	StreamURL sql.NullString
 }
 
@@ -105,7 +105,27 @@ func (*Racers) GetID(racerID int) (Racer, error) {
 	return racer, nil
 }
 
-func (*Racers) SetTimeZone(discordID string, timezone string) error {
+func (*Racers) SetUsername(discordID string, username string) error {
+	var stmt *sql.Stmt
+	if v, err := db.Prepare(`
+		UPDATE tournament_racers
+		SET username = ?
+		WHERE discord_id = ?
+	`); err != nil {
+		return err
+	} else {
+		stmt = v
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(username, discordID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (*Racers) SetTimezone(discordID string, timezone string) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
 		UPDATE tournament_racers

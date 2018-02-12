@@ -46,6 +46,7 @@ func commandInit() {
 	commandHandlerMap["timezoneset"] = commandSetTimezone
 	commandHandlerMap["setstream"] = commandSetStream
 	commandHandlerMap["streamset"] = commandSetStream
+	commandHandlerMap["checkround"] = commandCheckRound
 	commandHandlerMap["startround"] = commandStartRound
 	commandHandlerMap["roundstart"] = commandStartRound
 	commandHandlerMap["start"] = commandStartRound
@@ -116,6 +117,7 @@ func commandHelpGetMsg() string {
 		msg += "!setstream               Set a player's stream for them\n"
 		msg += "!startround              Start the current round of the tournament\n"
 		msg += "!endround                Delete all of the channels for this round\n"
+		msg += "!checkround              Do a dry run of "!startround"\n"
 		msg += "!forcetime               Force the scheduled time to be ok\n"
 		msg += "!forceban [num]          Force the current player to ban\n"
 		msg += "!forcepick [num]         Force the current player to pick\n"

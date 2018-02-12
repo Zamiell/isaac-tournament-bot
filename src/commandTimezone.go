@@ -58,7 +58,7 @@ func commandTimezone(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Set the new timezone
-	if err := db.Racers.SetTimeZone(m.Author.ID, newTimezone); err != nil {
+	if err := db.Racers.SetTimezone(m.Author.ID, newTimezone); err != nil {
 		msg := "Failed to update the timezone: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
