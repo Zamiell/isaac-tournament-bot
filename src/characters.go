@@ -81,7 +81,7 @@ func charactersEnd(race models.Race, msg string) {
 	}
 	msg += "\n"
 
-	ruleset := tournaments[race.TournamentName].Ruleset
+	ruleset := tournaments[race.ChallongeURL].Ruleset
 	if ruleset == "seeded" {
 		buildsStart(race, msg)
 	} else if ruleset == "unseeded" {

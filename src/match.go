@@ -153,7 +153,7 @@ func matchEnd(race models.Race, msg string) {
 	}
 	msg += "\n"
 
-	ruleset := tournaments[race.TournamentName].Ruleset
+	ruleset := tournaments[race.ChallongeURL].Ruleset
 	for i := 0; i < bestOf; i++ {
 		msg += "**Round " + strconv.Itoa(i+1) + "**:\n"
 		msg += "- Character: *" + race.Characters[i] + "*\n"

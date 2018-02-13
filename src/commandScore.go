@@ -90,7 +90,7 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 
 	// Update the match on Challonge
 	// https://api.challonge.com/v1/documents/matches/update
-	challongeTournamentID := floatToString(tournaments[race.TournamentName].ChallongeID)
+	challongeTournamentID := floatToString(tournaments[race.ChallongeURL].ChallongeID)
 	apiURL := "https://api.challonge.com/v1/tournaments/" + challongeTournamentID + "/matches/" + race.ChallongeMatchID + ".json"
 	apiURL += "?api_key=" + challongeAPIKey
 	apiURL += "&match[scores_csv]=" + score

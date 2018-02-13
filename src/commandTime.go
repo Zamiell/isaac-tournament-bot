@@ -74,20 +74,23 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	// Check to see if this is a valid time
 	input := strings.Join(args, " ")
 	input += " " + getTimezoneShort(racer.Timezone.String)
+	log.Info("Parsing:", input)
 	parser := &dateparser.Parser{
 		TZInfos: timezone.GetAllOffsets(),
 	}
 	var datetime time.Time
-	if t, err := parser.Parse(input); err != nil {
+	if v, err := parser.Parse(input); err != nil {
 		msg := "Failed to parse the time: " + err.Error()
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		datetime = t
+		datetime = v
 	}
 
 	// Change it to UTC
+	log.Info("Converted to:", datetime)
 	datetimeUTC := datetime.UTC()
+	log.Info("Converted to (in UTC):", datetimeUTC)
 
 	// Check to see if it is in the future
 	difference := datetimeUTC.Sub(time.Now().UTC())
@@ -119,8 +122,9 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 		// Get the short name of their time zone so that we can add it to their submitted time
 		loc1, _ := time.LoadLocation(racer1.Timezone.String)
 		loc2, _ := time.LoadLocation(racer2.Timezone.String)
-		_, offset1 := time.Now().In(loc1).Zone()
-		_, offset2 := time.Now().In(loc2).Zone()
+		now := time.Now()
+		_, offset1 := now.In(loc1).Zone()
+		_, offset2 := now.In(loc2).Zone()
 		if offset1 == offset2 {
 			timezonesEqual = true
 		}
