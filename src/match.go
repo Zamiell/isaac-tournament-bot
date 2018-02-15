@@ -109,7 +109,7 @@ func matchStart(race models.Race) {
 		return
 	}
 
-	// Set the state to 2
+	// Update the state
 	race.State = "banningCharacters"
 	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
@@ -127,6 +127,20 @@ func matchStart(race models.Race) {
 		discordSend(race.ChannelID, msg)
 		return
 	}
+
+	// Announce that the match is starting in the general channel
+	msg := "A race is scheduled to begin in 5 minutes:\n\n"
+	msg += race.TournamentName + "\n"
+	msg += race.Name() + "\n\n"
+	if race.CasterID.Valid {
+		msg += race.Caster.Username + " has volunteered to cast the match at:\n"
+		msg += "<" + race.Caster.StreamURL.String + ">"
+	} else {
+		msg += "No-one has volunteered to cast this match. You can watch both racers here:\n"
+		msg += "<https://kadgar.net/live/" + race.Racer1.Username + "/" + race.Racer2.Username + ">"
+	}
+
+	discordSend(discordGeneralChannelID, msg)
 
 	charactersBanStart(race)
 }

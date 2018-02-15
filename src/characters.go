@@ -27,6 +27,8 @@ var (
 )
 
 func charactersBanStart(race models.Race) {
+	// Alert the players that the race is about to start
+	// (this cannot be in the "matchStart()" function because we need to have everything in one message, or it can get out of order)
 	msg := race.Racer1.Mention() + " and " + race.Racer2.Mention() + " - the race is scheduled to start in 5 minutes.\n\n"
 	if race.CasterID.Valid {
 		msg += race.Caster.Mention() + ", you are scheduled to cast this match in 5 minutes at: <" + race.Caster.StreamURL.String + ">\n\n"

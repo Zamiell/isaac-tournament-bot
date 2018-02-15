@@ -9,21 +9,23 @@ import (
 )
 
 const (
-	discordAdminRoleName  = "Admins"
-	discordBotRoleName    = "Bots"
-	discordCasterRoleName = "Casters"
+	discordAdminRoleName      = "Admins"
+	discordBotRoleName        = "Bots"
+	discordCasterRoleName     = "Casters"
+	discordGeneralChannelName = "general"
 )
 
 var (
-	discord               *discordgo.Session
-	discordBotID          string
-	discordGuildName      string
-	discordGuildID        string
-	discordAdminRoleID    string
-	discordBotRoleID      string
-	discordCasterRoleID   string
-	discordEveryoneRoleID string
-	commandMutex          = new(sync.Mutex)
+	discord                 *discordgo.Session
+	discordBotID            string
+	discordGuildName        string
+	discordGuildID          string
+	discordAdminRoleID      string
+	discordBotRoleID        string
+	discordCasterRoleID     string
+	discordEveryoneRoleID   string
+	discordGeneralChannelID string
+	commandMutex            = new(sync.Mutex)
 )
 
 func discordInit() {
@@ -91,7 +93,7 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 		log.Fatal("Failed to find the ID of the \"" + discordGuildName + "\" Discord server.")
 	}
 
-	// Get the ID of the administrative role and the "Everyone" role
+	// Get the ID of several roles
 	var roles []*discordgo.Role
 	if v, err := discord.GuildRoles(discordGuildID); err != nil {
 		log.Fatal("Failed to get the roles for the guild: " + err.Error())
@@ -112,6 +114,25 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 	}
 	if discordAdminRoleID == "" {
 		log.Fatal("Failed to find the role of \"" + discordAdminRoleName + "\".")
+	}
+
+	// Get the ID of the general channel
+	var channels []*discordgo.Channel
+	if v, err := discord.GuildChannels(discordGuildID); err != nil {
+		log.Fatal("Failed to get the Discord server channels: " + err.Error())
+	} else {
+		channels = v
+	}
+	found := false
+	for _, channel := range channels {
+		if channel.Name == discordGeneralChannelName {
+			found = true
+			discordGeneralChannelID = channel.ID
+			break
+		}
+	}
+	if !found {
+		log.Fatal("Failed to find the \"" + discordGeneralChannelName + "\" channel.")
 	}
 }
 
