@@ -107,6 +107,7 @@ func commandHelpGetMsg() string {
 	msg += "!yes                     Veto the selected thing\n"
 	msg += "!no                      Do not veto the selected thing\n"
 	msg += "!score                   Report the score after the match has completed\n"
+	msg += "                         (with your number first)\n"
 	msg += "```"
 	/*
 		msg += "Admin-only commands:\n"

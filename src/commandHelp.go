@@ -6,4 +6,5 @@ import (
 
 func commandHelp(m *discordgo.MessageCreate, args []string) {
 	discordSend(m.ChannelID, commandHelpGetMsg())
+	// This function is located in "command.go"
 }

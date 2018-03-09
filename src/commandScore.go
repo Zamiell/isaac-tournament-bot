@@ -9,7 +9,7 @@ import (
 )
 
 func commandScore(m *discordgo.MessageCreate, args []string) {
-	if len(args) == 0 {
+	if len(args) != 1 {
 		commandScorePrint(m)
 		return
 	}
@@ -35,7 +35,7 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 	} else if m.Author.ID == race.Racer2.DiscordID {
 		playerNum = 2
 	} else {
-		discordSend(m.ChannelID, "Only \""+race.Racer1.Username+"\" and \""+race.Racer2.Username+"\" can veto a build.")
+		discordSend(m.ChannelID, "Only \""+race.Racer1.Username+"\" and \""+race.Racer2.Username+"\" can report a score.")
 		return
 	}
 
@@ -55,12 +55,15 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 		scoreValid = false
 	}
 	var p1Wins, p2Wins int
+	var winnerName string
 	if v, err := strconv.Atoi(string(score[0])); err != nil {
 		scoreValid = false
 	} else if playerNum == 1 {
 		p1Wins = v
+		winnerName = race.Racer1.Username
 	} else if playerNum == 2 {
 		p2Wins = v
+		winnerName = race.Racer2.Username
 	}
 	if v, err := strconv.Atoi(string(score[2])); err != nil {
 		scoreValid = false
@@ -77,7 +80,7 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Make sure the score is in the right order
-	// (player 1 must be first)
+	// (player 2 must be first)
 	score = strconv.Itoa(p1Wins) + "-" + strconv.Itoa(p2Wins)
 
 	// Get the Challonge participant ID of the winner
@@ -102,13 +105,14 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	msg := "Score successfully submitted."
+	msg := "The score of \"" + score + "\" was successfully submitted (with " + winnerName + " winning the match)."
 	discordSend(m.ChannelID, msg)
 	log.Info("User \"" + m.Author.Username + "\" submitted a score of \"" + score + "\" for race \"" + race.Name() + "\".")
 }
 
 func commandScorePrint(m *discordgo.MessageCreate) {
 	msg := "Report the score of the match with: `!score [score]`\n"
-	msg += "e.g. `!score 3-2`"
+	msg += "e.g. `!score 3-2`\n"
+	msg += "The number of wins for the person reporting the score should come first."
 	discordSend(m.ChannelID, msg)
 }
