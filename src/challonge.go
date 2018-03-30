@@ -46,13 +46,6 @@ func challongeInit() {
 		return
 	}
 
-	tournamentNamesString := os.Getenv("TOURNAMENT_NAMES")
-	if len(tournamentNamesString) == 0 {
-		log.Fatal("The \"TOURNAMENT_NAMES\" environment variable is blank. Set it in the \".env\" file.")
-		return
-	}
-	tournamentNames := strings.Split(tournamentNamesString, ",")
-
 	tournamentURLsString := os.Getenv("TOURNAMENT_CHALLONGE_URLS")
 	if len(tournamentURLsString) == 0 {
 		log.Fatal("The \"TOURNAMENT_CHALLONGE_URLS\" environment variable is blank. Set it in the \".env\" file.")
@@ -91,16 +84,17 @@ func challongeInit() {
 	}
 
 	// Figure out the ID for all the tournaments listed in the environment variable
-	for i, _ := range tournamentNames {
+	for i, tournamentURL := range tournamentURLs {
 		found := false
 		for _, v := range jsonTournaments {
 			vMap := v.(map[string]interface{})
 			jsonTournament := vMap["tournament"].(map[string]interface{})
-			if jsonTournament["url"] == tournamentURLs[i] {
+			// log.Info("We are an admin of Challonge tournament: " + jsonTournament["name"].(string))
+			if jsonTournament["url"] == tournamentURL {
 				found = true
 				tournaments[tournamentURLs[i]] = Tournament{
-					Name:              tournamentNames[i],
-					ChallongeURL:      tournamentURLs[i],
+					Name:              jsonTournament["name"].(string),
+					ChallongeURL:      tournamentURL,
 					ChallongeID:       jsonTournament["id"].(float64),
 					Ruleset:           tournamentRulesets[i],
 					DiscordCategoryID: tournamentDiscordCategoryIDs[i],
@@ -109,7 +103,7 @@ func challongeInit() {
 			}
 		}
 		if !found {
-			log.Fatal("Failed to find the \"" + tournamentNames[i] + "\" tournament in this Challonge user's tournament list.")
+			log.Fatal("Failed to find the \"" + tournamentURL + "\" tournament in this Challonge user's tournament list.")
 		}
 	}
 }

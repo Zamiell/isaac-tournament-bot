@@ -61,6 +61,7 @@ func main() {
 	defer discord.Close()
 	challongeInit()
 	matchInit()
+	log.Info("The bot has successfully initialized.")
 
 	// Wait here until CTRL-C or other term signal is received
 	sc := make(chan os.Signal, 1)

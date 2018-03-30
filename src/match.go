@@ -129,7 +129,8 @@ func matchStart(race models.Race) {
 	}
 
 	// Announce that the match is starting in the general channel
-	msg := "A race is scheduled to begin in 5 minutes:\n\n"
+	msg := "------------------------------------------\n"
+	msg += "A race is scheduled to begin in 5 minutes:\n\n"
 	msg += "```\n" // This is necessary because underscores in usernames can mess up the formatting
 	msg += race.TournamentName + "\n"
 	msg += race.Name() + "\n"
