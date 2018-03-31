@@ -8,7 +8,6 @@ import (
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
 	"github.com/bwmarrin/discordgo"
 	"github.com/kierdavis/dateparser"
-	timezone "github.com/tkuchiki/go-timezone"
 )
 
 func commandTime(m *discordgo.MessageCreate, args []string) {
@@ -73,13 +72,8 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 
 	// Check to see if this is a valid time
 	input := strings.Join(args, " ")
-	input += " " + getTimezoneShort(racer.Timezone.String)
-	log.Info("Parsing:", input)
-	parser := &dateparser.Parser{
-		TZInfos: timezone.GetAllOffsets(),
-	}
 	var datetime time.Time
-	if v, err := parser.Parse(input); err != nil {
+	if v, err := dateparser.Parse(input); err != nil {
 		msg := "Failed to parse the time: " + err.Error()
 		discordSend(m.ChannelID, msg)
 		return
@@ -87,20 +81,24 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 		datetime = v
 	}
 
-	// Change it to UTC
-	log.Info("Converted to:", datetime)
-	datetimeUTC := datetime.UTC()
-	log.Info("Converted to (in UTC):", datetimeUTC)
+	// Get the timezone offset for this person
+	// https://stackoverflow.com/questions/34975007/in-go-how-can-i-extract-the-value-of-my-current-local-time-offset
+	loc, _ := time.LoadLocation(racer.Timezone.String)
+	t := time.Now().In(loc)
+	_, offset := t.Zone()
+
+	// Change the time to correspond to the local time zone
+	datetime = datetime.Add(time.Second * time.Duration(offset) * -1)
 
 	// Check to see if it is in the future
-	difference := datetimeUTC.Sub(time.Now().UTC())
+	difference := datetime.Sub(time.Now().UTC())
 	if difference < 0 {
 		discordSend(m.ChannelID, "You must schedule a date in the future.")
 		return
 	}
 
 	// Set the new scheduled time
-	if err := db.Races.SetDatetimeScheduled(m.ChannelID, datetimeUTC, activePlayer); err != nil {
+	if err := db.Races.SetDatetimeScheduled(m.ChannelID, datetime, activePlayer); err != nil {
 		msg := "Failed to update the scheduled time: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
@@ -131,11 +129,11 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	}
 
 	msg := racer1.Mention() + " has suggested that the match be scheduled at: *"
-	msg += getDate(datetimeUTC, racer1.Timezone.String) + "*\n"
+	msg += getDate(datetime, racer1.Timezone.String) + "*\n"
 
 	if !timezonesEqual && racer2.Timezone.Valid {
 		msg += racer2.Mention() + ", this is equal to: *"
-		msg += getDate(datetimeUTC, racer2.Timezone.String) + "*\n"
+		msg += getDate(datetime, racer2.Timezone.String) + "*\n"
 		msg += "If"
 	} else {
 		msg += racer2.Mention() + ", if"
@@ -143,7 +141,7 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	msg += " this time is good for you, please use the `!timeok` command. Otherwise, suggest a new time with: `!time [date & time]`"
 	discordSend(m.ChannelID, msg)
 
-	log.Info("Racer \"" + m.Author.Username + "\" suggested the time of: " + getDate(datetimeUTC, "UTC"))
+	log.Info("Racer \"" + m.Author.Username + "\" suggested the time of: " + getDate(datetime, "UTC"))
 }
 
 func commandSchedulePrint(m *discordgo.MessageCreate) {
