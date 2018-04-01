@@ -88,6 +88,8 @@ func charactersEnd(race models.Race, msg string) {
 		buildsStart(race, msg)
 	} else if ruleset == "unseeded" {
 		matchEnd(race, msg)
+	} else if ruleset == "team" {
+		matchEnd(race, msg)
 	} else {
 		msg += "Unknown tournament ruleset for tournament \"" + race.TournamentName + "\"."
 		log.Error(msg)

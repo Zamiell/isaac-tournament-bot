@@ -13,6 +13,7 @@ const (
 	discordBotRoleName        = "Bots"
 	discordCasterRoleName     = "Casters"
 	discordGeneralChannelName = "general"
+	discordTeamCaptainRoleName = "Team Captain"
 )
 
 var (
@@ -25,6 +26,7 @@ var (
 	discordCasterRoleID     string
 	discordEveryoneRoleID   string
 	discordGeneralChannelID string
+	discordTeamCaptainRoleID string
 	commandMutex            = new(sync.Mutex)
 )
 
@@ -74,7 +76,7 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Get the guild ID
 	var guilds []*discordgo.UserGuild
-	if v, err := s.UserGuilds(0, "", ""); err != nil {
+	if v, err := s.UserGuilds(1, "", ""); err != nil {
 		log.Fatal("Failed to get the Discord guilds:", err)
 		return
 	} else {
@@ -83,7 +85,6 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 
 	foundGuild := false
 	for _, guild := range guilds {
-		// log.Info("We are in Discord server: " + guild.Name)
 		if guild.Name == discordGuildName {
 			foundGuild = true
 			discordGuildID = guild.ID
@@ -111,6 +112,8 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 			discordCasterRoleID = role.ID
 		} else if role.Name == "@everyone" {
 			discordEveryoneRoleID = role.ID
+		} else if role.Name == discordTeamCaptainRoleName {
+			discordTeamCaptainRoleID = role.ID
 		}
 	}
 	if discordAdminRoleID == "" {
