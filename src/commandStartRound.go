@@ -338,7 +338,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		// Give the welcome message
 		msg += "Please discuss the times that each of you are available to play this week.\n"
 		if tournament.Ruleset =="team" {
-		msg += discord1.Mention() + " and " + discord2.Mention() + " are the team captains, only them can submit times agreed upon.\n" }
+		msg += discord1.Mention() + " and " + discord2.Mention() + " are the team captains, only them can operate the bot and submit times agreed upon.\n" }
 		msg += "You can use suggest a time to your opponent with something like: `!time 6pm sat`\n"
 		msg += "If they accept with `!timeok`, then the match will be officially scheduled."
 		discordSend(channelID, msg)
