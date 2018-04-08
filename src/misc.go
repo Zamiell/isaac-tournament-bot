@@ -21,3 +21,12 @@ func getRandom(min int, max int) int {
 func deleteFromSlice(a []string, i int) []string {
 	return append(a[:i], a[i+1:]...)
 }
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}

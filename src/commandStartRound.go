@@ -42,6 +42,13 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		return
 	}
 	jsonTournament := vMap["tournament"].(map[string]interface{})
+	var roles []*discordgo.Role
+	if v, err := discord.GuildRoles(discordGuildID); err != nil {
+		log.Fatal("Failed to get the roles for the guild: " + err.Error())
+		return
+	} else {
+		roles = v
+	}
 
 	// Get all of the open matches
 	foundMatches := false
@@ -75,60 +82,113 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		}
 
 		// Find the discord ID of the two players and add them to the database if they are not already
-		var discord1 *discordgo.User
-		for _, member := range guild.Members {
-			username := member.Nick
-			if username == "" {
-				username = member.User.Username
-			}
-			if username == player1Name {
-				discord1 = member.User
-				break
-			}
-		}
-		if discord1 == nil {
-			msg := "Failed to find \"" + player1Name + "\" in the Discord server."
-			log.Error(msg)
-			discordSend(m.ChannelID, msg)
-			return
-		}
-
-		var discord2 *discordgo.User
-		for _, member := range guild.Members {
-			username := member.Nick
-			if username == "" {
-				username = member.User.Username
-			}
-			if username == player2Name {
-				discord2 = member.User
-				break
-			}
-		}
-		if discord2 == nil {
-			msg := "Failed to find \"" + player2Name + "\" in this Discord server."
-			log.Error(msg)
-			discordSend(m.ChannelID, msg)
-			return
-		}
-
 		var racer1 models.Racer
-		if v, err := racerGet(discord1); err != nil {
-			msg := "Failed to get the racer from the database: " + err.Error()
-			log.Error(msg)
-			discordSend(m.ChannelID, msg)
-			return
-		} else {
-			racer1 = v
-		}
-
 		var racer2 models.Racer
-		if v, err := racerGet(discord2); err != nil {
-			msg := "Failed to get the racer from the database: " + err.Error()
-			log.Error(msg)
-			discordSend(m.ChannelID, msg)
-			return
+		var team1DiscordID string
+		var team2DiscordID string
+		var discord1 *discordgo.User
+		var discord2 *discordgo.User
+		if tournament.Ruleset == "team" {
+			for _, role := range roles {
+				if role.Name == player1Name {
+					team1DiscordID = role.ID
+				}
+			}
+			for _, role := range roles {
+				if role.Name == player2Name {
+					team2DiscordID = role.ID
+				}
+			}
+			for _, member := range guild.Members {
+				if stringInSlice(discordTeamCaptainRoleID, member.Roles) && stringInSlice(team1DiscordID, member.Roles) {
+					discord1 = member.User
+					break
+				}
+			}
+
+			if discord1 == nil {
+				msg := "Failed to find \"" + player1Name + "\" team captain in the Discord server."
+				log.Error(msg)
+				discordSend(m.ChannelID, msg)
+				return
+			}
+			for _, member := range guild.Members {
+				if stringInSlice(discordTeamCaptainRoleID, member.Roles) && stringInSlice(team2DiscordID, member.Roles) {
+					discord2 = member.User
+					break
+				}
+			}
+			if discord2 == nil {
+				msg := "Failed to find \"" + player2Name + "\" team captain in the Discord server."
+				log.Error(msg)
+				discordSend(m.ChannelID, msg)
+				return
+			}
+			if v, err := racerGet(discord1); err != nil {
+				msg := "Failed to get the racer from the database: " + err.Error()
+				log.Error(msg)
+				discordSend(m.ChannelID, msg)
+				return
+			} else {
+				racer1 = v
+			}
+			if v, err := racerGet(discord2); err != nil {
+				msg := "Failed to get the racer from the database: " + err.Error()
+				log.Error(msg)
+				discordSend(m.ChannelID, msg)
+				return
+			} else {
+				racer2 = v
+			}
 		} else {
-			racer2 = v
+			for _, member := range guild.Members {
+				username := member.Nick
+				if username == "" {
+					username = member.User.Username
+				}
+				if username == player1Name {
+					discord1 = member.User
+					break
+				}
+			}
+			if discord1 == nil {
+				msg := "Failed to find \"" + player1Name + "\" in the Discord server."
+				log.Error(msg)
+				discordSend(m.ChannelID, msg)
+				return
+			}
+			for _, member := range guild.Members {
+				username := member.Nick
+				if username == "" {
+					username = member.User.Username
+				}
+				if username == player2Name {
+					discord2 = member.User
+					break
+				}
+			}
+			if discord2 == nil {
+				msg := "Failed to find \"" + player2Name + "\" in this Discord server."
+				log.Error(msg)
+				discordSend(m.ChannelID, msg)
+				return
+			}
+			if v, err := racerGet(discord1); err != nil {
+				msg := "Failed to get the racer from the database: " + err.Error()
+				log.Error(msg)
+				discordSend(m.ChannelID, msg)
+				return
+			} else {
+				racer1 = v
+			}
+			if v, err := racerGet(discord2); err != nil {
+				msg := "Failed to get the racer from the database: " + err.Error()
+				log.Error(msg)
+				discordSend(m.ChannelID, msg)
+				return
+			} else {
+				racer2 = v
+			}
 		}
 
 		if dryRun {
@@ -177,30 +237,41 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			discordgo.PermissionEmbedLinks |
 			discordgo.PermissionAttachFiles |
 			discordgo.PermissionReadMessageHistory
-		discord.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
-			PermissionOverwrites: []*discordgo.PermissionOverwrite{
-				// Deny everyone from seeing this channel
-				&discordgo.PermissionOverwrite{
-					ID:   discordEveryoneRoleID,
-					Type: "role",
-					Deny: permissionsReadWrite,
-				},
+		var permissions = make([]*discordgo.PermissionOverwrite, 0)
+		permissions = append(permissions,
+			&discordgo.PermissionOverwrite{
+				ID:   discordEveryoneRoleID,
+				Type: "role",
+				Deny: permissionsReadWrite,
+			},
 
-				// Allow bots to see + talk in this channel
+			// Allow bots to see + talk in this channel
+			&discordgo.PermissionOverwrite{
+				ID:    discordBotRoleID,
+				Type:  "role",
+				Allow: permissionsReadWrite,
+			},
+
+			// Allow all casters to see + talk in this channel
+			&discordgo.PermissionOverwrite{
+				ID:    discordCasterRoleID,
+				Type:  "role",
+				Allow: permissionsReadWrite,
+			})
+		if tournament.Ruleset == "team" {
+			permissions = append(permissions,
 				&discordgo.PermissionOverwrite{
-					ID:    discordBotRoleID,
+					ID:    team1DiscordID,
 					Type:  "role",
 					Allow: permissionsReadWrite,
 				},
-
-				// Allow all casters to see + talk in this channel
 				&discordgo.PermissionOverwrite{
-					ID:    discordCasterRoleID,
+					ID:    team2DiscordID,
 					Type:  "role",
 					Allow: permissionsReadWrite,
-				},
-
-				// Allow the two racers to see + talk in this channel
+				})
+		} else {
+			permissions = append(permissions,
 				&discordgo.PermissionOverwrite{
 					ID:    racer1.DiscordID,
 					Type:  "member",
@@ -210,11 +281,12 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 					ID:    racer2.DiscordID,
 					Type:  "member",
 					Allow: permissionsReadWrite,
-				},
-			},
-			ParentID: tournament.DiscordCategoryID,
+				})
+		}
+		discord.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
+			PermissionOverwrites: permissions,
+			ParentID:             tournament.DiscordCategoryID,
 		})
-
 		// Find out if the players have set their timezone
 		msg := ""
 		if racer1.Timezone.Valid {
@@ -259,6 +331,9 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 
 		// Give the welcome message
 		msg += "Please discuss the times that each of you are available to play this week.\n"
+		if tournament.Ruleset == "team" {
+			msg += discord1.Mention() + " and " + discord2.Mention() + " are the team captains, only them can operate the bot and submit times agreed upon.\n"
+		}
 		msg += "You can use suggest a time to your opponent with something like: `!time 6pm sat`\n"
 		msg += "If they accept with `!timeok`, then the match will be officially scheduled."
 		discordSend(channelID, msg)

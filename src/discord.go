@@ -9,23 +9,25 @@ import (
 )
 
 const (
-	discordAdminRoleName      = "Admins"
-	discordBotRoleName        = "Bots"
-	discordCasterRoleName     = "Casters"
-	discordGeneralChannelName = "general"
+	discordAdminRoleName       = "Admins"
+	discordBotRoleName         = "Bots"
+	discordCasterRoleName      = "Casters"
+	discordGeneralChannelName  = "general"
+	discordTeamCaptainRoleName = "Team Captain"
 )
 
 var (
-	discord                 *discordgo.Session
-	discordBotID            string
-	discordGuildName        string
-	discordGuildID          string
-	discordAdminRoleID      string
-	discordBotRoleID        string
-	discordCasterRoleID     string
-	discordEveryoneRoleID   string
-	discordGeneralChannelID string
-	commandMutex            = new(sync.Mutex)
+	discord                  *discordgo.Session
+	discordBotID             string
+	discordGuildName         string
+	discordGuildID           string
+	discordAdminRoleID       string
+	discordBotRoleID         string
+	discordCasterRoleID      string
+	discordEveryoneRoleID    string
+	discordGeneralChannelID  string
+	discordTeamCaptainRoleID string
+	commandMutex             = new(sync.Mutex)
 )
 
 func discordInit() {
@@ -83,7 +85,6 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 
 	foundGuild := false
 	for _, guild := range guilds {
-		// log.Info("We are in Discord server: " + guild.Name)
 		if guild.Name == discordGuildName {
 			foundGuild = true
 			discordGuildID = guild.ID
@@ -111,6 +112,8 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 			discordCasterRoleID = role.ID
 		} else if role.Name == "@everyone" {
 			discordEveryoneRoleID = role.ID
+		} else if role.Name == discordTeamCaptainRoleName {
+			discordTeamCaptainRoleID = role.ID
 		}
 	}
 	if discordAdminRoleID == "" {
