@@ -51,6 +51,14 @@ func charactersBanStart(race models.Race) {
 }
 
 func charactersPickStart(race models.Race, msg string) {
+	bestOfString := tournaments[race.ChallongeURL].BestOf
+	var bestOf int
+	if v, err := strconv.Atoi(bestOfString); err != nil {
+		log.Fatal("The \"BEST_OF\" environment variable is not a number.")
+		return
+	} else {
+		bestOf = v
+	}
 	// Set the state
 	race.State = "pickingCharacters"
 	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {

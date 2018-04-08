@@ -92,6 +92,15 @@ func getBansRemaining(race models.Race, thing string) string {
 }
 
 func getPicksRemaining(race models.Race, thing string) string {
+	bestOfString := tournaments[race.ChallongeURL].BestOf
+	var bestOf int
+	if v, err := strconv.Atoi(bestOfString); err != nil {
+		log.Fatal("The \"BEST_OF\" environment variable is not a number.")
+		return ""
+	} else {
+		bestOf = v
+	}
+
 	var things []string
 	if thing == "characters" {
 		things = race.Characters

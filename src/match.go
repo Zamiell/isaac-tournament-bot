@@ -9,25 +9,12 @@ import (
 )
 
 var (
-	bestOf   int
 	numBans  int
 	numVetos int
 )
 
 func matchInit() {
 	// Read the configuration from environment variables
-	bestOfString := os.Getenv("BEST_OF")
-	if len(bestOfString) == 0 {
-		log.Fatal("The \"BEST_OF\" environment variable is blank. Set it in the \".env\" file.")
-		return
-	}
-
-	if v, err := strconv.Atoi(bestOfString); err != nil {
-		log.Fatal("The \"BEST_OF\" environment variable is not a number.")
-		return
-	} else {
-		bestOf = v
-	}
 
 	numBansString := os.Getenv("NUM_BANS")
 	if len(numBansString) == 0 {
@@ -170,6 +157,14 @@ func matchEnd(race models.Race, msg string) {
 	msg += "\n"
 
 	ruleset := tournaments[race.ChallongeURL].Ruleset
+	bestOfString := tournaments[race.ChallongeURL].BestOf
+	var bestOf int
+	if v, err := strconv.Atoi(bestOfString); err != nil {
+		log.Fatal("The \"BEST_OF\" environment variable is not a number.")
+		return 
+	} else {
+		bestOf = v
+	}
 	for i := 0; i < bestOf; i++ {
 		msg += "**Round " + strconv.Itoa(i+1) + "**:\n"
 		msg += "- Character: *" + race.Characters[i] + "*\n"
