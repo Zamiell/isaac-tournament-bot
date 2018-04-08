@@ -19,7 +19,7 @@ type Tournament struct {
 	ChallongeID       float64
 	Ruleset           string
 	DiscordCategoryID string
-	BestOf						string
+	BestOf            string
 }
 
 var (
@@ -74,7 +74,6 @@ func challongeInit() {
 		return
 	}
 	tournamentBestOf := strings.Split(tournamentBestOfString, ",")
-	log.Info(tournamentBestOfString)
 
 	// Get all of the Challonge user's tournaments
 	apiURL := "https://api.challonge.com/v1/tournaments.json?"
@@ -107,7 +106,7 @@ func challongeInit() {
 					ChallongeID:       jsonTournament["id"].(float64),
 					Ruleset:           tournamentRulesets[i],
 					DiscordCategoryID: tournamentDiscordCategoryIDs[i],
-					BestOf: 						tournamentBestOf[i],
+					BestOf:            tournamentBestOf[i],
 				}
 				break
 			}
