@@ -9,25 +9,25 @@ import (
 )
 
 const (
-	discordAdminRoleName      = "Admins"
-	discordBotRoleName        = "Bots"
-	discordCasterRoleName     = "Casters"
-	discordGeneralChannelName = "general"
+	discordAdminRoleName       = "Admins"
+	discordBotRoleName         = "Bots"
+	discordCasterRoleName      = "Casters"
+	discordGeneralChannelName  = "general"
 	discordTeamCaptainRoleName = "Team Captain"
 )
 
 var (
-	discord                 *discordgo.Session
-	discordBotID            string
-	discordGuildName        string
-	discordGuildID          string
-	discordAdminRoleID      string
-	discordBotRoleID        string
-	discordCasterRoleID     string
-	discordEveryoneRoleID   string
-	discordGeneralChannelID string
+	discord                  *discordgo.Session
+	discordBotID             string
+	discordGuildName         string
+	discordGuildID           string
+	discordAdminRoleID       string
+	discordBotRoleID         string
+	discordCasterRoleID      string
+	discordEveryoneRoleID    string
+	discordGeneralChannelID  string
 	discordTeamCaptainRoleID string
-	commandMutex            = new(sync.Mutex)
+	commandMutex             = new(sync.Mutex)
 )
 
 func discordInit() {

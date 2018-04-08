@@ -19,14 +19,7 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 		startRound(m, tournament, false)
 	}
 }
-func stringInSlice(a string, list []string) bool {
-    for _, b := range list {
-        if b == a {
-            return true
-        }
-    }
-    return false
-}
+
 func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) {
 	// Get the tournament from Challonge
 	apiURL := "https://api.challonge.com/v1/tournaments/" + floatToString(tournament.ChallongeID) + ".json?"
@@ -56,6 +49,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 	} else {
 		roles = v
 	}
+
 	// Get all of the open matches
 	foundMatches := false
 	var round string
@@ -106,26 +100,26 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 				}
 			}
 			for _, member := range guild.Members {
-				if stringInSlice(discordTeamCaptainRoleID,member.Roles) && stringInSlice(team1DiscordID,member.Roles) {
+				if stringInSlice(discordTeamCaptainRoleID, member.Roles) && stringInSlice(team1DiscordID, member.Roles) {
 					discord1 = member.User
 					break
 				}
 			}
 
 			if discord1 == nil {
-				msg := "Failed to find \"" + player1Name +  "\" team captain in the Discord server."
+				msg := "Failed to find \"" + player1Name + "\" team captain in the Discord server."
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
 			}
 			for _, member := range guild.Members {
-				if stringInSlice(discordTeamCaptainRoleID,member.Roles) && stringInSlice(team2DiscordID,member.Roles) {
+				if stringInSlice(discordTeamCaptainRoleID, member.Roles) && stringInSlice(team2DiscordID, member.Roles) {
 					discord2 = member.User
 					break
 				}
 			}
 			if discord2 == nil {
-				msg := "Failed to find \"" + player2Name +  "\" team captain in the Discord server."
+				msg := "Failed to find \"" + player2Name + "\" team captain in the Discord server."
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
@@ -243,9 +237,9 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			discordgo.PermissionEmbedLinks |
 			discordgo.PermissionAttachFiles |
 			discordgo.PermissionReadMessageHistory
-		var permissions = make([]*discordgo.PermissionOverwrite,0)
+		var permissions = make([]*discordgo.PermissionOverwrite, 0)
 		permissions = append(permissions,
-		&discordgo.PermissionOverwrite{
+			&discordgo.PermissionOverwrite{
 				ID:   discordEveryoneRoleID,
 				Type: "role",
 				Deny: permissionsReadWrite,
@@ -264,20 +258,20 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 				Type:  "role",
 				Allow: permissionsReadWrite,
 			})
-			if tournament.Ruleset == "team" {
-				permissions = append(permissions,
-					&discordgo.PermissionOverwrite{
-						ID:    team1DiscordID,
-						Type:  "role",
-						Allow: permissionsReadWrite,
-					},
-					&discordgo.PermissionOverwrite{
-						ID:    team2DiscordID,
-						Type:  "role",
-						Allow: permissionsReadWrite,
-					})
-			} else {
-				permissions = append(permissions,
+		if tournament.Ruleset == "team" {
+			permissions = append(permissions,
+				&discordgo.PermissionOverwrite{
+					ID:    team1DiscordID,
+					Type:  "role",
+					Allow: permissionsReadWrite,
+				},
+				&discordgo.PermissionOverwrite{
+					ID:    team2DiscordID,
+					Type:  "role",
+					Allow: permissionsReadWrite,
+				})
+		} else {
+			permissions = append(permissions,
 				&discordgo.PermissionOverwrite{
 					ID:    racer1.DiscordID,
 					Type:  "member",
@@ -288,10 +282,10 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 					Type:  "member",
 					Allow: permissionsReadWrite,
 				})
-			}
+		}
 		discord.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
 			PermissionOverwrites: permissions,
-			ParentID: tournament.DiscordCategoryID,
+			ParentID:             tournament.DiscordCategoryID,
 		})
 		// Find out if the players have set their timezone
 		msg := ""
@@ -337,8 +331,9 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 
 		// Give the welcome message
 		msg += "Please discuss the times that each of you are available to play this week.\n"
-		if tournament.Ruleset =="team" {
-		msg += discord1.Mention() + " and " + discord2.Mention() + " are the team captains, only them can operate the bot and submit times agreed upon.\n" }
+		if tournament.Ruleset == "team" {
+			msg += discord1.Mention() + " and " + discord2.Mention() + " are the team captains, only them can operate the bot and submit times agreed upon.\n"
+		}
 		msg += "You can use suggest a time to your opponent with something like: `!time 6pm sat`\n"
 		msg += "If they accept with `!timeok`, then the match will be officially scheduled."
 		discordSend(channelID, msg)

@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// Valid rulesets are "seeded" and "unseeded" and "team"
+// Valid rulesets are "seeded", "unseeded" and "team"
 type Tournament struct {
 	Name              string
 	ChallongeURL      string
