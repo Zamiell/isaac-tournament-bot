@@ -51,14 +51,6 @@ func charactersBanStart(race models.Race) {
 }
 
 func charactersPickStart(race models.Race, msg string) {
-	bestOfString := tournaments[race.ChallongeURL].BestOf
-	var bestOf int
-	if v, err := strconv.Atoi(bestOfString); err != nil {
-		log.Fatal("The \"BEST_OF\" environment variable is not a number.")
-		return
-	} else {
-		bestOf = v
-	}
 	// Set the state
 	race.State = "pickingCharacters"
 	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
@@ -69,7 +61,7 @@ func charactersPickStart(race models.Race, msg string) {
 	}
 
 	msg += "**Character Pick Phase**\n\n"
-	msg += "- " + strconv.Itoa(bestOf) + " characters need to be picked.\n"
+	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " characters need to be picked.\n"
 	msg += "- Use the `!pick` command to select a character.\n"
 	msg += "  e.g. `!pick 3` (to pick the 3rd character in the list)\n\n"
 	if race.ActivePlayer == 1 {

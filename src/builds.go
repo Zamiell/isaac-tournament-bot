@@ -81,14 +81,6 @@ var (
 )
 
 func buildsStart(race models.Race, msg string) {
-	bestOfString := tournaments[race.ChallongeURL].BestOf
-	var bestOf int
-	if v, err := strconv.Atoi(bestOfString); err != nil {
-		log.Fatal("The \"BEST_OF\" environment variable is not a number.")
-		return
-	} else {
-		bestOf = v
-	}
 	race.State = "vetoBuilds"
 	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
@@ -99,21 +91,13 @@ func buildsStart(race models.Race, msg string) {
 	log.Info("Race \"" + race.Name() + "\" finished selecting characters; set to \"" + race.State + "\".")
 
 	msg += "**Build Ban Phase**\n\n"
-	msg += "- " + strconv.Itoa(bestOf) + " builds will randomly be chosen. Each player will get one veto.\n"
+	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " builds will randomly be chosen. Each player will get one veto.\n"
 	msg += "- Use the `!yes` and `!no` commands to answer the questions.\n\n"
 	race.NumVoted = 2 // Set it to 2 so that it gives a new build
 	buildsRound(race, msg)
 }
 
 func buildsRound(race models.Race, msg string) {
-	var bestOf int
-	bestOfString := tournaments[race.ChallongeURL].BestOf
-	if v, err := strconv.Atoi(bestOfString); err != nil {
-		log.Fatal("The \"BEST_OF\" environment variable is not a number.")
-		return
-	} else {
-		bestOf = v
-	}
 	if race.NumVoted == 2 {
 		// Both racers have voted, so get a new build
 		race.NumVoted = 0
@@ -124,7 +108,7 @@ func buildsRound(race models.Race, msg string) {
 			return
 		}
 
-		if len(race.Builds) == bestOf {
+		if len(race.Builds) == tournaments[race.ChallongeURL].BestOf {
 			matchEnd(race, msg)
 			return
 		}

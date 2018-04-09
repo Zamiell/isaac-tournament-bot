@@ -19,7 +19,7 @@ type Tournament struct {
 	ChallongeID       float64
 	Ruleset           string
 	DiscordCategoryID string
-	BestOf            string
+	BestOf            int
 }
 
 var (
@@ -68,12 +68,23 @@ func challongeInit() {
 	}
 	tournamentDiscordCategoryIDs := strings.Split(tournamentDiscordCategoryIDsString, ",")
 
-	tournamentBestOfString := os.Getenv("BEST_OF")
+	tournamentBestOfString := os.Getenv("TOURNAMENT_BEST_OF")
 	if len(tournamentBestOfString) == 0 {
-		log.Fatal("The \"BEST_OF\" environment variable is blank. Set it in the \".env\" file.")
+		log.Fatal("The \"TOURNAMENT_BEST_OF\" environment variable is blank. Set it in the \".env\" file.")
 		return
 	}
-	tournamentBestOf := strings.Split(tournamentBestOfString, ",")
+	tournamentBestOfStrings := strings.Split(tournamentBestOfString, ",")
+
+	// Validate that all of the "best of" values are numbers
+	tournamentBestOf := make([]int, 0)
+	for _, bestOfString := range tournamentBestOfStrings {
+		if v, err := strconv.Atoi(bestOfString); err != nil {
+			log.Fatal("One of the values in the \"TOURNAMENT_BEST_OF\" environment variable is not a number.")
+			return
+		} else {
+			tournamentBestOf = append(tournamentBestOf, v)
+		}
+	}
 
 	// Get all of the Challonge user's tournaments
 	apiURL := "https://api.challonge.com/v1/tournaments.json?"

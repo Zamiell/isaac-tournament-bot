@@ -157,15 +157,7 @@ func matchEnd(race models.Race, msg string) {
 	msg += "\n"
 
 	ruleset := tournaments[race.ChallongeURL].Ruleset
-	bestOfString := tournaments[race.ChallongeURL].BestOf
-	var bestOf int
-	if v, err := strconv.Atoi(bestOfString); err != nil {
-		log.Fatal("The \"BEST_OF\" environment variable is not a number.")
-		return 
-	} else {
-		bestOf = v
-	}
-	for i := 0; i < bestOf; i++ {
+	for i := 0; i < tournaments[race.ChallongeURL].BestOf; i++ {
 		msg += "**Round " + strconv.Itoa(i+1) + "**:\n"
 		msg += "- Character: *" + race.Characters[i] + "*\n"
 		if ruleset == "seeded" {
