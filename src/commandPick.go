@@ -27,7 +27,15 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 	} else {
 		race = v
 	}
-
+	// Get bestOf
+	bestOfString := tournaments[race.ChallongeURL].BestOf
+	var bestOf int
+	if v, err := strconv.Atoi(bestOfString); err != nil {
+		log.Fatal("The \"BEST_OF\" environment variable is not a number.")
+		return
+	} else {
+		bestOf = v
+	}
 	// Check to see if this person is one of the two racers
 	var playerNum int
 	if m.Author.ID == race.Racer1.DiscordID {
