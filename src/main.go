@@ -21,10 +21,9 @@ import (
 )
 
 var (
-	projectPath     = path.Join(os.Getenv("GOPATH"), "src", "github.com", "Zamiell", "isaac-tournament-bot")
-	log             *logging.Logger
-	db              *models.Models
-	racingPlusEmote = "<:RacingPlus:394342809802506240>"
+	projectPath = path.Join(os.Getenv("GOPATH"), "src", "github.com", "Zamiell", "isaac-tournament-bot")
+	log         *logging.Logger
+	db          *models.Models
 )
 
 func main() {

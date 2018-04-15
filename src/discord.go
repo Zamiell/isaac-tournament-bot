@@ -12,8 +12,8 @@ const (
 	discordAdminRoleName       = "Admins"
 	discordBotRoleName         = "Bots"
 	discordCasterRoleName      = "Casters"
-	discordGeneralChannelName  = "general"
 	discordTeamCaptainRoleName = "Team Captain"
+	discordGeneralChannelName  = "general"
 )
 
 var (
@@ -110,10 +110,10 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 			discordBotRoleID = role.ID
 		} else if role.Name == discordCasterRoleName {
 			discordCasterRoleID = role.ID
-		} else if role.Name == "@everyone" {
-			discordEveryoneRoleID = role.ID
 		} else if role.Name == discordTeamCaptainRoleName {
 			discordTeamCaptainRoleID = role.ID
+		} else if role.Name == "@everyone" {
+			discordEveryoneRoleID = role.ID
 		}
 	}
 	if discordAdminRoleID == "" {

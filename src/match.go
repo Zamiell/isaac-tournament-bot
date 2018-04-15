@@ -71,13 +71,13 @@ func matchInit() {
 
 func matchStart(race models.Race) {
 	// Sleep until the match starts
+	origStartTime := race.DatetimeScheduled.Time
 	sleepDuration := race.DatetimeScheduled.Time.Sub(time.Now().UTC())
 	if sleepDuration < 5*time.Minute {
 		sleepDuration = 0
 	} else {
 		sleepDuration -= 5 * time.Minute
 	}
-
 	time.Sleep(sleepDuration)
 
 	// Re-get the race from the database
@@ -88,6 +88,11 @@ func matchStart(race models.Race) {
 		return
 	} else {
 		race = v
+	}
+
+	// Check to see if the race has been rescheduled
+	if origStartTime != race.DatetimeScheduled.Time {
+		return
 	}
 
 	// Check to see if this match has started already
@@ -176,6 +181,6 @@ func matchEnd(race models.Race, msg string) {
 	msg += ".\n"
 	msg += "When the race is over, please use the `!score [score]` command to report the results.\n"
 	msg += "e.g. `!score 3-2`\n\n"
-	msg += "Good luck and have fun! " + racingPlusEmote
+	msg += "Good luck and have fun!"
 	discordSend(race.ChannelID, msg)
 }

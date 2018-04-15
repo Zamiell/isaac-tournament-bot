@@ -63,12 +63,12 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 		winnerName = race.Racer1.Username
 	} else if playerNum == 2 {
 		p2Wins = v
-		winnerName = race.Racer2.Username
 	}
 	if v, err := strconv.Atoi(string(score[2])); err != nil {
 		scoreValid = false
 	} else if playerNum == 2 {
 		p1Wins = v
+		winnerName = race.Racer2.Username
 	} else if playerNum == 1 {
 		p2Wins = v
 	}
