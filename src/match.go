@@ -15,7 +15,6 @@ var (
 
 func matchInit() {
 	// Read the configuration from environment variables
-
 	numBansString := os.Getenv("NUM_BANS")
 	if len(numBansString) == 0 {
 		log.Fatal("The \"NUM_BANS\" environment variable is blank. Set it in the \".env\" file.")

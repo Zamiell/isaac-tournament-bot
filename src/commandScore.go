@@ -46,6 +46,7 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this score was reported in the correct format
+	// e.g. 3-0
 	score := args[0]
 	scoreValid := true
 	if len(score) != 3 {
@@ -54,24 +55,29 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 	if score[1] != '-' {
 		scoreValid = false
 	}
-	var p1Wins, p2Wins int
-	var winnerName string
+	minWinNum := 0
+	maxWinNum := tournaments[race.ChallongeURL].BestOf/2 + 1
+
+	// The first digit
+	var digit1 int
 	if v, err := strconv.Atoi(string(score[0])); err != nil {
 		scoreValid = false
-	} else if playerNum == 1 {
-		p1Wins = v
-		winnerName = race.Racer1.Username
-	} else if playerNum == 2 {
-		p2Wins = v
+	} else if v < minWinNum || v > maxWinNum {
+		scoreValid = false
+	} else {
+		digit1 = v
 	}
+
+	// The second digit
+	var digit2 int
 	if v, err := strconv.Atoi(string(score[2])); err != nil {
 		scoreValid = false
-	} else if playerNum == 2 {
-		p1Wins = v
-		winnerName = race.Racer2.Username
-	} else if playerNum == 1 {
-		p2Wins = v
+	} else if v < minWinNum || v > maxWinNum {
+		scoreValid = false
+	} else {
+		digit2 = v
 	}
+
 	if !scoreValid {
 		msg := "You must report the score in the following format: `!score #-#`\n"
 		msg += "e.g. `!score 3-2`"
@@ -79,8 +85,31 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Make sure the score is in the right order
-	// (player 2 must be first)
+	// Get the winner's name
+	var winnerName string
+	if playerNum == 1 {
+		if digit1 > digit2 {
+			winnerName = race.Racer1.Username
+		} else {
+			winnerName = race.Racer2.Username
+		}
+	} else if playerNum == 2 {
+		if digit1 > digit2 {
+			winnerName = race.Racer2.Username
+		} else {
+			winnerName = race.Racer1.Username
+		}
+	}
+
+	// Put the wins in the right order according to what is listed on the Challonge bracket
+	var p1Wins, p2Wins int
+	if playerNum == 1 {
+		p1Wins = digit1
+		p2Wins = digit2
+	} else if playerNum == 2 {
+		p2Wins = digit1
+		p1Wins = digit2
+	}
 	score = strconv.Itoa(p1Wins) + "-" + strconv.Itoa(p2Wins)
 
 	// Get the Challonge participant ID of the winner
