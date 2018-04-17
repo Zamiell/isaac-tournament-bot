@@ -41,7 +41,7 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 
 	// Check to see if this person is one of the two racers
 	if m.Author.ID == race.Racer1.DiscordID || m.Author.ID == race.Racer2.DiscordID {
-		discordSend(m.ChannelID, "You cannot cast a match that you are participanting in.")
+		discordSend(m.ChannelID, "You cannot cast a match that you are participating in.")
 		return
 	}
 
