@@ -51,9 +51,9 @@ func commandGetStream(m *discordgo.MessageCreate, args []string) {
 		racer = v
 	}
 
-	msg := "The stream for " + discordUser.Username + " is "
+	msg := "The stream for `" + racer.Username + "` is "
 	if racer.StreamURL.Valid {
-		msg += "currently set to: **" + racer.StreamURL.String + "**"
+		msg += "currently set to:\n<" + racer.StreamURL.String + ">"
 	} else {
 		msg += "**not currently set**."
 	}
