@@ -22,7 +22,8 @@ var (
 		"Lilith",    // 12
 		"Keeper",    // 13
 		"Apollyon",  // 14
-		"Samael",    // 15
+		"Forgotten", // 15
+		"Samael",    // 16
 	}
 )
 
