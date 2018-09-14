@@ -118,6 +118,12 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 	}
 	if discordAdminRoleID == "" {
 		log.Fatal("Failed to find the role of \"" + discordAdminRoleName + "\".")
+	} else if discordBotRoleID == "" {
+		log.Fatal("Failed to find the role of \"" + discordBotRoleName + "\".")
+	} else if discordCasterRoleID == "" {
+		log.Fatal("Failed to find the role of \"" + discordCasterRoleName + "\".")
+	} else if discordEveryoneRoleID == "" {
+		log.Fatal("Failed to find the role of \"@everyone\".")
 	}
 
 	// Get the ID of the general channel

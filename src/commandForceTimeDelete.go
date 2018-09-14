@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func commandForceTime(m *discordgo.MessageCreate, args []string) {
+func commandForceTimeDelete(m *discordgo.MessageCreate, args []string) {
 	if !isAdmin(m) {
 		return
 	}
@@ -60,5 +60,5 @@ func commandForceTime(m *discordgo.MessageCreate, args []string) {
 	}
 
 	m.Author = discordUser
-	commandTime(m, args)
+	commandTimeDelete(m, args)
 }

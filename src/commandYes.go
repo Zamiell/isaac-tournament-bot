@@ -34,8 +34,8 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this race is in the item banning phase
-	if race.State != "vetoBuilds" {
+	// Check to see if this race is in the vetoing phase
+	if race.State != "vetoCharacters" && race.State != "vetoBuilds" {
 		discordSend(m.ChannelID, "You can only veto something once the characters have been chosen.")
 		return
 	}
@@ -54,14 +54,26 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// The build was already added, so remove it
-	vetoBuild := race.Builds[len(race.Builds)-1]
-	race.Builds = race.Builds[:len(race.Builds)-1] // Delete the last element
-	if err := db.Races.SetBuilds(race.ChannelID, race.Builds); err != nil {
-		msg := "Failed to set the builds for race \"" + race.Name() + "\": " + err.Error()
-		log.Error(msg)
-		discordSend(m.ChannelID, msg)
-		return
+	// The character/build was already added, so remove it
+	var veto string
+	if race.State == "vetoCharacters" {
+		veto = race.Characters[len(race.Characters)-1]
+		race.Characters = race.Characters[:len(race.Characters)-1] // Delete the last element
+		if err := db.Races.SetCharacters(race.ChannelID, race.Characters); err != nil {
+			msg := "Failed to set the characters for race \"" + race.Name() + "\": " + err.Error()
+			log.Error(msg)
+			discordSend(m.ChannelID, msg)
+			return
+		}
+	} else if race.State == "vetoBuilds" {
+		veto = race.Builds[len(race.Builds)-1]
+		race.Builds = race.Builds[:len(race.Builds)-1] // Delete the last element
+		if err := db.Races.SetBuilds(race.ChannelID, race.Builds); err != nil {
+			msg := "Failed to set the builds for race \"" + race.Name() + "\": " + err.Error()
+			log.Error(msg)
+			discordSend(m.ChannelID, msg)
+			return
+		}
 	}
 
 	// Decrement the vetos
@@ -89,9 +101,11 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	msg := m.Author.Mention() + " vetoed: *" + vetoBuild + "*\n\n"
 	incrementActivePlayer(&race)
-
-	buildsRound(race, msg)
-	log.Info("Racer \"" + m.Author.Username + "\" vetoed: " + vetoBuild)
+	msg := m.Author.Mention() + " vetoed: *" + veto + "*\n\n"
+	if race.State == "vetoCharacters" {
+		charactersRound(race, msg)
+	} else if race.State == "vetoBuilds" {
+		buildsRound(race, msg)
+	}
 }

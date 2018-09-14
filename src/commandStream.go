@@ -16,11 +16,14 @@ func commandStream(m *discordgo.MessageCreate, args []string) {
 	streamURL := args[0]
 
 	// Create the user in the database if it does not already exist
-	if _, err := racerGet(m.Author); err != nil {
+	var racer models.Racer
+	if v, err := racerGet(m.Author); err != nil {
 		msg := "Failed to get the racer from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
+	} else {
+		racer = v
 	}
 
 	// Lower-case the URL
@@ -58,9 +61,8 @@ func commandStream(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	msg := "The stream for **" + m.Author.Username + "** has been set to: <" + streamURL + ">"
+	msg := "The stream for **" + racer.Username + "** has been set to: <" + streamURL + ">"
 	discordSend(m.ChannelID, msg)
-	log.Info("Stream for \"" + m.Author.Username + "\" set to: " + streamURL)
 }
 
 func commandStreamPrint(m *discordgo.MessageCreate) {

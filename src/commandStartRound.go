@@ -42,6 +42,8 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		return
 	}
 	jsonTournament := vMap["tournament"].(map[string]interface{})
+
+	// Get the Discord roles
 	var roles []*discordgo.Role
 	if v, err := discord.GuildRoles(discordGuildID); err != nil {
 		log.Fatal("Failed to get the roles for the guild: " + err.Error())
@@ -283,10 +285,16 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 					Allow: permissionsReadWrite,
 				})
 		}
-		discord.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
+		if _, err := discord.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
 			PermissionOverwrites: permissions,
 			ParentID:             tournament.DiscordCategoryID,
-		})
+		}); err != nil {
+			msg := "Failed to edit the permissions for the new channel: " + err.Error()
+			log.Error(msg)
+			discordSend(m.ChannelID, msg)
+			return
+		}
+
 		// Find out if the players have set their timezone
 		msg := ""
 		if racer1.Timezone.Valid {
@@ -350,7 +358,12 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 
 	// Rename the channel category
 	categoryName := "Round " + round + " - " + tournament.Ruleset
-	discord.ChannelEdit(tournament.DiscordCategoryID, categoryName)
+	if _, err := discord.ChannelEdit(tournament.DiscordCategoryID, categoryName); err != nil {
+		msg := "Failed to rename the channel category: " + err.Error()
+		log.Error(msg)
+		discordSend(m.ChannelID, msg)
+		return
+	}
 
 	if foundMatches {
 		msg := "Round " + round + " channels created for tournament \"" + tournament.Name + "\"."

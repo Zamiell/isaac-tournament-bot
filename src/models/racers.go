@@ -11,8 +11,9 @@ type Racer struct {
 	Username  string
 	// Matches the TZ column of this page:
 	// https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-	Timezone  sql.NullString
-	StreamURL sql.NullString
+	Timezone       sql.NullString
+	StreamURL      sql.NullString
+	CasterAlwaysOk bool
 }
 
 func (r *Racer) Mention() string {
@@ -51,24 +52,22 @@ func (*Racers) Insert(racer Racer) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(
+	_, err := stmt.Exec(
 		racer.DiscordID,
 		racer.Username,
-	); err != nil {
-		return err
-	}
-
-	return nil
+	)
+	return err
 }
 
 func (*Racers) Get(discordID string) (Racer, error) {
 	var racer Racer
-	if err := db.QueryRow(`
+	err := db.QueryRow(`
 		SELECT
 			discord_id,
 			username,
 			timezone,
-			stream_url
+			stream_url,
+			caster_always_ok
 		FROM tournament_racers
 		WHERE discord_id = ?
 	`, discordID).Scan(
@@ -76,21 +75,20 @@ func (*Racers) Get(discordID string) (Racer, error) {
 		&racer.Username,
 		&racer.Timezone,
 		&racer.StreamURL,
-	); err != nil {
-		return racer, err
-	}
-
-	return racer, nil
+		&racer.CasterAlwaysOk,
+	)
+	return racer, err
 }
 
 func (*Racers) GetID(racerID int) (Racer, error) {
 	var racer Racer
-	if err := db.QueryRow(`
+	err := db.QueryRow(`
 		SELECT
 			discord_id,
 			username,
 			timezone,
-			stream_url
+			stream_url,
+			caster_always_ok
 		FROM tournament_racers
 		WHERE id = ?
 	`, racerID).Scan(
@@ -98,11 +96,9 @@ func (*Racers) GetID(racerID int) (Racer, error) {
 		&racer.Username,
 		&racer.Timezone,
 		&racer.StreamURL,
-	); err != nil {
-		return racer, err
-	}
-
-	return racer, nil
+		&racer.CasterAlwaysOk,
+	)
+	return racer, err
 }
 
 func (*Racers) SetUsername(discordID string, username string) error {
@@ -118,11 +114,8 @@ func (*Racers) SetUsername(discordID string, username string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(username, discordID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(username, discordID)
+	return err
 }
 
 func (*Racers) SetTimezone(discordID string, timezone string) error {
@@ -138,11 +131,8 @@ func (*Racers) SetTimezone(discordID string, timezone string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(timezone, discordID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(timezone, discordID)
+	return err
 }
 
 func (*Racers) SetStreamURL(discordID string, streamURL string) error {
@@ -158,9 +148,23 @@ func (*Racers) SetStreamURL(discordID string, streamURL string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(streamURL, discordID); err != nil {
-		return err
-	}
+	_, err := stmt.Exec(streamURL, discordID)
+	return err
+}
 
-	return nil
+func (*Racers) SetCasterAlwaysOk(discordID string, ok bool) error {
+	var stmt *sql.Stmt
+	if v, err := db.Prepare(`
+		UPDATE tournament_racers
+		SET caster_always_ok = ?
+		WHERE discord_id = ?
+	`); err != nil {
+		return err
+	} else {
+		stmt = v
+	}
+	defer stmt.Close()
+
+	_, err := stmt.Exec(ok, discordID)
+	return err
 }

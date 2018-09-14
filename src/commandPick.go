@@ -10,7 +10,7 @@ import (
 
 func commandPick(m *discordgo.MessageCreate, args []string) {
 	if len(args) == 0 {
-		commandBanPrint(m)
+		commandPickPrint(m)
 		return
 	}
 
@@ -63,7 +63,7 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Account for the fact that the array is 0 indexed and the choices presented to the user begin at 1
-	choice -= 1
+	choice--
 
 	// Check to see if this is a valid index
 	var thingsRemaining, things []string

@@ -88,7 +88,7 @@ func buildsStart(race models.Race, msg string) {
 		discordSend(race.ChannelID, msg)
 		return
 	}
-	log.Info("Race \"" + race.Name() + "\" finished selecting characters; set to \"" + race.State + "\".")
+	log.Info("Race \"" + race.Name() + "\" is now in state: " + race.State)
 
 	msg += "**Build Ban Phase**\n\n"
 	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " builds will randomly be chosen. Each player will get one veto.\n"

@@ -72,8 +72,6 @@ func racerGet(u *discordgo.User) (models.Racer, error) {
 		DiscordID: u.ID,
 		Username:  u.Username,
 	}
-	if err := db.Racers.Insert(racer); err != nil {
-		return racer, err
-	}
-	return racer, nil
+	err := db.Racers.Insert(racer)
+	return racer, err
 }

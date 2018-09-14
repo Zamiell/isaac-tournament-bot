@@ -35,15 +35,15 @@ func Init() (*Models, error) {
 	}
 	dbUser := os.Getenv("DB_USER")
 	if len(dbUser) == 0 {
-		return nil, errors.New("The \"DB_USER\" environment variable is blank. Set it in the \".env\" file.")
+		return nil, errors.New("the \"DB_USER\" environment variable is blank; set it in the \".env\" file")
 	}
 	dbPass := os.Getenv("DB_PASS")
 	if len(dbPass) == 0 {
-		return nil, errors.New("The \"DB_PASS\" environment variable is blank. Set it in the \".env\" file.")
+		return nil, errors.New("the \"DB_PASS\" environment variable is blank; set it in the \".env\" file")
 	}
 	dbName := os.Getenv("DB_NAME")
 	if len(dbPass) == 0 {
-		return nil, errors.New("The \"DB_NAME\" environment variable is blank. Set it in the \".env\" file.")
+		return nil, errors.New("the \"DB_NAME\" environment variable is blank; set it in the \".env\" file")
 	}
 
 	// Initialize the database

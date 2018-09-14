@@ -140,8 +140,6 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	}
 	msg += " this time is good for you, please use the `!timeok` command. Otherwise, suggest a new time with: `!time [date & time]`"
 	discordSend(m.ChannelID, msg)
-
-	log.Info("Racer \"" + m.Author.Username + "\" suggested the time of: " + getDate(datetime, "UTC"))
 }
 
 func commandSchedulePrint(m *discordgo.MessageCreate) {

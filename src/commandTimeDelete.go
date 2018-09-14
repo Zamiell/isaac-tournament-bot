@@ -52,5 +52,4 @@ func commandTimeDelete(m *discordgo.MessageCreate, args []string) {
 	}
 
 	discordSend(m.ChannelID, "The currently scheduled time has been deleted. Please suggest a new time with the `!time` command.")
-	log.Info("Race \"" + race.Name() + "\" rescheduled; state set to 0.")
 }

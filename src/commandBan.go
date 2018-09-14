@@ -71,7 +71,7 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Account for the fact that the array is 0 indexed and the choices presented to the user begin at 1
-	choice -= 1
+	choice--
 
 	// Check to see if this is a valid index
 	var thingsRemaining []string
@@ -136,7 +136,6 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 		msg += "\n"
 		charactersPickStart(race, msg)
 	}
-	log.Info("Racer \"" + m.Author.Username + "\" banned \"" + thing + "\".")
 }
 
 func commandBanPrint(m *discordgo.MessageCreate) {

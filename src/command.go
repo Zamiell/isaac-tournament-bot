@@ -56,7 +56,9 @@ func commandHelpGetMsg() string {
 		msg += "!startround              Start the current round of the tournament\n"
 		msg += "!endround                Delete all of the channels for this round\n"
 		msg += "!checkround              Do a dry run of "!startround"\n"
-		msg += "!forcetime               Force the scheduled time to be ok\n"
+		msg += "!forcetime               Force a scheduled time\n"
+		msg += "!forcetimeok             Force the scheduled time to be ok\n"
+		msg += "!forcetimedelete         Force the currently scheduled time to be deleted\n"
 		msg += "!forceban [num]          Force the current player to ban\n"
 		msg += "!forcepick [num]         Force the current player to pick\n"
 		msg += "!forceyes                Force the current player to veto\n"
@@ -96,6 +98,8 @@ func commandInit() {
 	commandHandlerMap["caster"] = commandCaster
 	commandHandlerMap["casterok"] = commandCasterOk
 	commandHandlerMap["casternotok"] = commandCasterNotOk
+	commandHandlerMap["casteralwaysok"] = commandCasterAlwaysOk
+	commandHandlerMap["casteralwaysnotok"] = commandCasterAlwaysNotOk
 	commandHandlerMap["ban"] = commandBan
 	commandHandlerMap["pick"] = commandPick
 	commandHandlerMap["yes"] = commandYes
@@ -119,6 +123,10 @@ func commandInit() {
 	commandHandlerMap["end"] = commandEndRound
 	commandHandlerMap["forcetime"] = commandForceTime
 	commandHandlerMap["timeforce"] = commandForceTime
+	commandHandlerMap["forcetimeok"] = commandForceTimeOk
+	commandHandlerMap["timeokforce"] = commandForceTimeOk
+	commandHandlerMap["forcetimedelete"] = commandForceTimeDelete
+	commandHandlerMap["timedeleteforce"] = commandForceTimeDelete
 	commandHandlerMap["forceban"] = commandForceBan
 	commandHandlerMap["banforce"] = commandForceBan
 	commandHandlerMap["forcepick"] = commandForcePick
@@ -127,7 +135,6 @@ func commandInit() {
 	commandHandlerMap["yesforce"] = commandForceYes
 	commandHandlerMap["forceno"] = commandForceNo
 	commandHandlerMap["noforce"] = commandForceNo
-
 	commandHandlerMap["getchannelid"] = commandGetChannelID
 	commandHandlerMap["debug"] = commandDebug
 }

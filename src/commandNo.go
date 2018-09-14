@@ -33,8 +33,8 @@ func commandNo(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this race is in the item banning phase
-	if race.State != "vetoBuilds" {
+	// Check to see if this race is in the vetoing phase
+	if race.State != "vetoCharacters" && race.State != "vetoBuilds" {
 		discordSend(m.ChannelID, "You can only veto something once the match has started.")
 		return
 	}
@@ -55,6 +55,9 @@ func commandNo(m *discordgo.MessageCreate, args []string) {
 	}
 
 	incrementActivePlayer(&race)
-	buildsRound(race, "")
-	log.Info("Racer \"" + m.Author.Username + "\" declined to veto.")
+	if race.State == "vetoCharacters" {
+		charactersRound(race, "")
+	} else if race.State == "vetoBuilds" {
+		buildsRound(race, "")
+	}
 }

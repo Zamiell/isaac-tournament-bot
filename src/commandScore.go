@@ -136,7 +136,6 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 
 	msg := "The score of \"" + score + "\" was successfully submitted (with " + winnerName + " winning the match)."
 	discordSend(m.ChannelID, msg)
-	log.Info("User \"" + m.Author.Username + "\" submitted a score of \"" + score + "\" for race \"" + race.Name() + "\".")
 }
 
 func commandScorePrint(m *discordgo.MessageCreate) {

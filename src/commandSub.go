@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math"
 	"strconv"
 	"time"
 
@@ -125,7 +124,7 @@ func getRemaining(race models.Race, thing string) string {
 	// Build column 1
 	lines := make([]string, 0)
 	column1length := 0
-	halfwayPoint := int(math.Floor(float64((len(thingsRemaining) - 1) / 2)))
+	halfwayPoint := int(float64((len(thingsRemaining) - 1) / 2))
 	for i := 0; i <= halfwayPoint; i++ {
 		line := strconv.Itoa(i+1) + " - " + thingsRemaining[i]
 		lines = append(lines, line)
@@ -147,7 +146,7 @@ func getRemaining(race models.Race, thing string) string {
 	for i := halfwayPoint + 1; i < len(thingsRemaining); i++ {
 		line := strconv.Itoa(i+1) + " - " + thingsRemaining[i]
 		lines[lineCounter] += line
-		lineCounter += 1
+		lineCounter++
 	}
 
 	// Make the string

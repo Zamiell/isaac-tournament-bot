@@ -10,27 +10,29 @@ import (
 
 type Races struct{}
 
-// State definitions:
-// - "initial" is freshly created before both players have confirmed a scheduled time
-// - "scheduled" is confirmed but before it starts
-// - "banningCharacters" (triggered 5 minutes before starting)
-// - "pickingCharacters"
-// - "vetoBuilds"
-// - "inProgress"
-// - "completed" (after a score is reported)
 type Race struct {
-	TournamentName      string
-	Racer1ID            int     // The "tournament_racers" database ID
-	Racer1ChallongeID   float64 // The "participant" ID; needed to automatically set the winner through the Challonge API
-	Racer1              Racer
-	Racer2ID            int     // The "tournament_racers" database ID
-	Racer2ChallongeID   float64 // The "participant" ID; needed to automatically set the winner through the Challonge API
-	Racer2              Racer
-	ChannelID           string // The Discord channel ID that was automatically created for this race
-	ChallongeURL        string // The suffix of the Challonge URL for this tournament
-	ChallongeMatchID    string
-	BracketRound        string
-	State               string
+	TournamentName    string
+	Racer1ID          int     // The "tournament_racers" database ID
+	Racer1ChallongeID float64 // The "participant" ID; needed to automatically set the winner through the Challonge API
+	Racer1            Racer
+	Racer2ID          int     // The "tournament_racers" database ID
+	Racer2ChallongeID float64 // The "participant" ID; needed to automatically set the winner through the Challonge API
+	Racer2            Racer
+	ChannelID         string // The Discord channel ID that was automatically created for this race
+	ChallongeURL      string // The suffix of the Challonge URL for this tournament
+	ChallongeMatchID  string
+	BracketRound      string
+	State             string
+	/*
+		State definitions:
+		- "initial" is freshly created before both players have confirmed a scheduled time
+		- "scheduled" is confirmed but before it starts
+		- "banningCharacters" (triggered 5 minutes before starting)
+		- "pickingCharacters"
+		- "vetoBuilds"
+		- "inProgress"
+		- "completed" (after a score is reported)
+	*/
 	DatetimeScheduled   mysql.NullTime
 	CasterID            sql.NullInt64
 	Caster              Racer
@@ -264,15 +266,12 @@ func (*Races) SetState(channelID string, state string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(state, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(state, channelID)
+	return err
 }
 
-// activePlayer is the player who suggested the time
 func (*Races) SetDatetimeScheduled(channelID string, datetimeScheduled time.Time, activePlayer int) error {
+	// activePlayer is the player who suggested the time
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
 		UPDATE tournament_races
@@ -285,11 +284,8 @@ func (*Races) SetDatetimeScheduled(channelID string, datetimeScheduled time.Time
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(datetimeScheduled, activePlayer, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(datetimeScheduled, activePlayer, channelID)
+	return err
 }
 
 func (*Races) UnsetDatetimeScheduled(channelID string) error {
@@ -305,11 +301,8 @@ func (*Races) UnsetDatetimeScheduled(channelID string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(channelID)
+	return err
 }
 
 func (*Races) SetCaster(channelID string, casterID string) error {
@@ -325,11 +318,8 @@ func (*Races) SetCaster(channelID string, casterID string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(casterID, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(casterID, channelID)
+	return err
 }
 
 func (*Races) UnsetCaster(channelID string) error {
@@ -348,11 +338,8 @@ func (*Races) UnsetCaster(channelID string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(channelID)
+	return err
 }
 
 func (*Races) SetCasterApproval(channelID string, playerNum int) error {
@@ -368,11 +355,8 @@ func (*Races) SetCasterApproval(channelID string, playerNum int) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(channelID)
+	return err
 }
 
 func (*Races) SetActivePlayer(channelID string, activePlayer int) error {
@@ -388,11 +372,8 @@ func (*Races) SetActivePlayer(channelID string, activePlayer int) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(activePlayer, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(activePlayer, channelID)
+	return err
 }
 
 func (*Races) SetCharactersRemaining(channelID string, characters []string) error {
@@ -410,11 +391,8 @@ func (*Races) SetCharactersRemaining(channelID string, characters []string) erro
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(charactersString, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(charactersString, channelID)
+	return err
 }
 
 func (*Races) SetCharacters(channelID string, characters []string) error {
@@ -432,11 +410,8 @@ func (*Races) SetCharacters(channelID string, characters []string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(charactersString, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(charactersString, channelID)
+	return err
 }
 
 func (*Races) SetBuildsRemaining(channelID string, builds []string) error {
@@ -454,11 +429,8 @@ func (*Races) SetBuildsRemaining(channelID string, builds []string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(buildsString, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(buildsString, channelID)
+	return err
 }
 
 func (*Races) SetBuilds(channelID string, builds []string) error {
@@ -476,11 +448,8 @@ func (*Races) SetBuilds(channelID string, builds []string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(buildsString, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(buildsString, channelID)
+	return err
 }
 
 func (*Races) SetBans(channelID string, playerNum int, bans int) error {
@@ -496,11 +465,8 @@ func (*Races) SetBans(channelID string, playerNum int, bans int) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(bans, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(bans, channelID)
+	return err
 }
 
 func (*Races) SetVetos(channelID string, playerNum int, vetos int) error {
@@ -516,11 +482,8 @@ func (*Races) SetVetos(channelID string, playerNum int, vetos int) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(vetos, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(vetos, channelID)
+	return err
 }
 
 func (*Races) SetNumVoted(channelID string, numVoted int) error {
@@ -536,11 +499,8 @@ func (*Races) SetNumVoted(channelID string, numVoted int) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(numVoted, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(numVoted, channelID)
+	return err
 }
 
 func (*Races) SetScore(channelID string, score string) error {
@@ -556,9 +516,6 @@ func (*Races) SetScore(channelID string, score string) error {
 	}
 	defer stmt.Close()
 
-	if _, err := stmt.Exec(score, channelID); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := stmt.Exec(score, channelID)
+	return err
 }

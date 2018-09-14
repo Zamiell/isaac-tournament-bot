@@ -100,16 +100,6 @@ func matchStart(race models.Race) {
 		return
 	}
 
-	// Update the state
-	race.State = "banningCharacters"
-	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
-		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
-		log.Error(msg)
-		discordSend(race.ChannelID, msg)
-		return
-	}
-	log.Info("Race \"" + race.Name() + "\" beginning in 5 minutes; set to state \"" + race.State + "\".")
-
 	// Randomly decide who starts
 	race.ActivePlayer = getRandom(1, 2)
 	if err := db.Races.SetActivePlayer(race.ChannelID, race.ActivePlayer); err != nil {
@@ -135,7 +125,9 @@ func matchStart(race models.Race) {
 	}
 	discordSend(discordGeneralChannelID, msg)
 
-	charactersBanStart(race)
+	// TODO Dynamically handle the kind of tournament
+	// charactersBanStart(race)
+	charactersVetoStart(race)
 }
 
 func matchEnd(race models.Race, msg string) {

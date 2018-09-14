@@ -36,19 +36,21 @@ func commandCasterOk(m *discordgo.MessageCreate, args []string) {
 
 	// Find out whether they are player 1 or player 2
 	playerNum := 1
+	racerName := race.Racer1.Username
 	if m.Author.ID == race.Racer2.DiscordID {
 		playerNum = 2
+		racerName = race.Racer2.Username
 	}
 
 	// Set approval
 	if err := db.Races.SetCasterApproval(m.ChannelID, playerNum); err != nil {
-		msg := "Failed to unset the caster in the database: " + err.Error()
+		msg := "Failed to set the caster approval in the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	}
 
-	msg := m.Author.Username + " has approved " + race.Caster.Mention() + " as the caster for this match.\n"
+	msg := racerName + " has approved " + race.Caster.Mention() + " as the caster for this match.\n"
 	if playerNum == 1 {
 		if race.CasterP2 {
 			msg += "Both racers have now approved this caster."

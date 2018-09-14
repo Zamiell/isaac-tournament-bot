@@ -12,12 +12,11 @@ import (
 	"time"
 )
 
-// Valid rulesets are "seeded", "unseeded" and "team"
 type Tournament struct {
 	Name              string
 	ChallongeURL      string
 	ChallongeID       float64
-	Ruleset           string
+	Ruleset           string // Can be "seeded", "unseeded" and "team"
 	DiscordCategoryID string
 	BestOf            int
 }
@@ -165,10 +164,21 @@ func challongeGetParticipantName(tournament map[string]interface{}, participantI
 	for _, v := range tournament["participants"].([]interface{}) {
 		vMap := v.(map[string]interface{})
 		participant := vMap["participant"].(map[string]interface{})
-		if participant["id"] == participantID {
+
+		// First, check the normal ID
+		if participant["id"].(float64) == participantID {
 			return participant["name"].(string)
+		}
+
+		// Second, all check the group player IDs
+		// (this is needed if the tournament happens to have group stages)
+		groupIDs := participant["group_player_ids"].([]interface{})
+		for _, groupID := range groupIDs {
+			if groupID.(float64) == participantID {
+				return participant["name"].(string)
+			}
 		}
 	}
 
-	return "Unknown"
+	return "Unknown-" + floatToString(participantID)
 }

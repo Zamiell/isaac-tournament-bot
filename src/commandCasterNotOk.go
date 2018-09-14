@@ -42,6 +42,12 @@ func commandCasterNotOk(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	msg := m.Author.Username + " has denied permission for " + race.Caster.Mention() + " to rebroadcast the race. They have been removed as the registered caster for this match."
+	// Find out whether they are player 1 or player 2
+	racerName := race.Racer1.Username
+	if m.Author.ID == race.Racer2.DiscordID {
+		racerName = race.Racer2.Username
+	}
+
+	msg := racerName + " has denied permission for " + race.Caster.Mention() + " to rebroadcast the race. They have been removed as the registered caster for this match."
 	discordSend(m.ChannelID, msg)
 }

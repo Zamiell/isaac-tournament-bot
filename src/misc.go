@@ -14,7 +14,7 @@ func floatToString(num float64) string {
 // From: http://golangcookbook.blogspot.com/2012/11/generate-random-number-in-given-range.html
 func getRandom(min int, max int) int {
 	rand.Seed(time.Now().UnixNano())
-	max += 1
+	max++
 	return rand.Intn(max-min) + min
 }
 
