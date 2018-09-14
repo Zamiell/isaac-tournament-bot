@@ -54,6 +54,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 
 	// Get all of the open matches
 	foundMatches := false
+	foundPlayers := make([]string, 0)
 	var round string
 	for _, v := range jsonTournament["matches"].([]interface{}) {
 		vMap := v.(map[string]interface{})
@@ -68,9 +69,24 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		player2ID := match["player2_id"].(float64)
 		player1Name := challongeGetParticipantName(jsonTournament, player1ID)
 		player2Name := challongeGetParticipantName(jsonTournament, player2ID)
-		round = floatToString(match["round"].(float64))
 		challongeMatchID := floatToString(match["id"].(float64))
 		channelName := player1Name + "-vs-" + player2Name
+
+		// Check to see if we have already created a channel for either of these players
+		playerAlreadyHasChannel := false
+		for _, p := range foundPlayers {
+			if p == player1Name || p == player2Name {
+				playerAlreadyHasChannel = true
+				break
+			}
+		}
+		if playerAlreadyHasChannel {
+			log.Info("Skipping match \"" + channelName + "\" since one of the players already has a channel open.")
+			continue
+		}
+		foundPlayers = append(foundPlayers, player1Name)
+		foundPlayers = append(foundPlayers, player2Name)
+		round = floatToString(match["round"].(float64))
 
 		// Get the Discord guild object
 		var guild *discordgo.Guild

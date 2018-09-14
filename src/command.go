@@ -63,6 +63,7 @@ func commandHelpGetMsg() string {
 		msg += "!forcepick [num]         Force the current player to pick\n"
 		msg += "!forceyes                Force the current player to veto\n"
 		msg += "!forceno                 Force the current player to not veto\n"
+		msg += "!join                    Print out the URL to join another server"
 		msg += "!getchannelid [name]     Get the ID of the specified Discord channel\n"
 		msg += "!debug                   Execute the debug function\n"
 		msg += "```"
@@ -74,6 +75,7 @@ func commandHelpGetMsg() string {
 func commandInit() {
 	// General commands
 	commandHandlerMap["help"] = commandHelp
+	commandHandlerMap["commands"] = commandHelp
 	commandHandlerMap["r+"] = commandRacingPlus
 	commandHandlerMap["racing+"] = commandRacingPlus
 	commandHandlerMap["racingplus"] = commandRacingPlus
@@ -135,6 +137,7 @@ func commandInit() {
 	commandHandlerMap["yesforce"] = commandForceYes
 	commandHandlerMap["forceno"] = commandForceNo
 	commandHandlerMap["noforce"] = commandForceNo
+	commandHandlerMap["join"] = commandJoin
 	commandHandlerMap["getchannelid"] = commandGetChannelID
 	commandHandlerMap["debug"] = commandDebug
 }
