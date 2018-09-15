@@ -97,6 +97,7 @@ func commandInit() {
 	commandHandlerMap["timedelete"] = commandTimeDelete
 	commandHandlerMap["cast"] = commandCast
 	commandHandlerMap["castcancel"] = commandCastCancel
+	commandHandlerMap["cancelcast"] = commandCastCancel
 	commandHandlerMap["caster"] = commandCaster
 	commandHandlerMap["casterok"] = commandCasterOk
 	commandHandlerMap["casternotok"] = commandCasterNotOk

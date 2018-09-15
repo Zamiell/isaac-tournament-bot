@@ -112,10 +112,19 @@ func matchStart(race models.Race) {
 	// Announce that the match is starting in the general channel
 	msg := "------------------------------------------\n"
 	msg += "A race is scheduled to begin in 5 minutes:\n\n"
-	msg += "```\n" // This is necessary because underscores in usernames can mess up the formatting
+	msg += matchGetDescription(race)
+	discordSend(discordGeneralChannelID, msg)
+
+	// TODO Dynamically handle the kind of tournament
+	// charactersBanStart(race)
+	charactersVetoStart(race)
+}
+
+func matchGetDescription(race models.Race) string {
+	msg := "```\n" // This is necessary because underscores in usernames can mess up the formatting
 	msg += race.TournamentName + "\n"
 	msg += race.Name() + "\n"
-	msg += "```\n\n"
+	msg += "```\n"
 	if race.CasterID.Valid {
 		msg += race.Caster.Username + " has volunteered to cast the match at:\n"
 		msg += "<" + race.Caster.StreamURL.String + ">"
@@ -123,11 +132,7 @@ func matchStart(race models.Race) {
 		msg += "No-one has volunteered to cast this match. You can watch both racers here:\n"
 		msg += "<https://kadgar.net/live/" + race.Racer1.Username + "/" + race.Racer2.Username + ">"
 	}
-	discordSend(discordGeneralChannelID, msg)
-
-	// TODO Dynamically handle the kind of tournament
-	// charactersBanStart(race)
-	charactersVetoStart(race)
+	return msg
 }
 
 func matchEnd(race models.Race, msg string) {
