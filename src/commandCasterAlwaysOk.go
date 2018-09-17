@@ -17,6 +17,13 @@ func commandCasterAlwaysOk(m *discordgo.MessageCreate, args []string) {
 		racer = v
 	}
 
+	// Check to see if they have already enabled default caster approval
+	if racer.CasterAlwaysOk {
+		msg := "You have already enabled default caster approval. You can disable it with the `!casteralwaysnotok` command."
+		discordSend(m.ChannelID, msg)
+		return
+	}
+
 	// Set the new value
 	if err := db.Racers.SetCasterAlwaysOk(m.Author.ID, true); err != nil {
 		msg := "Failed to update the default caster approval: " + err.Error()

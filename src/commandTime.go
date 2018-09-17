@@ -16,6 +16,12 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
+	// Check to see if they might be mistakenly trying to do the "!timeok" command
+	if len(args) == 1 && args[0] == "ok" {
+		commandTimeOk(m, args)
+		return
+	}
+
 	// Create the user in the database if it does not already exist
 	var racer models.Racer
 	if v, err := racerGet(m.Author); err != nil {
