@@ -24,7 +24,7 @@ func commandCastCancel(m *discordgo.MessageCreate, args []string) {
 
 	// Check to see if someone is already casting this match
 	if !race.CasterID.Valid {
-		discordSend(m.ChannelID, "No-one has volunteered to cast this match, so there is no need to cancel anything.")
+		discordSend(m.ChannelID, "No-one is currently marked as casting this match, so there is no need to cancel anything.")
 		return
 	}
 

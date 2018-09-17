@@ -1,14 +1,16 @@
 package main
 
 import (
-	"database/sql"
-
-	"github.com/Zamiell/isaac-tournament-bot/src/models"
 	"github.com/bwmarrin/discordgo"
 )
 
-func commandForceCasterAlwaysOk(m *discordgo.MessageCreate, args []string) {
+func commandSetCasterAlwaysOk(m *discordgo.MessageCreate, args []string) {
 	if !isAdmin(m) {
+		return
+	}
+
+	if len(args) != 1 {
+		commandSetCasterAlwaysOkPrint(m)
 		return
 	}
 
@@ -43,5 +45,12 @@ func commandForceCasterAlwaysOk(m *discordgo.MessageCreate, args []string) {
 	}
 
 	m.Author = discordUser
+	args = args[1:] // This will be an empty slice if there is nothing after the command
 	commandCasterAlwaysOk(m, args)
+}
+
+func commandSetCasterAlwaysOkPrint(m *discordgo.MessageCreate) {
+	msg := "Enable another player's default with: `!setcasteralwaysok [username]`\n"
+	msg += "e.g. `!setcasteralwaysok Zamiel`"
+	discordSend(m.ChannelID, msg)
 }

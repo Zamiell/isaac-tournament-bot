@@ -147,11 +147,6 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 }
 
 func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	// Ignore all messages created by the bot itself
-	if m.Author.ID == discordBotID {
-		return
-	}
-
 	// Log the message
 	var channelName string
 	if v, err := discord.Channel(m.ChannelID); err != nil {
@@ -160,6 +155,11 @@ func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		channelName = v.Name
 	}
 	log.Info("[#" + channelName + "] <" + m.Author.Username + "#" + m.Author.Discriminator + "> " + m.Content)
+
+	// Ignore all messages created by the bot itself
+	if m.Author.ID == discordBotID {
+		return
+	}
 
 	// First, look for people mentioning the bot
 	// (the second condition accounts for if we have a server nickname)

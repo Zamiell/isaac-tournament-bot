@@ -32,7 +32,7 @@ func commandCasterAlwaysOk(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	msg := "**" + racer.Username + "** has enabled default caster approval."
-	msg += "To disable this, use the `!casteralwaysnotok` command."
+	msg := "**" + racer.Username + "** has enabled default caster approval.\n"
+	msg += "(To disable this, use the `!casteralwaysnotok` command.)"
 	discordSend(m.ChannelID, msg)
 }

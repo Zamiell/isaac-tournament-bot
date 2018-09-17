@@ -50,9 +50,11 @@ func commandHelpGetMsg() string {
 		msg += "Admin-only commands:\n"
 		msg += "```\n"
 		msg += "Command               Description\n"
-		msg += "-----------------------------------------------------------------------\n"
+		msg += "-------------------------------------------------------------------------\n"
 		msg += "!settimezone             Set a player's timezone for them\n"
 		msg += "!setstream               Set a player's stream for them\n"
+		msg += "!setcasteralwaysok       Enable a player's default caster approval for them\n"
+		msg += "!setcasteralwaysnotok    Disable a player's default caster approval for them\n"
 		msg += "!startround              Start the current round of the tournament\n"
 		msg += "!endround                Delete all of the channels for this round\n"
 		msg += "!checkround              Do a dry run of "!startround"\n"
@@ -98,6 +100,8 @@ func commandInit() {
 	commandHandlerMap["cast"] = commandCast
 	commandHandlerMap["castcancel"] = commandCastCancel
 	commandHandlerMap["cancelcast"] = commandCastCancel
+	commandHandlerMap["castdelete"] = commandCastCancel
+	commandHandlerMap["deletecast"] = commandCastCancel
 	commandHandlerMap["caster"] = commandCaster
 	commandHandlerMap["casterok"] = commandCasterOk
 	commandHandlerMap["casternotok"] = commandCasterNotOk
@@ -114,6 +118,10 @@ func commandInit() {
 	commandHandlerMap["timezoneset"] = commandSetTimezone
 	commandHandlerMap["setstream"] = commandSetStream
 	commandHandlerMap["streamset"] = commandSetStream
+	commandHandlerMap["setcasteralwaysok"] = commandSetCasterAlwaysOk
+	commandHandlerMap["casteralwaysokset"] = commandSetCasterAlwaysOk
+	commandHandlerMap["setcasteralwaysnotok"] = commandSetCasterAlwaysNotOk
+	commandHandlerMap["casteralwaysnotokset"] = commandSetCasterAlwaysNotOk
 	commandHandlerMap["checkround"] = commandCheckRound
 	commandHandlerMap["startround"] = commandStartRound
 	commandHandlerMap["roundstart"] = commandStartRound
