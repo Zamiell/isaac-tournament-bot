@@ -126,7 +126,7 @@ func matchGetDescription(race models.Race) string {
 	msg += race.Name() + "\n"
 	msg += "```\n"
 	if race.CasterID.Valid {
-		msg += race.Caster.Username + " has volunteered to cast the match at:\n"
+		msg += "`" + race.Caster.Username + "` has volunteered to cast the match at:\n"
 		msg += "<" + race.Caster.StreamURL.String + ">"
 	} else {
 		msg += "No-one has volunteered to cast this match. You can watch both racers here:\n"

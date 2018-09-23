@@ -30,7 +30,7 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 	} else if m.Author.ID == race.Racer2.DiscordID {
 		playerNum = 2
 	} else {
-		discordSend(m.ChannelID, "Only \""+race.Racer1.Username+"\" and \""+race.Racer2.Username+"\" can veto a build.")
+		discordSend(m.ChannelID, "Only `"+race.Racer1.Username+"` and `"+race.Racer2.Username+"` can veto a build.")
 		return
 	}
 
