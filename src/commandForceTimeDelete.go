@@ -26,7 +26,7 @@ func commandForceTimeDelete(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	// Find the discord ID of the active racer
+	// Find the Discord ID of the active racer
 	var activeRacerDiscordID string
 	if race.ActiveRacer == 1 {
 		activeRacerDiscordID = race.Racer2.DiscordID

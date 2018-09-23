@@ -107,8 +107,7 @@ func commandCasterOk(m *discordgo.MessageCreate, args []string) {
 }
 
 func commandCasterOkPrint(m *discordgo.MessageCreate) {
-	msg := "Approve a caster by doing: `!casterok`\n"
-	msg += "If there are two or more casters that you need to approve, then you need to specify the name of the caster by doing: `!casterok [username]\n"
+	msg := "If there are two or more casters awaiting a response, then you need to specify the name of the caster by doing: `!casterok [username]`\n"
 	msg += "e.g. `!casterok Willy`"
 	discordSend(m.ChannelID, msg)
 }

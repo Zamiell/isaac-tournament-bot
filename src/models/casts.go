@@ -82,7 +82,7 @@ func (*Casts) GetAll(channelID string) ([]*Cast, error) {
 
 	casts := make([]*Cast, 0)
 	for rows.Next() {
-		var cast *Cast
+		var cast Cast
 		if err := rows.Scan(
 			&cast.CasterID,
 			&cast.R1Permission,
@@ -91,7 +91,7 @@ func (*Casts) GetAll(channelID string) ([]*Cast, error) {
 		); err != nil {
 			return nil, err
 		}
-		casts = append(casts, cast)
+		casts = append(casts, &cast)
 	}
 
 	return casts, nil

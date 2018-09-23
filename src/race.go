@@ -13,7 +13,7 @@ func raceGet(channelID string) (*models.Race, error) {
 		race = v
 	}
 
-	// Now we have to fill in the "Racer1" and "Racer2" fields
+	// We also to fill in the "Racer1" and "Racer2" fields
 	if v, err := db.Users.GetFromUserID(race.Racer1ID); err != nil {
 		return race, err
 	} else {
@@ -25,7 +25,14 @@ func raceGet(channelID string) (*models.Race, error) {
 		race.Racer2 = v
 	}
 
-	// We also have to fill in the "Caster" fields for the casts, if any
+	// We also have to fill in the "Casts" field
+	if v, err := db.Casts.GetAll(race.ChannelID); err != nil {
+		return race, err
+	} else {
+		race.Casts = v
+	}
+
+	// We also have to fill in the "Caster" field(s), if any
 	for _, cast := range race.Casts {
 		if v, err := db.Users.GetFromUserID(cast.CasterID); err != nil {
 			return race, err

@@ -118,6 +118,10 @@ func commandInit() {
 	commandHandlerMap["timezoneset"] = commandSetTimezone
 	commandHandlerMap["setstream"] = commandSetStream
 	commandHandlerMap["streamset"] = commandSetStream
+	commandHandlerMap["setcasterok"] = commandSetCasterOk
+	commandHandlerMap["casterokset"] = commandSetCasterOk
+	commandHandlerMap["setcasternotok"] = commandSetCasterNotOk
+	commandHandlerMap["casternotokset"] = commandSetCasterNotOk
 	commandHandlerMap["setcasteralwaysok"] = commandSetCasterAlwaysOk
 	commandHandlerMap["casteralwaysokset"] = commandSetCasterAlwaysOk
 	commandHandlerMap["setcasteralwaysnotok"] = commandSetCasterAlwaysNotOk

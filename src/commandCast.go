@@ -104,7 +104,7 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 	msg := user.Mention() + ", you are now registered as the " + languageFull + " caster for this match with the following stream: <" + user.StreamURL.String + ">\n"
 
 	if race.Racer1.CasterAlwaysOk {
-		if err := db.Casts.SetPermission(race.ChannelID, race.Racer1.DiscordID, 1); err != nil {
+		if err := db.Casts.SetPermission(race.ChannelID, user.DiscordID, 1); err != nil {
 			msg := "Failed to set the caster approval for racer 1 in the database: " + err.Error()
 			log.Error(msg)
 			discordSend(m.ChannelID, msg)
@@ -113,7 +113,7 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 		msg += race.Racer1.Username + " has automatically approved all casters.\n"
 	}
 	if race.Racer2.CasterAlwaysOk {
-		if err := db.Casts.SetPermission(race.ChannelID, race.Racer2.DiscordID, 2); err != nil {
+		if err := db.Casts.SetPermission(race.ChannelID, user.DiscordID, 2); err != nil {
 			msg := "Failed to set the caster approval for racer 2 in the database: " + err.Error()
 			log.Error(msg)
 			discordSend(m.ChannelID, msg)

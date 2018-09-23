@@ -60,7 +60,7 @@ func (*Users) Insert(user *User) error {
 }
 
 func (*Users) GetFromDiscordID(discordID string) (*User, error) {
-	var user *User
+	var user User
 	err := db.QueryRow(`
 		SELECT
 			discord_id,
@@ -77,11 +77,11 @@ func (*Users) GetFromDiscordID(discordID string) (*User, error) {
 		&user.StreamURL,
 		&user.CasterAlwaysOk,
 	)
-	return user, err
+	return &user, err
 }
 
 func (*Users) GetFromUserID(userID int) (*User, error) {
-	var user *User
+	var user User
 	err := db.QueryRow(`
 		SELECT
 			discord_id,
@@ -98,7 +98,7 @@ func (*Users) GetFromUserID(userID int) (*User, error) {
 		&user.StreamURL,
 		&user.CasterAlwaysOk,
 	)
-	return user, err
+	return &user, err
 }
 
 func (*Users) SetUsername(discordID string, username string) error {

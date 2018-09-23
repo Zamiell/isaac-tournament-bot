@@ -25,7 +25,7 @@ func commandSetTimezone(m *discordgo.MessageCreate, args []string) {
 		guild = v
 	}
 
-	// Find the discord ID of the user
+	// Find the Discord ID of the user
 	var discordUser *discordgo.User
 	for _, member := range guild.Members {
 		username := member.Nick

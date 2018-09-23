@@ -147,7 +147,7 @@ func (*Races) Delete(channelID string) error {
 }
 
 func (*Races) Get(channelID string) (*Race, error) {
-	var race *Race
+	var race Race
 	var charactersRemaining, characters, buildsRemaining, builds string
 	if err := db.QueryRow(`
 		SELECT
@@ -195,7 +195,7 @@ func (*Races) Get(channelID string) (*Race, error) {
 		&race.Racer2Vetos,
 		&race.NumVoted,
 	); err != nil {
-		return race, err
+		return &race, err
 	}
 
 	race.CharactersRemaining = stringToSlice(charactersRemaining)
@@ -203,7 +203,7 @@ func (*Races) Get(channelID string) (*Race, error) {
 	race.BuildsRemaining = stringToSlice(buildsRemaining)
 	race.Builds = stringToSlice(builds)
 
-	return race, nil
+	return &race, nil
 }
 
 func (*Races) GetAllScheduled() ([]string, error) {

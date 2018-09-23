@@ -32,7 +32,7 @@ func commandCaster(m *discordgo.MessageCreate, args []string) {
 	msg := ""
 	for _, cast := range race.Casts {
 		if cast.R1Permission && cast.R2Permission {
-			msg += "`" + cast.Caster.Username + "` is registered to cast this match in " + languageMap[cast.Language] + " at: <" + cast.Caster.StreamURL.String + ">\n"
+			msg += "`" + cast.Caster.Username + "` is approved to cast this match in " + languageMap[cast.Language] + " at: <" + cast.Caster.StreamURL.String + ">\n"
 		} else {
 			msg += "`" + cast.Caster.Username + "` has requested to cast this match in " + languageMap[cast.Language] + " at: <" + cast.Caster.StreamURL.String + ">\n"
 			if !cast.R1Permission {

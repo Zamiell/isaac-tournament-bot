@@ -95,8 +95,7 @@ func commandCasterNotOk(m *discordgo.MessageCreate, args []string) {
 }
 
 func commandCasterNotOkPrint(m *discordgo.MessageCreate) {
-	msg := "Disapprove a caster by doing: `!casternotok`\n"
-	msg += "If there are two or more casters that you need to disapprove, then you need to specify the name of the caster by doing: `!casternotok [username]\n"
+	msg := "If there are two or more casters awaiting a response, then you need to specify the name of the caster by doing: `!casternotok [username]`\n"
 	msg += "e.g. `!casternotok Willy`"
 	discordSend(m.ChannelID, msg)
 }

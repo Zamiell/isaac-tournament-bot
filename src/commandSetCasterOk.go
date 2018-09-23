@@ -4,13 +4,13 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func commandSetCasterAlwaysNotOk(m *discordgo.MessageCreate, args []string) {
+func commandSetCasterOk(m *discordgo.MessageCreate, args []string) {
 	if !isAdmin(m) {
 		return
 	}
 
-	if len(args) != 1 {
-		commandSetCasterAlwaysOkPrint(m)
+	if len(args) == 0 {
+		commandSetCasterOkPrint(m)
 		return
 	}
 
@@ -46,11 +46,11 @@ func commandSetCasterAlwaysNotOk(m *discordgo.MessageCreate, args []string) {
 
 	m.Author = discordUser
 	args = args[1:] // This will be an empty slice if there is nothing after the command
-	commandCasterAlwaysNotOk(m, args)
+	commandCasterOk(m, args)
 }
 
-func commandSetCasterAlwaysNotOkPrint(m *discordgo.MessageCreate) {
-	msg := "Disable another user's default caster approval with: `!setcasteralwaysnotok [username]`\n"
-	msg += "e.g. `!setcasteralwaysnotok Willy`"
+func commandSetCasterOkPrint(m *discordgo.MessageCreate) {
+	msg := "Give permission on behalf of a racer with: `!setcasterok [username]`\n"
+	msg += "e.g. `!setcasterok Willy`"
 	discordSend(m.ChannelID, msg)
 }
