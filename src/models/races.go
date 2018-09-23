@@ -19,6 +19,7 @@ type Race struct {
 	Racer2ChallongeID float64 // The "participant" ID; needed to automatically set the winner through the Challonge API
 	Racer2            Racer
 	ChannelID         string // The Discord channel ID that was automatically created for this race
+	ChannelName       string // The Discord channel name that was automatically created for this race
 	ChallongeURL      string // The suffix of the Challonge URL for this tournament
 	ChallongeMatchID  string
 	BracketRound      string
@@ -67,6 +68,7 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 			racer2,
 			racer2_challonge_id,
 			channel_id,
+			channel_name,
 			challonge_url,
 			challonge_match_id,
 			bracket_round,
@@ -82,6 +84,7 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 			(SELECT id FROM tournament_racers WHERE discord_id = ?),
 			?,
 			(SELECT id FROM tournament_racers WHERE discord_id = ?),
+			?,
 			?,
 			?,
 			?,
@@ -109,6 +112,7 @@ func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race Race) 
 		racer2DiscordID,
 		race.Racer2ChallongeID,
 		race.ChannelID,
+		race.ChannelName,
 		race.ChallongeURL,
 		race.ChallongeMatchID,
 		race.BracketRound,
@@ -154,6 +158,7 @@ func (*Races) Get(channelID string) (Race, error) {
 			racer1,
 			racer2,
 			channel_id,
+			channel_name,
 			challonge_url,
 			challonge_match_id,
 			bracket_round,
@@ -179,6 +184,7 @@ func (*Races) Get(channelID string) (Race, error) {
 		&race.Racer1ID,
 		&race.Racer2ID,
 		&race.ChannelID,
+		&race.ChannelName,
 		&race.ChallongeURL,
 		&race.ChallongeMatchID,
 		&race.BracketRound,

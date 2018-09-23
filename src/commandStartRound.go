@@ -230,6 +230,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			Racer1ChallongeID:   player1ID,
 			Racer2ChallongeID:   player2ID,
 			ChannelID:           channelID,
+			ChannelName:         channelName,
 			ChallongeURL:        tournament.ChallongeURL,
 			ChallongeMatchID:    challongeMatchID,
 			BracketRound:        round,

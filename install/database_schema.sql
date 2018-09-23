@@ -20,15 +20,13 @@ CREATE TABLE tournament_races (
     racer2                INT            NOT NULL, /* The "tournament_racers" database ID */
     racer2_challonge_id   INT            NOT NULL, /* The "participant" ID; needed to automatically set the winner through the Challonge API */
     channel_id            NVARCHAR(100)  NOT NULL, /* The Discord channel ID that was automatically created for this race */
+    channel_name          NVARCHAR(500)  NOT NULL,
     challonge_url         NVARCHAR(100)  NOT NULL, /* The suffix of the Challonge URL for this tournament */
     challonge_match_id    NVARCHAR(100)  NOT NULL,
     bracket_round         NVARCHAR(10)   NOT NULL,
     state                 NVARCHAR(50)   NOT NULL, /* Definitions are listed in the "Race" struct */
     datetime_created      TIMESTAMP      NOT NULL  DEFAULT NOW(),
     datetime_scheduled    TIMESTAMP      NULL      DEFAULT NULL,
-    caster                INT            NULL      DEFAULT NULL,
-    caster_p1             INT            NOT NULL  DEFAULT 0, /* Whether or not player 1 approves of the caster who volunteered */
-    caster_p2             INT            NOT NULL  DEFAULT 0, /* Whether or not player 2 approves of the caster who volunteered */
     active_player         INT            NOT NULL  DEFAULT 1,
     characters_remaining  NVARCHAR(500)  NOT NULL,
     characters            NVARCHAR(500)  NOT NULL  DEFAULT "",
@@ -39,10 +37,9 @@ CREATE TABLE tournament_races (
     racer1_vetos          INT            NOT NULL,
     racer2_vetos          INT            NOT NULL,
     num_voted             INT            NOT NULL  DEFAULT 0,
-    score                 NVARCHAR(10)   NOT NULL  DEFAULT "0-0",
+    score                 NVARCHAR(10)   NULL      DEFAULT NULL, /* e.g. "3-2" */
     FOREIGN KEY (racer1) REFERENCES tournament_racers (id) ON DELETE CASCADE,
-    FOREIGN KEY (racer2) REFERENCES tournament_racers (id) ON DELETE CASCADE,
-    FOREIGN KEY (caster) REFERENCES tournament_racers (id) ON DELETE CASCADE
+    FOREIGN KEY (racer2) REFERENCES tournament_racers (id) ON DELETE CASCADE
 );
 CREATE INDEX tournament_races_index_channel_id ON tournament_races (channel_id);
 
@@ -59,3 +56,15 @@ CREATE TABLE tournament_racers (
 );
 CREATE INDEX tournament_racers_index_discord_id ON tournament_racers (discord_id);
 CREATE INDEX tournament_racers_index_username ON tournament_racers (username);
+
+DROP TABLE IF EXISTS tournament_race_casters;
+CREATE TABLE tournament_race_casters (
+    id           INT           NOT NULL  PRIMARY KEY  AUTO_INCREMENT,
+    race_id      INT           NOT NULL,
+    caster       INT           NOT NULL,
+    p1_approves  INT           NOT NULL  DEFAULT 0, /* Whether or not player 1 approves of this caster */
+    p2_approves  INT           NOT NULL  DEFAULT 0, /* Whether or not player 2 approves of this caster */
+    language     NVARCHAR(50)  NOT NULL  DEFAULT "en",
+    FOREIGN KEY (race_id) REFERENCES tournament_races (id) ON DELETE CASCADE,
+    FOREIGN KEY (caster) REFERENCES tournament_racers (id) ON DELETE CASCADE
+);

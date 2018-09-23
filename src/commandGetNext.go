@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
 	"github.com/bwmarrin/discordgo"
 )
@@ -18,7 +20,11 @@ func commandGetNext(m *discordgo.MessageCreate, args []string) {
 	}
 
 	var channelID string
-	if v, err := db.Races.GetNext(); err != nil {
+	if v, err := db.Races.GetNext(); err == sql.ErrNoRows {
+		msg := "There are no races currently scheduled for this week."
+		discordSend(m.ChannelID, msg)
+		return
+	} else if err != nil {
 		msg := "Failed to get the next race from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
