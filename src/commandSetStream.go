@@ -25,7 +25,7 @@ func commandSetStream(m *discordgo.MessageCreate, args []string) {
 		guild = v
 	}
 
-	// Find the discord ID of the player
+	// Find the discord ID of the user
 	var discordUser *discordgo.User
 	for _, member := range guild.Members {
 		username := member.Nick
@@ -50,7 +50,7 @@ func commandSetStream(m *discordgo.MessageCreate, args []string) {
 }
 
 func commandSetStreamPrint(m *discordgo.MessageCreate) {
-	msg := "Set another player's stream with: `!setstream [username] [stream URL]`\n"
-	msg += "e.g. `!settimezone Zamiel twitch.tv/Zamiel`"
+	msg := "Set another user's stream with: `!setstream [username] [stream URL]`\n"
+	msg += "e.g. `!settimezone Willy twitch.tv/willy`"
 	discordSend(m.ChannelID, msg)
 }

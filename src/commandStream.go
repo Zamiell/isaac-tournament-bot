@@ -16,14 +16,14 @@ func commandStream(m *discordgo.MessageCreate, args []string) {
 	streamURL := args[0]
 
 	// Create the user in the database if it does not already exist
-	var racer models.Racer
-	if v, err := racerGet(m.Author); err != nil {
-		msg := "Failed to get the racer from the database: " + err.Error()
+	var user *models.User
+	if v, err := userGet(m.Author); err != nil {
+		msg := "Failed to get the user from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		racer = v
+		user = v
 	}
 
 	// Lower-case the URL
@@ -54,35 +54,35 @@ func commandStream(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Set the new stream
-	if err := db.Racers.SetStreamURL(m.Author.ID, streamURL); err != nil {
+	if err := db.Users.SetStreamURL(m.Author.ID, streamURL); err != nil {
 		msg := "Failed to update the stream: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	}
 
-	msg := "The stream for **" + racer.Username + "** has been set to: <" + streamURL + ">"
+	msg := "The stream for **" + user.Username + "** has been set to: <" + streamURL + ">"
 	discordSend(m.ChannelID, msg)
 }
 
 func commandStreamPrint(m *discordgo.MessageCreate) {
-	var racer models.Racer
-	if v, err := racerGet(m.Author); err != nil {
-		msg := "Failed to get the racer from the database: " + err.Error()
+	var user *models.User
+	if v, err := userGet(m.Author); err != nil {
+		msg := "Failed to get the user from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		racer = v
+		user = v
 	}
 
 	msg := m.Author.Mention() + ", your stream is "
-	if racer.StreamURL.Valid {
-		msg += "currently set to: <" + racer.StreamURL.String + ">\n\n"
+	if user.StreamURL.Valid {
+		msg += "currently set to: <" + user.StreamURL.String + ">\n\n"
 	} else {
 		msg += "**not currently set**.\n\n"
 	}
 	msg += "Set your stream with: `!stream [url]`\n"
-	msg += "e.g. `!stream https://www.twitch.tv/zamiell`"
+	msg += "e.g. `!stream https://www.twitch.tv/willy`"
 	discordSend(m.ChannelID, msg)
 }

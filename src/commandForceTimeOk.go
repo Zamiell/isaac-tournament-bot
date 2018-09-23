@@ -13,7 +13,7 @@ func commandForceTimeOk(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this is a race channel (and get the race from the database)
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
@@ -26,11 +26,11 @@ func commandForceTimeOk(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	// Find the discord ID of the active player
+	// Find the discord ID of the active racer
 	var activeRacerDiscordID string
-	if race.ActivePlayer == 1 {
+	if race.ActiveRacer == 1 {
 		activeRacerDiscordID = race.Racer2.DiscordID
-	} else if race.ActivePlayer == 2 {
+	} else if race.ActiveRacer == 2 {
 		activeRacerDiscordID = race.Racer1.DiscordID
 	}
 
@@ -53,7 +53,7 @@ func commandForceTimeOk(m *discordgo.MessageCreate, args []string) {
 		}
 	}
 	if discordUser == nil {
-		msg := "Failed to find the active player in the Discord server."
+		msg := "Failed to find the active racer in the Discord server."
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return

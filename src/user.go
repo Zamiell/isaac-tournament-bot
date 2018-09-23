@@ -7,15 +7,15 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// Get this racer from the database
-// (and create an entry if it doesn't exist already)
-func racerGet(u *discordgo.User) (models.Racer, error) {
-	var racer models.Racer
+// Get this user from the database
+// (and create an entry if it does not exist already)
+func userGet(u *discordgo.User) (*models.User, error) {
+	var user *models.User
 
 	// Get the Discord guild object
 	var guild *discordgo.Guild
 	if v, err := discord.Guild(discordGuildID); err != nil {
-		return racer, err
+		return user, err
 	} else {
 		guild = v
 	}
@@ -33,45 +33,45 @@ func racerGet(u *discordgo.User) (models.Racer, error) {
 		}
 	}
 	if username == "" {
-		return racer, errors.New("Failed to find \"" + u.Username + "\" in the Discord server.")
+		return user, errors.New("Failed to find \"" + u.Username + "\" in the Discord server.")
 	}
 
-	// See if this racer exists in the database already
+	// See if this user exists in the database already
 	var exists bool
-	if v, err := db.Racers.Exists(u.ID); err != nil {
-		return racer, err
+	if v, err := db.Users.Exists(u.ID); err != nil {
+		return user, err
 	} else {
 		exists = v
 	}
 
 	// This Discord ID already exists in the database, so return it
 	if exists {
-		if v, err := db.Racers.Get(u.ID); err != nil {
-			return racer, err
+		if v, err := db.Users.GetFromDiscordID(u.ID); err != nil {
+			return user, err
 		} else {
-			racer = v
+			user = v
 		}
 
-		if racer.Username == username {
+		if user.Username == username {
 			// Their username in the database matches the Discord nickname
-			return racer, nil
+			return user, nil
 		}
 
 		// Their Discord nickname has changed since they were added to the database,
 		// so we need to update it
-		racer.Username = username
-		if err := db.Racers.SetUsername(u.ID, username); err != nil {
-			return racer, err
+		user.Username = username
+		if err := db.Users.SetUsername(u.ID, username); err != nil {
+			return user, err
 		} else {
-			return racer, nil
+			return user, nil
 		}
 	}
 
 	// This Discord ID does not exist in the database, so create it
-	racer = models.Racer{
+	user = &models.User{
 		DiscordID: u.ID,
 		Username:  u.Username,
 	}
-	err := db.Racers.Insert(racer)
-	return racer, err
+	err := db.Users.Insert(user)
+	return user, err
 }

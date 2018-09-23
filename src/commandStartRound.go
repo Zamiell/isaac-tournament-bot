@@ -99,14 +99,15 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			guild = v
 		}
 
-		// Find the discord ID of the two players and add them to the database if they are not already
-		var racer1 models.Racer
-		var racer2 models.Racer
+		// Find the Discord ID of the two racers and add them to the database if they are not already
+		var racer1 *models.User
+		var racer2 *models.User
 		var team1DiscordID string
 		var team2DiscordID string
 		var discord1 *discordgo.User
 		var discord2 *discordgo.User
 		if tournament.Ruleset == "team" {
+			// This is a team match, so we only need to find the team captain
 			for _, role := range roles {
 				if role.Name == player1Name {
 					team1DiscordID = role.ID
@@ -125,7 +126,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			}
 
 			if discord1 == nil {
-				msg := "Failed to find \"" + player1Name + "\" team captain in the Discord server."
+				msg := "Failed to find \"" + player1Name + "\" (the team captain) in the Discord server."
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
@@ -137,21 +138,21 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 				}
 			}
 			if discord2 == nil {
-				msg := "Failed to find \"" + player2Name + "\" team captain in the Discord server."
+				msg := "Failed to find \"" + player2Name + "\" (the team captain) in the Discord server."
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
 			}
-			if v, err := racerGet(discord1); err != nil {
-				msg := "Failed to get the racer from the database: " + err.Error()
+			if v, err := userGet(discord1); err != nil {
+				msg := "Failed to get the user from the database: " + err.Error()
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
 			} else {
 				racer1 = v
 			}
-			if v, err := racerGet(discord2); err != nil {
-				msg := "Failed to get the racer from the database: " + err.Error()
+			if v, err := userGet(discord2); err != nil {
+				msg := "Failed to get the user from the database: " + err.Error()
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
@@ -159,6 +160,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 				racer2 = v
 			}
 		} else {
+			// This is a 1v1 match
 			for _, member := range guild.Members {
 				username := member.Nick
 				if username == "" {
@@ -191,16 +193,16 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 				discordSend(m.ChannelID, msg)
 				return
 			}
-			if v, err := racerGet(discord1); err != nil {
-				msg := "Failed to get the racer from the database: " + err.Error()
+			if v, err := userGet(discord1); err != nil {
+				msg := "Failed to get the user from the database: " + err.Error()
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
 			} else {
 				racer1 = v
 			}
-			if v, err := racerGet(discord2); err != nil {
-				msg := "Failed to get the racer from the database: " + err.Error()
+			if v, err := userGet(discord2); err != nil {
+				msg := "Failed to get the user from the database: " + err.Error()
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
@@ -312,7 +314,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			return
 		}
 
-		// Find out if the players have set their timezone
+		// Find out if the racers have set their timezone
 		msg := ""
 		if racer1.Timezone.Valid {
 			msg += discord1.Mention() + " has a timezone of: " + getTimezone(racer1.Timezone.String) + "\n"
@@ -341,7 +343,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		}
 		msg += "\n"
 
-		// Find out if the players have set their stream URL
+		// Find out if the racers have set their stream URL
 		if racer1.StreamURL.Valid {
 			msg += discord1.Mention() + " has a stream of: <" + racer1.StreamURL.String + ">\n"
 		} else {

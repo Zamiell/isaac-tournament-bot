@@ -9,7 +9,7 @@ import (
 
 func commandNo(m *discordgo.MessageCreate, args []string) {
 	// Check to see if this is a race channel (and get the race from the database)
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
@@ -23,11 +23,11 @@ func commandNo(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this person is one of the two racers
-	var playerNum int
+	var racerNum int
 	if m.Author.ID == race.Racer1.DiscordID {
-		playerNum = 1
+		racerNum = 1
 	} else if m.Author.ID == race.Racer2.DiscordID {
-		playerNum = 2
+		racerNum = 2
 	} else {
 		discordSend(m.ChannelID, "Only `"+race.Racer1.Username+"` and `"+race.Racer2.Username+"` can veto a build.")
 		return
@@ -40,7 +40,7 @@ func commandNo(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if it is their turn
-	if race.ActivePlayer != playerNum {
+	if race.ActiveRacer != racerNum {
 		discordSend(m.ChannelID, "It is not your turn.")
 		return
 	}
@@ -54,7 +54,7 @@ func commandNo(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	incrementActivePlayer(&race)
+	incrementActiveRacer(race)
 	if race.State == "vetoCharacters" {
 		charactersRound(race, "")
 	} else if race.State == "vetoBuilds" {

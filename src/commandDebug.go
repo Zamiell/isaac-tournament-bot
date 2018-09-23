@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
@@ -13,14 +14,14 @@ func commandDebug(m *discordgo.MessageCreate, args []string) {
 	}
 
 	/*
-	log.Info("Tournaments:")
-	for _, tournament := range tournaments { // This is a map indexed by "ChallongeURL"
-		log.Info(tournament.Name + " - " + tournament.ChallongeURL + " - " + floatToString(tournament.ChallongeID) + " - " + tournament.Ruleset)
-	}
+		log.Info("Tournaments:")
+		for _, tournament := range tournaments { // This is a map indexed by "ChallongeURL"
+			log.Info(tournament.Name + " - " + tournament.ChallongeURL + " - " + floatToString(tournament.ChallongeID) + " - " + tournament.Ruleset)
+		}
 	*/
 
 	// Check to see if this is a race channel (and get the race from the database)
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return

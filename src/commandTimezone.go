@@ -16,14 +16,14 @@ func commandTimezone(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Create the user in the database if it does not already exist
-	var racer models.Racer
-	if v, err := racerGet(m.Author); err != nil {
-		msg := "Failed to get the racer from the database: " + err.Error()
+	var user *models.User
+	if v, err := userGet(m.Author); err != nil {
+		msg := "Failed to get the user from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		racer = v
+		user = v
 	}
 
 	// See if the submitted timezone is a short timezone
@@ -61,31 +61,31 @@ func commandTimezone(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Set the new timezone
-	if err := db.Racers.SetTimezone(m.Author.ID, newTimezone); err != nil {
+	if err := db.Users.SetTimezone(m.Author.ID, newTimezone); err != nil {
 		msg := "Failed to update the timezone: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	}
 
-	msg := "The timezone for **" + racer.Username + "** has been set to: **" + getTimezone(newTimezone) + "**"
+	msg := "The timezone for **" + user.Username + "** has been set to: **" + getTimezone(newTimezone) + "**"
 	discordSend(m.ChannelID, msg)
 }
 
 func commandTimezonePrint(m *discordgo.MessageCreate) {
-	var racer models.Racer
-	if v, err := racerGet(m.Author); err != nil {
-		msg := "Failed to get the racer from the database: " + err.Error()
+	var user *models.User
+	if v, err := userGet(m.Author); err != nil {
+		msg := "Failed to get the user from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		racer = v
+		user = v
 	}
 
 	msg := m.Author.Mention() + ", your timezone is "
-	if racer.Timezone.Valid {
-		msg += "currently set to: **" + getTimezone(racer.Timezone.String) + "**\n\n"
+	if user.Timezone.Valid {
+		msg += "currently set to: **" + getTimezone(user.Timezone.String) + "**\n\n"
 	} else {
 		msg += "**not currently set**.\n\n"
 	}

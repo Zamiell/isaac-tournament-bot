@@ -22,7 +22,7 @@ func commandGetTimezone(m *discordgo.MessageCreate, args []string) {
 		guild = v
 	}
 
-	// Find the discord ID of the player
+	// Find the discord ID of the user
 	var discordUser *discordgo.User
 	for _, member := range guild.Members {
 		username := member.Nick
@@ -41,19 +41,19 @@ func commandGetTimezone(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	var racer models.Racer
-	if v, err := racerGet(discordUser); err != nil {
-		msg := "Failed to get the racer from the database: " + err.Error()
+	var user *models.User
+	if v, err := userGet(discordUser); err != nil {
+		msg := "Failed to get the user from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		racer = v
+		user = v
 	}
 
 	msg := "The timezone for " + discordUser.Username + " is "
-	if racer.Timezone.Valid {
-		msg += "currently set to: **" + racer.Timezone.String + "**"
+	if user.Timezone.Valid {
+		msg += "currently set to: **" + user.Timezone.String + "**"
 	} else {
 		msg += "**not currently set**."
 	}
@@ -61,7 +61,7 @@ func commandGetTimezone(m *discordgo.MessageCreate, args []string) {
 }
 
 func commandGetTimezonePrint(m *discordgo.MessageCreate) {
-	msg := "Get another player's timezone with: `!gettimezone [username]`\n"
-	msg += "e.g. `!gettimezone Zamiel`"
+	msg := "Get another user's timezone with: `!gettimezone [username]`\n"
+	msg += "e.g. `!gettimezone Willy`"
 	discordSend(m.ChannelID, msg)
 }

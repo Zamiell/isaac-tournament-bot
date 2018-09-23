@@ -10,7 +10,7 @@ import (
 
 func commandYes(m *discordgo.MessageCreate, args []string) {
 	// Check to see if this is a race channel (and get the race from the database)
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
@@ -24,11 +24,11 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this person is one of the two racers
-	var playerNum int
+	var racerNum int
 	if m.Author.ID == race.Racer1.DiscordID {
-		playerNum = 1
+		racerNum = 1
 	} else if m.Author.ID == race.Racer2.DiscordID {
-		playerNum = 2
+		racerNum = 2
 	} else {
 		discordSend(m.ChannelID, "Only `"+race.Racer1.Username+"` and `"+race.Racer2.Username+"` can veto a build.")
 		return
@@ -41,14 +41,14 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if it is their turn
-	if race.ActivePlayer != playerNum {
+	if race.ActiveRacer != racerNum {
 		discordSend(m.ChannelID, "It is not your turn.")
 		return
 	}
 
 	// Check to see if they are out of vetos
-	if (playerNum == 1 && race.Racer1Vetos == 0) ||
-		(playerNum == 2 && race.Racer2Vetos == 0) {
+	if (racerNum == 1 && race.Racer1Vetos == 0) ||
+		(racerNum == 2 && race.Racer2Vetos == 0) {
 
 		discordSend(m.ChannelID, "You have already used all of your vetos for the match.")
 		return
@@ -78,15 +78,15 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 
 	// Decrement the vetos
 	var vetosLeft int
-	if playerNum == 1 {
+	if racerNum == 1 {
 		race.Racer1Vetos--
 		vetosLeft = race.Racer1Vetos
-	} else if playerNum == 2 {
+	} else if racerNum == 2 {
 		race.Racer2Vetos--
 		vetosLeft = race.Racer2Vetos
 	}
-	if err := db.Races.SetVetos(race.ChannelID, playerNum, vetosLeft); err != nil {
-		msg := "Failed to set the vetos for racer " + strconv.Itoa(playerNum) + " on race \"" + race.Name() + "\": " + err.Error()
+	if err := db.Races.SetVetos(race.ChannelID, racerNum, vetosLeft); err != nil {
+		msg := "Failed to set the vetos for racer " + strconv.Itoa(racerNum) + " on race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
@@ -101,7 +101,7 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	incrementActivePlayer(&race)
+	incrementActiveRacer(race)
 	msg := m.Author.Mention() + " vetoed: *" + veto + "*\n\n"
 	if race.State == "vetoCharacters" {
 		charactersRound(race, msg)

@@ -15,7 +15,7 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this is a race channel (and get the race from the database)
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
@@ -29,11 +29,11 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this person is one of the two racers
-	var playerNum int
+	var racerNum int
 	if m.Author.ID == race.Racer1.DiscordID {
-		playerNum = 1
+		racerNum = 1
 	} else if m.Author.ID == race.Racer2.DiscordID {
-		playerNum = 2
+		racerNum = 2
 	} else {
 		discordSend(m.ChannelID, "Only \""+race.Racer1.Username+"\" and \""+race.Racer2.Username+"\" can ban something.")
 		return
@@ -48,14 +48,14 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if it is their turn
-	if race.ActivePlayer != playerNum {
+	if race.ActiveRacer != racerNum {
 		discordSend(m.ChannelID, "It is not your turn.")
 		return
 	}
 
 	// Check to see if they have any bans left
-	if (playerNum == 1 && race.Racer1Bans == 0) ||
-		(playerNum == 2 && race.Racer2Bans == 0) {
+	if (racerNum == 1 && race.Racer1Bans == 0) ||
+		(racerNum == 2 && race.Racer2Bans == 0) {
 
 		discordSend(m.ChannelID, "You do not have any bans left.")
 		return
@@ -109,21 +109,21 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 
 	// Decrement their bans
 	var bansLeft int
-	if playerNum == 1 {
+	if racerNum == 1 {
 		race.Racer1Bans--
 		bansLeft = race.Racer1Bans
-	} else if playerNum == 2 {
+	} else if racerNum == 2 {
 		race.Racer2Bans--
 		bansLeft = race.Racer2Bans
 	}
-	if err := db.Races.SetBans(race.ChannelID, playerNum, bansLeft); err != nil {
-		msg := "Failed to set the bans for racer " + strconv.Itoa(playerNum) + " on race \"" + race.Name() + "\": " + err.Error()
+	if err := db.Races.SetBans(race.ChannelID, racerNum, bansLeft); err != nil {
+		msg := "Failed to set the bans for racer " + strconv.Itoa(racerNum) + " on race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	}
 
-	incrementActivePlayer(&race)
+	incrementActiveRacer(race)
 
 	msg := m.Author.Mention() + " banned **" + thing + "**.\n"
 	totalBansLeft := race.Racer1Bans + race.Racer2Bans
@@ -140,6 +140,6 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 
 func commandBanPrint(m *discordgo.MessageCreate) {
 	msg := "Ban something with: `!ban [number]`\n"
-	msg += "e.g. `!ban 3`\n"
+	msg += "e.g. `!ban 3`"
 	discordSend(m.ChannelID, msg)
 }

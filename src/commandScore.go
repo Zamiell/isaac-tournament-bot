@@ -15,7 +15,7 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this is a race channel (and get the race from the database)
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
@@ -29,11 +29,11 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this person is one of the two racers
-	var playerNum int
+	var racerNum int
 	if m.Author.ID == race.Racer1.DiscordID {
-		playerNum = 1
+		racerNum = 1
 	} else if m.Author.ID == race.Racer2.DiscordID {
-		playerNum = 2
+		racerNum = 2
 	} else {
 		discordSend(m.ChannelID, "Only \""+race.Racer1.Username+"\" and \""+race.Racer2.Username+"\" can report a score.")
 		return
@@ -87,13 +87,13 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 
 	// Get the winner's name
 	var winnerName string
-	if playerNum == 1 {
+	if racerNum == 1 {
 		if digit1 > digit2 {
 			winnerName = race.Racer1.Username
 		} else {
 			winnerName = race.Racer2.Username
 		}
-	} else if playerNum == 2 {
+	} else if racerNum == 2 {
 		if digit1 > digit2 {
 			winnerName = race.Racer2.Username
 		} else {
@@ -103,10 +103,10 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 
 	// Put the wins in the right order according to what is listed on the Challonge bracket
 	var p1Wins, p2Wins int
-	if playerNum == 1 {
+	if racerNum == 1 {
 		p1Wins = digit1
 		p2Wins = digit2
-	} else if playerNum == 2 {
+	} else if racerNum == 2 {
 		p2Wins = digit1
 		p1Wins = digit2
 	}

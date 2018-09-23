@@ -2,14 +2,21 @@ package main
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/Zamiell/isaac-tournament-bot/src/models"
 	"github.com/bwmarrin/discordgo"
 )
 
 func commandCast(m *discordgo.MessageCreate, args []string) {
+	if len(args) != 1 {
+		commandCastPrint(m)
+		return
+	}
+	language := strings.ToLower(args[0])
+
 	// Check to see if this is a race channel (and get the race from the database)
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
@@ -23,18 +30,18 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Create the user in the database if it does not already exist
-	var caster models.Racer
-	if v, err := racerGet(m.Author); err != nil {
-		msg := "Failed to get the racer from the database: " + err.Error()
+	var user *models.User
+	if v, err := userGet(m.Author); err != nil {
+		msg := "Failed to get the user from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		caster = v
+		user = v
 	}
 
 	// Check to see if they have a stream set
-	if !caster.StreamURL.Valid {
+	if !user.StreamURL.Valid {
 		discordSend(m.ChannelID, "You cannot volunteer to cast a match if you do not have a stream URL set. Please set one first with the `!stream` command.")
 		return
 	}
@@ -51,25 +58,54 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if someone is already casting this match
-	if race.CasterID.Valid {
-		discordSend(m.ChannelID, race.Caster.Username+" has already volunteered to cast this match.")
+	// Check to see if this is a valid language
+	valid := false
+	var languageFull string
+	for k, v := range languageMap {
+		if k == language || v == language {
+			valid = true
+			language = k
+			languageFull = v
+			break
+		}
+	}
+	if !valid {
+		msg := "That is not a valid language."
+		discordSend(m.ChannelID, msg)
 		return
 	}
 
-	// Set them as the new caster
-	if err := db.Races.SetCaster(m.ChannelID, m.Author.ID); err != nil {
-		msg := "Failed to set the new caster in the database: " + err.Error()
+	// Check to see if they are already casting this match
+	for _, cast := range race.Casts {
+		if cast.Caster.DiscordID == m.Author.ID {
+			msg := "You have already volunteered to cast this match."
+			discordSend(m.ChannelID, msg)
+			return
+		}
+	}
+
+	// Check to see if someone else is already casting this match in that language
+	for _, cast := range race.Casts {
+		if cast.Language == language {
+			msg := "This match is already being casted in " + languageFull + " by `" + cast.Caster.Username + "`."
+			discordSend(m.ChannelID, msg)
+			return
+		}
+	}
+
+	// Add them as a new caster
+	if err := db.Casts.Insert(race.ChannelID, user.DiscordID, language); err != nil {
+		msg := "Failed to insert the new cast in the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	}
 
-	msg := caster.Mention() + ", you are now registered as the caster for this match at the following stream: <" + caster.StreamURL.String + ">\n"
+	msg := user.Mention() + ", you are now registered as the " + languageFull + " caster for this match with the following stream: <" + user.StreamURL.String + ">\n"
 
 	if race.Racer1.CasterAlwaysOk {
-		if err := db.Races.SetCasterApproval(race.Racer1.DiscordID, 1); err != nil {
-			msg := "Failed to set the caster approval in the database: " + err.Error()
+		if err := db.Casts.SetPermission(race.ChannelID, race.Racer1.DiscordID, 1); err != nil {
+			msg := "Failed to set the caster approval for racer 1 in the database: " + err.Error()
 			log.Error(msg)
 			discordSend(m.ChannelID, msg)
 			return
@@ -77,8 +113,8 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 		msg += race.Racer1.Username + " has automatically approved all casters.\n"
 	}
 	if race.Racer2.CasterAlwaysOk {
-		if err := db.Races.SetCasterApproval(race.Racer2.DiscordID, 2); err != nil {
-			msg := "Failed to set the caster approval in the database: " + err.Error()
+		if err := db.Casts.SetPermission(race.ChannelID, race.Racer2.DiscordID, 2); err != nil {
+			msg := "Failed to set the caster approval for racer 2 in the database: " + err.Error()
 			log.Error(msg)
 			discordSend(m.ChannelID, msg)
 			return
@@ -96,5 +132,11 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 		msg += " must agree to this with the `!casterok` command. If you do not agree, use the `!casternotok` command.\n"
 		msg += "(You can also use the `!casteralwaysok` command to give blanket permission for everyone to cast.)"
 	}
+	discordSend(m.ChannelID, msg)
+}
+
+func commandCastPrint(m *discordgo.MessageCreate) {
+	msg := "Volunteer to cast this match by doing: `!cast [language]`\n"
+	msg += "e.g. `!cast en`"
 	discordSend(m.ChannelID, msg)
 }

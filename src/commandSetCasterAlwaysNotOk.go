@@ -25,7 +25,7 @@ func commandSetCasterAlwaysNotOk(m *discordgo.MessageCreate, args []string) {
 		guild = v
 	}
 
-	// Find the discord ID of the player
+	// Find the discord ID of the user
 	var discordUser *discordgo.User
 	for _, member := range guild.Members {
 		username := member.Nick
@@ -50,7 +50,7 @@ func commandSetCasterAlwaysNotOk(m *discordgo.MessageCreate, args []string) {
 }
 
 func commandSetCasterAlwaysNotOkPrint(m *discordgo.MessageCreate) {
-	msg := "Disable another player's default with: `!setcasteralwaysnotok [username]`\n"
-	msg += "e.g. `!setcasteralwaysnotok Zamiel`"
+	msg := "Disable another user's default caster approval with: `!setcasteralwaysnotok [username]`\n"
+	msg += "e.g. `!setcasteralwaysnotok Willy`"
 	discordSend(m.ChannelID, msg)
 }

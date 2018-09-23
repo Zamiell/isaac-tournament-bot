@@ -23,18 +23,18 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Create the user in the database if it does not already exist
-	var racer models.Racer
-	if v, err := racerGet(m.Author); err != nil {
-		msg := "Failed to get the racer from the database: " + err.Error()
+	var user *models.User
+	if v, err := userGet(m.Author); err != nil {
+		msg := "Failed to get the user from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		racer = v
+		user = v
 	}
 
 	// Check to see if this is a race channel (and get the race from the database)
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
@@ -48,11 +48,11 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this person is one of the two racers
-	var activePlayer int
+	var activeRacer int
 	if m.Author.ID == race.Racer1.DiscordID {
-		activePlayer = 1
+		activeRacer = 1
 	} else if m.Author.ID == race.Racer2.DiscordID {
-		activePlayer = 2
+		activeRacer = 2
 	} else {
 		discordSend(m.ChannelID, "Only \""+race.Racer1.Username+"\" and \""+race.Racer2.Username+"\" can schedule a time for this match.")
 		return
@@ -65,13 +65,13 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this person has a timezone specified
-	if !racer.Timezone.Valid {
+	if !user.Timezone.Valid {
 		discordSend(m.ChannelID, "You must specify a timezone with the `!timezone` command before you can suggest a time for the match.")
 		return
 	}
 
 	// Check to see if this person has a stream specified
-	if !racer.StreamURL.Valid {
+	if !user.StreamURL.Valid {
 		discordSend(m.ChannelID, "You must specify a stream URL with the `!stream` command before you can suggest a time for the match.")
 		return
 	}
@@ -89,7 +89,7 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 
 	// Get the timezone offset for this person
 	// https://stackoverflow.com/questions/34975007/in-go-how-can-i-extract-the-value-of-my-current-local-time-offset
-	loc, _ := time.LoadLocation(racer.Timezone.String)
+	loc, _ := time.LoadLocation(user.Timezone.String)
 	t := time.Now().In(loc)
 	_, offset := t.Zone()
 
@@ -104,15 +104,15 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Set the new scheduled time
-	if err := db.Races.SetDatetimeScheduled(m.ChannelID, datetime, activePlayer); err != nil {
+	if err := db.Races.SetDatetimeScheduled(m.ChannelID, datetime, activeRacer); err != nil {
 		msg := "Failed to update the scheduled time: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	}
 
-	var racer1 models.Racer
-	var racer2 models.Racer
+	var racer1 *models.User
+	var racer2 *models.User
 	if m.Author.ID == race.Racer1.DiscordID {
 		racer1 = race.Racer1
 		racer2 = race.Racer2
@@ -150,18 +150,18 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 
 func commandSchedulePrint(m *discordgo.MessageCreate) {
 	// Create the user in the database if it does not already exist
-	var racer models.Racer
-	if v, err := racerGet(m.Author); err != nil {
-		msg := "Failed to get the racer from the database: " + err.Error()
+	var user *models.User
+	if v, err := userGet(m.Author); err != nil {
+		msg := "Failed to get the user from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		racer = v
+		user = v
 	}
 
 	// Check to see if this is a race channel (and get the race from the database)
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
@@ -177,8 +177,8 @@ func commandSchedulePrint(m *discordgo.MessageCreate) {
 	msg := ""
 	if race.DatetimeScheduled.Valid {
 		var timezone string
-		if racer.Timezone.Valid {
-			timezone = racer.Timezone.String
+		if user.Timezone.Valid {
+			timezone = user.Timezone.String
 		} else {
 			timezone = "UTC"
 		}

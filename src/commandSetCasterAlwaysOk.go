@@ -25,7 +25,7 @@ func commandSetCasterAlwaysOk(m *discordgo.MessageCreate, args []string) {
 		guild = v
 	}
 
-	// Find the discord ID of the player
+	// Find the discord ID of the user
 	var discordUser *discordgo.User
 	for _, member := range guild.Members {
 		username := member.Nick
@@ -50,7 +50,7 @@ func commandSetCasterAlwaysOk(m *discordgo.MessageCreate, args []string) {
 }
 
 func commandSetCasterAlwaysOkPrint(m *discordgo.MessageCreate) {
-	msg := "Enable another player's default with: `!setcasteralwaysok [username]`\n"
-	msg += "e.g. `!setcasteralwaysok Zamiel`"
+	msg := "Enable another user's default cast approval with: `!setcasteralwaysok [username]`\n"
+	msg += "e.g. `!setcasteralwaysok Willy`"
 	discordSend(m.ChannelID, msg)
 }

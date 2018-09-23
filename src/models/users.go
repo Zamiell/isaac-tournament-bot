@@ -4,9 +4,9 @@ import (
 	"database/sql"
 )
 
-type Racers struct{}
+type Users struct{}
 
-type Racer struct {
+type User struct {
 	DiscordID string
 	Username  string
 	// Matches the TZ column of this page:
@@ -16,15 +16,15 @@ type Racer struct {
 	CasterAlwaysOk bool
 }
 
-func (r *Racer) Mention() string {
-	return "<@" + r.DiscordID + ">"
+func (u *User) Mention() string {
+	return "<@" + u.DiscordID + ">"
 }
 
-func (*Racers) Exists(discordID string) (bool, error) {
+func (*Users) Exists(discordID string) (bool, error) {
 	var id int
 	if err := db.QueryRow(`
 		SELECT id
-		FROM tournament_racers
+		FROM tournament_users
 		WHERE discord_id = ?
 	`, discordID).Scan(&id); err == sql.ErrNoRows {
 		return false, nil
@@ -35,10 +35,10 @@ func (*Racers) Exists(discordID string) (bool, error) {
 	return true, nil
 }
 
-func (*Racers) Insert(racer Racer) error {
+func (*Users) Insert(user *User) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		INSERT INTO tournament_racers (
+		INSERT INTO tournament_users (
 			discord_id,
 			username
 		) VALUES (
@@ -53,14 +53,14 @@ func (*Racers) Insert(racer Racer) error {
 	defer stmt.Close()
 
 	_, err := stmt.Exec(
-		racer.DiscordID,
-		racer.Username,
+		user.DiscordID,
+		user.Username,
 	)
 	return err
 }
 
-func (*Racers) Get(discordID string) (Racer, error) {
-	var racer Racer
+func (*Users) GetFromDiscordID(discordID string) (*User, error) {
+	var user *User
 	err := db.QueryRow(`
 		SELECT
 			discord_id,
@@ -68,20 +68,20 @@ func (*Racers) Get(discordID string) (Racer, error) {
 			timezone,
 			stream_url,
 			caster_always_ok
-		FROM tournament_racers
+		FROM tournament_users
 		WHERE discord_id = ?
 	`, discordID).Scan(
-		&racer.DiscordID,
-		&racer.Username,
-		&racer.Timezone,
-		&racer.StreamURL,
-		&racer.CasterAlwaysOk,
+		&user.DiscordID,
+		&user.Username,
+		&user.Timezone,
+		&user.StreamURL,
+		&user.CasterAlwaysOk,
 	)
-	return racer, err
+	return user, err
 }
 
-func (*Racers) GetID(racerID int) (Racer, error) {
-	var racer Racer
+func (*Users) GetFromUserID(userID int) (*User, error) {
+	var user *User
 	err := db.QueryRow(`
 		SELECT
 			discord_id,
@@ -89,22 +89,22 @@ func (*Racers) GetID(racerID int) (Racer, error) {
 			timezone,
 			stream_url,
 			caster_always_ok
-		FROM tournament_racers
+		FROM tournament_users
 		WHERE id = ?
-	`, racerID).Scan(
-		&racer.DiscordID,
-		&racer.Username,
-		&racer.Timezone,
-		&racer.StreamURL,
-		&racer.CasterAlwaysOk,
+	`, userID).Scan(
+		&user.DiscordID,
+		&user.Username,
+		&user.Timezone,
+		&user.StreamURL,
+		&user.CasterAlwaysOk,
 	)
-	return racer, err
+	return user, err
 }
 
-func (*Racers) SetUsername(discordID string, username string) error {
+func (*Users) SetUsername(discordID string, username string) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE tournament_racers
+		UPDATE tournament_users
 		SET username = ?
 		WHERE discord_id = ?
 	`); err != nil {
@@ -118,10 +118,10 @@ func (*Racers) SetUsername(discordID string, username string) error {
 	return err
 }
 
-func (*Racers) SetTimezone(discordID string, timezone string) error {
+func (*Users) SetTimezone(discordID string, timezone string) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE tournament_racers
+		UPDATE tournament_users
 		SET timezone = ?
 		WHERE discord_id = ?
 	`); err != nil {
@@ -135,10 +135,10 @@ func (*Racers) SetTimezone(discordID string, timezone string) error {
 	return err
 }
 
-func (*Racers) SetStreamURL(discordID string, streamURL string) error {
+func (*Users) SetStreamURL(discordID string, streamURL string) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE tournament_racers
+		UPDATE tournament_users
 		SET stream_url = ?
 		WHERE discord_id = ?
 	`); err != nil {
@@ -152,10 +152,10 @@ func (*Racers) SetStreamURL(discordID string, streamURL string) error {
 	return err
 }
 
-func (*Racers) SetCasterAlwaysOk(discordID string, ok bool) error {
+func (*Users) SetCasterAlwaysOk(discordID string, ok bool) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
-		UPDATE tournament_racers
+		UPDATE tournament_users
 		SET caster_always_ok = ?
 		WHERE discord_id = ?
 	`); err != nil {

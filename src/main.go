@@ -1,13 +1,5 @@
 package main
 
-/*
-	Notes:
-	!timezone America/New_York
-	!settimezone Zamiel2 America/Los_Angeles
-	!stream twitch.tv/Zamiell
-	!setstream Zamiel2 twitch.tv/CobaltStreak
-*/
-
 import (
 	"os"
 	"os/signal"
@@ -60,6 +52,7 @@ func main() {
 	defer discord.Close()
 	challongeInit()
 	matchInit()
+	languageInit()
 	log.Info("The bot has successfully initialized.")
 
 	// Wait here until CTRL-C or other term signal is received

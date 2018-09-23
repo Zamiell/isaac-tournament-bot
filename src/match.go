@@ -56,7 +56,7 @@ func matchInit() {
 		channelIDs = v
 	}
 	for _, channelID := range channelIDs {
-		var race models.Race
+		var race *models.Race
 		if v, err := raceGet(channelID); err != nil {
 			log.Fatal("Failed to get the race from the database: " + err.Error())
 			return
@@ -68,7 +68,7 @@ func matchInit() {
 	}
 }
 
-func matchStart(race models.Race) {
+func matchStart(race *models.Race) {
 	// Sleep until the match starts
 	origStartTime := race.DatetimeScheduled.Time
 	sleepDuration := race.DatetimeScheduled.Time.Sub(time.Now().UTC())
@@ -101,9 +101,9 @@ func matchStart(race models.Race) {
 	}
 
 	// Randomly decide who starts
-	race.ActivePlayer = getRandom(1, 2)
-	if err := db.Races.SetActivePlayer(race.ChannelID, race.ActivePlayer); err != nil {
-		msg := "Failed to set the active player for race \"" + race.Name() + "\": " + err.Error()
+	race.ActiveRacer = getRandom(1, 2)
+	if err := db.Races.SetActiveRacer(race.ChannelID, race.ActiveRacer); err != nil {
+		msg := "Failed to set the active racer for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(race.ChannelID, msg)
 		return
@@ -120,22 +120,39 @@ func matchStart(race models.Race) {
 	charactersVetoStart(race)
 }
 
-func matchGetDescription(race models.Race) string {
+func matchBeginningAlert(race *models.Race) string {
+	// Alert the racers that the race is about to start
+	msg := race.Racer1.Mention() + " and " + race.Racer2.Mention() + " - the race is scheduled to start in 5 minutes.\n\n"
+
+	// Alert the casters that the race is about to start
+	for _, cast := range race.Casts {
+		msg += cast.Caster.Mention() + ", you are scheduled to cast this match in " + languageMap[cast.Language] + " in 5 minutes at: <" + cast.Caster.StreamURL.String + ">\n\n"
+	}
+
+	return msg
+}
+
+func matchGetDescription(race *models.Race) string {
 	msg := "```\n" // This is necessary because underscores in usernames can mess up the formatting
 	msg += race.TournamentName + "\n"
 	msg += race.Name() + "\n"
 	msg += "```\n"
-	if race.CasterID.Valid {
-		msg += "`" + race.Caster.Username + "` has volunteered to cast the match at:\n"
-		msg += "<" + race.Caster.StreamURL.String + ">"
-	} else {
+	atLeastOneCaster := false
+	for _, cast := range race.Casts {
+		if cast.R1Permission && cast.R2Permission {
+			atLeastOneCaster = true
+			msg += "`" + cast.Caster.Username + "` has volunteered to cast the match at:\n"
+			msg += "<" + cast.Caster.StreamURL.String + ">"
+		}
+	}
+	if !atLeastOneCaster {
 		msg += "No-one has volunteered to cast this match. You can watch both racers here:\n"
 		msg += "<https://kadgar.net/live/" + race.Racer1.Username + "/" + race.Racer2.Username + ">"
 	}
 	return msg
 }
 
-func matchEnd(race models.Race, msg string) {
+func matchEnd(race *models.Race, msg string) {
 	race.State = "inProgress"
 	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
@@ -152,8 +169,8 @@ func matchEnd(race models.Race, msg string) {
 
 	msg += "**Racer 1: **" + race.Racer1.Mention() + " - <" + race.Racer1.StreamURL.String + ">\n"
 	msg += "**Racer 2: **" + race.Racer2.Mention() + " - <" + race.Racer2.StreamURL.String + ">\n"
-	if race.CasterID.Valid {
-		msg += "**Caster:** " + race.Caster.Mention() + " - <" + race.Caster.StreamURL.String + ">\n"
+	for _, cast := range race.Casts {
+		msg += "**" + languageMap[cast.Language] + " Caster:** " + cast.Caster.Mention() + " - <" + cast.Caster.StreamURL.String + ">\n"
 	}
 	msg += "\n"
 

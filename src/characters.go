@@ -27,7 +27,7 @@ var (
 	}
 )
 
-func charactersBanStart(race models.Race) {
+func charactersBanStart(race *models.Race) {
 	// Update the state
 	race.State = "banningCharacters"
 	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
@@ -38,20 +38,15 @@ func charactersBanStart(race models.Race) {
 	}
 	log.Info("Race \"" + race.Name() + "\" is now in state: " + race.State)
 
-	// Alert the players that the race is about to start
-	// (this cannot be in the "matchStart()" function because we need to have everything in one message, or it can get out of order)
-	msg := race.Racer1.Mention() + " and " + race.Racer2.Mention() + " - the race is scheduled to start in 5 minutes.\n\n"
-	if race.CasterID.Valid {
-		msg += race.Caster.Mention() + ", you are scheduled to cast this match in 5 minutes at: <" + race.Caster.StreamURL.String + ">\n\n"
-	}
+	msg := matchBeginningAlert(race)
 
 	msg += "**Character Ban Phase**\n\n"
-	msg += "- Each player gets to ban " + strconv.Itoa(numBans) + " characters.\n"
+	msg += "- Each racer gets to ban " + strconv.Itoa(numBans) + " characters.\n"
 	msg += "- Use the `!ban` command to select a character.\n"
 	msg += "  e.g. `!ban 3` (to ban the 3rd character in the list)\n\n"
-	if race.ActivePlayer == 1 {
+	if race.ActiveRacer == 1 {
 		msg += race.Racer1.Mention()
-	} else if race.ActivePlayer == 2 {
+	} else if race.ActiveRacer == 2 {
 		msg += race.Racer2.Mention()
 	}
 	msg += ", you start! (randomly decided)\n\n"
@@ -61,7 +56,7 @@ func charactersBanStart(race models.Race) {
 	discordSend(race.ChannelID, msg)
 }
 
-func charactersPickStart(race models.Race, msg string) {
+func charactersPickStart(race *models.Race, msg string) {
 	// Set the state
 	race.State = "pickingCharacters"
 	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
@@ -76,9 +71,9 @@ func charactersPickStart(race models.Race, msg string) {
 	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " characters need to be picked.\n"
 	msg += "- Use the `!pick` command to select a character.\n"
 	msg += "  e.g. `!pick 3` (to pick the 3rd character in the list)\n\n"
-	if race.ActivePlayer == 1 {
+	if race.ActiveRacer == 1 {
 		msg += race.Racer1.Mention()
-	} else if race.ActivePlayer == 2 {
+	} else if race.ActiveRacer == 2 {
 		msg += race.Racer2.Mention()
 	}
 	msg += ", you start!\n\n"
@@ -88,7 +83,7 @@ func charactersPickStart(race models.Race, msg string) {
 	discordSend(race.ChannelID, msg)
 }
 
-func charactersVetoStart(race models.Race) {
+func charactersVetoStart(race *models.Race) {
 	// Update the state
 	race.State = "vetoCharacters"
 	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
@@ -99,21 +94,16 @@ func charactersVetoStart(race models.Race) {
 	}
 	log.Info("Race \"" + race.Name() + "\" is now in state: " + race.State)
 
-	// Alert the players that the race is about to start
-	// (this cannot be in the "matchStart()" function because we need to have everything in one message, or it can get out of order)
-	msg := race.Racer1.Mention() + " and " + race.Racer2.Mention() + " - the race is scheduled to start in 5 minutes.\n\n"
-	if race.CasterID.Valid {
-		msg += race.Caster.Mention() + ", you are scheduled to cast this match in 5 minutes at: <" + race.Caster.StreamURL.String + ">\n\n"
-	}
+	msg := matchBeginningAlert(race)
 
 	msg += "**Character Veto Phase**\n\n"
-	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " characters will randomly be chosen. Each player will get one veto.\n"
+	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " characters will randomly be chosen. Each racer will get one veto.\n"
 	msg += "- Use the `!yes` and `!no` commands to answer the questions.\n\n"
 	race.NumVoted = 2 // Set it to 2 so that it gives a new character
 	charactersRound(race, msg)
 }
 
-func charactersRound(race models.Race, msg string) {
+func charactersRound(race *models.Race, msg string) {
 	if race.NumVoted == 2 {
 		// Both racers have voted, so get a new character
 		race.NumVoted = 0
@@ -129,14 +119,14 @@ func charactersRound(race models.Race, msg string) {
 			return
 		}
 
-		msg += getCharacter(&race)
+		msg += getCharacter(race)
 	}
 
-	if (race.Racer1Vetos == 0 && race.Racer2Vetos == 0) || // Both players have used all of their vetos
-		(race.ActivePlayer == 1 && race.Racer1Vetos == 0) || // It is player 1's turn and they have already used their vetos
-		(race.ActivePlayer == 2 && race.Racer2Vetos == 0) { // It is player 2's turn and they have already used their vetos
+	if (race.Racer1Vetos == 0 && race.Racer2Vetos == 0) || // Both racers have used all of their vetos
+		(race.ActiveRacer == 1 && race.Racer1Vetos == 0) || // It is racer 1's turn and they have already used their vetos
+		(race.ActiveRacer == 2 && race.Racer2Vetos == 0) { // It is racer 2's turn and they have already used their vetos
 
-		log.Info("Skipping player " + strconv.Itoa(race.ActivePlayer) + "'s turn, since they do not have a veto.")
+		log.Info("Skipping racer " + strconv.Itoa(race.ActiveRacer) + "'s turn, since they do not have a veto.")
 
 		race.NumVoted++
 		if err := db.Races.SetNumVoted(race.ChannelID, race.NumVoted); err != nil {
@@ -146,21 +136,21 @@ func charactersRound(race models.Race, msg string) {
 			return
 		}
 
-		incrementActivePlayer(&race)
+		incrementActiveRacer(race)
 		charactersRound(race, msg)
 		return
 	}
 
-	if race.ActivePlayer == 1 {
+	if race.ActiveRacer == 1 {
 		msg += race.Racer1.Mention()
-	} else if race.ActivePlayer == 2 {
+	} else if race.ActiveRacer == 2 {
 		msg += race.Racer2.Mention()
 	}
 	msg += ", do you want to veto this character? Use `!yes` or `!no` to answer."
 	discordSend(race.ChannelID, msg)
 }
 
-func charactersEnd(race models.Race, msg string) {
+func charactersEnd(race *models.Race, msg string) {
 	msg += "**Characters for the Match**\n\n"
 	for i, character := range race.Characters {
 		msg += strconv.Itoa(i+1) + ". " + character + "\n"

@@ -80,7 +80,7 @@ var (
 	}
 )
 
-func buildsStart(race models.Race, msg string) {
+func buildsStart(race *models.Race, msg string) {
 	race.State = "vetoBuilds"
 	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
@@ -91,13 +91,13 @@ func buildsStart(race models.Race, msg string) {
 	log.Info("Race \"" + race.Name() + "\" is now in state: " + race.State)
 
 	msg += "**Build Ban Phase**\n\n"
-	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " builds will randomly be chosen. Each player will get one veto.\n"
+	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " builds will randomly be chosen. Each racer will get one veto.\n"
 	msg += "- Use the `!yes` and `!no` commands to answer the questions.\n\n"
 	race.NumVoted = 2 // Set it to 2 so that it gives a new build
 	buildsRound(race, msg)
 }
 
-func buildsRound(race models.Race, msg string) {
+func buildsRound(race *models.Race, msg string) {
 	if race.NumVoted == 2 {
 		// Both racers have voted, so get a new build
 		race.NumVoted = 0
@@ -113,14 +113,14 @@ func buildsRound(race models.Race, msg string) {
 			return
 		}
 
-		msg += getBuild(&race)
+		msg += getBuild(race)
 	}
 
-	if (race.Racer1Vetos == 0 && race.Racer2Vetos == 0) || // Both players have used all of their vetos
-		(race.ActivePlayer == 1 && race.Racer1Vetos == 0) || // It is player 1's turn and they have already used their vetos
-		(race.ActivePlayer == 2 && race.Racer2Vetos == 0) { // It is player 2's turn and they have already used their vetos
+	if (race.Racer1Vetos == 0 && race.Racer2Vetos == 0) || // Both racer have used all of their vetos
+		(race.ActiveRacer == 1 && race.Racer1Vetos == 0) || // It is racer 1's turn and they have already used their vetos
+		(race.ActiveRacer == 2 && race.Racer2Vetos == 0) { // It is racer 2's turn and they have already used their vetos
 
-		log.Info("Skipping player " + strconv.Itoa(race.ActivePlayer) + "'s turn, since they do not have a veto.")
+		log.Info("Skipping racer " + strconv.Itoa(race.ActiveRacer) + "'s turn, since they do not have a veto.")
 
 		race.NumVoted++
 		if err := db.Races.SetNumVoted(race.ChannelID, race.NumVoted); err != nil {
@@ -130,14 +130,14 @@ func buildsRound(race models.Race, msg string) {
 			return
 		}
 
-		incrementActivePlayer(&race)
+		incrementActiveRacer(race)
 		buildsRound(race, msg)
 		return
 	}
 
-	if race.ActivePlayer == 1 {
+	if race.ActiveRacer == 1 {
 		msg += race.Racer1.Mention()
-	} else if race.ActivePlayer == 2 {
+	} else if race.ActiveRacer == 2 {
 		msg += race.Racer2.Mention()
 	}
 	msg += ", do you want to veto this build? Use `!yes` or `!no` to answer."

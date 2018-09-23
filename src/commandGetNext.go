@@ -9,14 +9,14 @@ import (
 
 func commandGetNext(m *discordgo.MessageCreate, args []string) {
 	// Create the user in the database if it does not already exist
-	var racer models.Racer
-	if v, err := racerGet(m.Author); err != nil {
-		msg := "Failed to get the racer from the database: " + err.Error()
+	var user *models.User
+	if v, err := userGet(m.Author); err != nil {
+		msg := "Failed to get the user from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		racer = v
+		user = v
 	}
 
 	var channelID string
@@ -33,7 +33,7 @@ func commandGetNext(m *discordgo.MessageCreate, args []string) {
 		channelID = v
 	}
 
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(channelID); err != nil {
 		msg := "Failed to get the race from the database: " + err.Error()
 		log.Error(msg)
@@ -44,8 +44,8 @@ func commandGetNext(m *discordgo.MessageCreate, args []string) {
 	}
 
 	var timezone string
-	if racer.Timezone.Valid {
-		timezone = racer.Timezone.String
+	if user.Timezone.Valid {
+		timezone = user.Timezone.String
 	} else {
 		timezone = "UTC"
 	}

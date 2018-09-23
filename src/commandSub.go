@@ -80,7 +80,7 @@ func getDate(datetime time.Time, timezone string) string {
 	Match subroutines
 */
 
-func getBansRemaining(race models.Race, thing string) string {
+func getBansRemaining(race *models.Race, thing string) string {
 	bansLeft := race.Racer1Bans + race.Racer2Bans
 	msg := "**" + strconv.Itoa(bansLeft) + " ban"
 	if bansLeft > 1 {
@@ -90,7 +90,7 @@ func getBansRemaining(race models.Race, thing string) string {
 	return msg
 }
 
-func getPicksRemaining(race models.Race, thing string) string {
+func getPicksRemaining(race *models.Race, thing string) string {
 	var things []string
 	if thing == "characters" {
 		things = race.Characters
@@ -110,7 +110,7 @@ func getPicksRemaining(race models.Race, thing string) string {
 	return msg
 }
 
-func getRemaining(race models.Race, thing string) string {
+func getRemaining(race *models.Race, thing string) string {
 	var thingsRemaining []string
 	if thing == "characters" {
 		thingsRemaining = race.CharactersRemaining
@@ -159,25 +159,25 @@ func getRemaining(race models.Race, thing string) string {
 	return msg
 }
 
-func getNext(race models.Race) string {
+func getNext(race *models.Race) string {
 	var msg string
-	if race.ActivePlayer == 1 {
+	if race.ActiveRacer == 1 {
 		msg = race.Racer1.Mention()
-	} else if race.ActivePlayer == 2 {
+	} else if race.ActiveRacer == 2 {
 		msg = race.Racer2.Mention()
 	}
 	msg += ", you're next!\n\n"
 	return msg
 }
 
-func incrementActivePlayer(race *models.Race) {
-	// Increment the active player
-	race.ActivePlayer++
-	if race.ActivePlayer > 2 {
-		race.ActivePlayer = 1
+func incrementActiveRacer(race *models.Race) {
+	// Increment the active racer
+	race.ActiveRacer++
+	if race.ActiveRacer > 2 {
+		race.ActiveRacer = 1
 	}
-	if err := db.Races.SetActivePlayer(race.ChannelID, race.ActivePlayer); err != nil {
-		msg := "Failed to set the active player for race \"" + race.Name() + "\": " + err.Error()
+	if err := db.Races.SetActiveRacer(race.ChannelID, race.ActiveRacer); err != nil {
+		msg := "Failed to set the active racer for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(race.ChannelID, msg)
 		return

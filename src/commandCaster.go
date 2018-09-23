@@ -9,7 +9,7 @@ import (
 
 func commandCaster(m *discordgo.MessageCreate, args []string) {
 	// Check to see if this is a race channel (and get the race from the database)
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
@@ -22,22 +22,25 @@ func commandCaster(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	if !race.CasterID.Valid {
+	// Check to see if someone is casting this match
+	if len(race.Casts) == 0 {
 		discordSend(m.ChannelID, "No-one has volunteered to cast this match yet.")
 		return
 	}
 
-	if race.CasterP1 && race.CasterP2 {
-		msg := race.Caster.Username + " is registered to cast this match at: " + race.Caster.StreamURL.String + "\n"
-		msg += "(Both racers have agreed already.)"
-		discordSend(m.ChannelID, msg)
-	} else {
-		msg := race.Caster.Username + " has requested to cast this match at: " + race.Caster.StreamURL.String + "\n"
-		if race.CasterP1 {
-			msg += race.Racer2.Username + " still needs to okay this with the `!casterok` command."
-		} else if race.CasterP2 {
-			msg += race.Racer1.Username + " still needs to okay this with the `!casterok` command."
+	// Display all of the casts for this match
+	msg := ""
+	for _, cast := range race.Casts {
+		if cast.R1Permission && cast.R2Permission {
+			msg += "`" + cast.Caster.Username + "` is registered to cast this match in " + languageMap[cast.Language] + " at: <" + cast.Caster.StreamURL.String + ">\n"
+		} else {
+			msg += "`" + cast.Caster.Username + "` has requested to cast this match in " + languageMap[cast.Language] + " at: <" + cast.Caster.StreamURL.String + ">\n"
+			if !cast.R1Permission {
+				msg += "`" + race.Racer1.Username + "` still needs to okay this with the `!casterok` command.\n"
+			} else if !cast.R2Permission {
+				msg += "`" + race.Racer2.Username + "` still needs to okay this with the `!casterok` command.\n"
+			}
 		}
-		discordSend(m.ChannelID, msg)
 	}
+	discordSend(m.ChannelID, msg)
 }

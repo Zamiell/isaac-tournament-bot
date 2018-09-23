@@ -22,7 +22,7 @@ func commandGetStream(m *discordgo.MessageCreate, args []string) {
 		guild = v
 	}
 
-	// Find the discord ID of the player
+	// Find the discord ID of the user
 	var discordUser *discordgo.User
 	for _, member := range guild.Members {
 		username := member.Nick
@@ -41,19 +41,19 @@ func commandGetStream(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	var racer models.Racer
-	if v, err := racerGet(discordUser); err != nil {
-		msg := "Failed to get the racer from the database: " + err.Error()
+	var user *models.User
+	if v, err := userGet(discordUser); err != nil {
+		msg := "Failed to get the user from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		racer = v
+		user = v
 	}
 
-	msg := "The stream for `" + racer.Username + "` is "
-	if racer.StreamURL.Valid {
-		msg += "currently set to:\n<" + racer.StreamURL.String + ">"
+	msg := "The stream for `" + user.Username + "` is "
+	if user.StreamURL.Valid {
+		msg += "currently set to:\n<" + user.StreamURL.String + ">"
 	} else {
 		msg += "**not currently set**."
 	}
@@ -61,7 +61,7 @@ func commandGetStream(m *discordgo.MessageCreate, args []string) {
 }
 
 func commandGetStreamPrint(m *discordgo.MessageCreate) {
-	msg := "Get another player's stream with: `!getstream [username]`\n"
-	msg += "e.g. `!getstream Zamiel`"
+	msg := "Get another user's stream with: `!getstream [username]`\n"
+	msg += "e.g. `!getstream Willy`"
 	discordSend(m.ChannelID, msg)
 }

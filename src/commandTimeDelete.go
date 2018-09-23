@@ -9,7 +9,7 @@ import (
 
 func commandTimeDelete(m *discordgo.MessageCreate, args []string) {
 	// Check to see if this is a race channel (and get the race from the database)
-	var race models.Race
+	var race *models.Race
 	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
