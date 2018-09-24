@@ -142,7 +142,7 @@ func matchGetDescription(race *models.Race) string {
 		if cast.R1Permission && cast.R2Permission {
 			atLeastOneCaster = true
 			msg += "`" + cast.Caster.Username + "` has volunteered to cast the match at:\n"
-			msg += "<" + cast.Caster.StreamURL.String + ">"
+			msg += "<" + cast.Caster.StreamURL.String + ">\n"
 		}
 	}
 	if !atLeastOneCaster {

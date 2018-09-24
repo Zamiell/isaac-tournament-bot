@@ -48,7 +48,7 @@ func commandCastCancel(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Delete the cast from the database
-	if err := db.Casts.Delete(race.ChannelID, m.ChannelID); err != nil {
+	if err := db.Casts.Delete(race.ChannelID, m.Author.ID); err != nil {
 		msg := "Failed to delete the cast from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
