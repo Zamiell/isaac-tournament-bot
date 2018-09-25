@@ -70,7 +70,11 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 		}
 	}
 	if !valid {
-		msg := "That is not a valid language."
+		msg := "That is not a valid language. Valid languages are:\n"
+		for k, v := range languageMap {
+			msg += k + " / " + v + ", "
+		}
+		msg = strings.TrimSuffix(msg, ", ")
 		discordSend(m.ChannelID, msg)
 		return
 	}
