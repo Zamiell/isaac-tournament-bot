@@ -62,7 +62,7 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 	valid := false
 	var languageFull string
 	for k, v := range languageMap {
-		if k == language || v == language {
+		if strings.ToLower(k) == language || strings.ToLower(v) == language {
 			valid = true
 			language = k
 			languageFull = v
