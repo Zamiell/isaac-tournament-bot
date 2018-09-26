@@ -134,6 +134,15 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
+	// Set the state
+	race.State = "completed"
+	if err := db.Races.SetState(race.ChannelID, race.State); err != nil {
+		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(race.ChannelID, msg)
+		return
+	}
+
 	msg := "The score of \"" + score + "\" was successfully submitted (with " + winnerName + " winning the match)."
 	discordSend(m.ChannelID, msg)
 }

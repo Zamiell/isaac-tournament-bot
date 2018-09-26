@@ -52,9 +52,21 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this race has already been scheduled
-	if race.State != "scheduled" {
+	// Check to see if this race has been scheduled
+	if race.State == "initial" {
 		discordSend(m.ChannelID, "You cannot volunteer to cast a match until a time has been scheduled by both of the racers.")
+		return
+	}
+
+	// Check to see if this race is in progress
+	if race.State == "inProgress" {
+		discordSend(m.ChannelID, "The match has already begun. You should not be bothering the players at this point.")
+		return
+	}
+
+	// Check to see if this race is already finished
+	if race.State == "completed" {
+		discordSend(m.ChannelID, "This match has already completed.")
 		return
 	}
 
@@ -72,9 +84,8 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 	if !valid {
 		msg := "That is not a valid language. Valid languages are:\n"
 		for k, v := range languageMap {
-			msg += k + " / " + v + ", "
+			msg += "- " + k + " / " + v + "\n"
 		}
-		msg = strings.TrimSuffix(msg, ", ")
 		discordSend(m.ChannelID, msg)
 		return
 	}

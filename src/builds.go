@@ -53,7 +53,7 @@ var (
 		{},         // 7
 		{},         // 8
 		{},         // 9
-		{"Azazel"}, // 10
+		{"Azazel", "Samael"}, // 10
 		{},         // 11
 		{},         // 12
 		{},         // 13
@@ -147,13 +147,22 @@ func buildsRound(race *models.Race, msg string) {
 func getBuild(race *models.Race) string {
 	// Get a random build
 	randBuildNum := getRandom(0, len(race.BuildsRemaining)-1)
+	log.Debug("randBuildNum:", randBuildNum)
+	randBuildNum = 14 // Monstro's Lung
+	log.Debug("randBuildNum*:", randBuildNum)
 	randBuild := race.BuildsRemaining[randBuildNum]
+	log.Debug("randBuild:", randBuild)
 
 	// Check to see if the item synergizes
 	roundNum := len(race.Builds) + 1
 	character := race.Characters[roundNum-1]
+	log.Debug("character:", character)
+	character = "Keeper"
+	log.Debug("character*:", character)
 	synergizes := true
+	log.Debug("buildExceptions[randBuildNum]:", buildExceptions[randBuildNum])
 	for _, exceptedCharacter := range buildExceptions[randBuildNum] {
+		log.Debug("exceptedCharacter:", exceptedCharacter)
 		if exceptedCharacter == character {
 			synergizes = false
 			break

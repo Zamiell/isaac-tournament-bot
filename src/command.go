@@ -53,6 +53,8 @@ func commandHelpGetMsg() string {
 		msg += "-------------------------------------------------------------------------\n"
 		msg += "!settimezone             Set a user's timezone for them\n"
 		msg += "!setstream               Set a user's stream for them\n"
+		msg += "!setcasterok             Give permission on behalf of a racer\n"
+		msg += "!setcasternotok          Deny permission on behalf of a racer\n"
 		msg += "!setcasteralwaysok       Enable a user's default caster approval for them\n"
 		msg += "!setcasteralwaysnotok    Disable a user's default caster approval for them\n"
 		msg += "!startround              Start the current round of the tournament\n"
@@ -65,7 +67,8 @@ func commandHelpGetMsg() string {
 		msg += "!forcepick [num]         Force the current racer to pick\n"
 		msg += "!forceyes                Force the current racer to veto\n"
 		msg += "!forceno                 Force the current racer to not veto\n"
-		msg += "!join                    Print out the URL to join another server"
+		msg += "!join                    Print out the URL to join another server\n"
+		msg += "!getstate                Get the current state of the match\n"
 		msg += "!getchannelid [name]     Get the ID of the specified Discord channel\n"
 		msg += "!debug                   Execute the debug function\n"
 		msg += "```"
@@ -151,6 +154,7 @@ func commandInit() {
 	commandHandlerMap["forceno"] = commandForceNo
 	commandHandlerMap["noforce"] = commandForceNo
 	commandHandlerMap["join"] = commandJoin
+	commandHandlerMap["getstate"] = commandGetState
 	commandHandlerMap["getchannelid"] = commandGetChannelID
 	commandHandlerMap["debug"] = commandDebug
 }

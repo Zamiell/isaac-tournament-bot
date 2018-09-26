@@ -28,6 +28,7 @@ type Race struct {
 		State definitions:
 		- "initial" is freshly created before both racers have confirmed a scheduled time
 		- "scheduled" is confirmed but before it starts
+		- "vetoCharacters" (triggered 5 minutes before starting)
 		- "banningCharacters" (triggered 5 minutes before starting)
 		- "pickingCharacters"
 		- "vetoBuilds"
