@@ -17,34 +17,33 @@ var (
 		"Dr. Fetus",                 // 7
 		"Epic Fetus",                // 8
 		"Ipecac",                    // 9
-		"Jacob's Ladder",            // 10
-		"Judas' Shadow",             // 11
-		"Lil' Brimstone",            // 12
-		"Magic Mushroom",            // 13
-		"Mom's Knife",               // 14
-		"Monstro's Lung",            // 15
-		"Polyphemus",                // 16
-		"Proptosis",                 // 17
-		"Sacrificial Dagger",        // 18
-		"Tech.5",                    // 19
-		"Tech X",                    // 20
-		"Brimstone",                 // 21
-		"Incubus",                   // 22
-		"Maw of the Void",           // 23
-		"Crown of Light",            // 24
-		"Godhead",                   // 25
-		"Sacred Heart",              // 26
-		"Mutant Spider + Inner Eye", // 27
-		"Technology + Coal",         // 28
-		"Ludovico + Parasite",       // 29
-		"Fire Mind + 13 luck",       // 30
-		"Tech Zero + more",          // 31
-		"Kamikaze! + Host Hat",      // 32
-		"Mega Blast + more",         // 33
+		"Judas' Shadow",             // 10
+		"Lil' Brimstone",            // 11
+		"Magic Mushroom",            // 12
+		"Mom's Knife",               // 13
+		"Monstro's Lung",            // 14
+		"Polyphemus",                // 15
+		"Proptosis",                 // 16
+		"Sacrificial Dagger",        // 17
+		"Tech.5",                    // 18
+		"Tech X",                    // 19
+		"Brimstone",                 // 20
+		"Incubus",                   // 21
+		"Maw of the Void",           // 22
+		"Crown of Light",            // 23
+		"Godhead",                   // 24
+		"Sacred Heart",              // 25
+		"Mutant Spider + Inner Eye", // 26
+		"Technology + Coal",         // 27
+		"Ludovico + Parasite",       // 28
+		"Fire Mind + 13 luck",       // 29
+		"Tech Zero + more",          // 30
+		"Kamikaze! + Host Hat",      // 31
+		"Mega Blast + more",         // 32
 	}
 
 	buildExceptions = [][]string{
-		{},                                     // 1
+		{"Samae"},                              // 1
 		{"Samael"},                             // 2
 		{"Cain", "Samson", "Azazel", "Samael"}, // 3
 		{}, // 4
@@ -53,30 +52,29 @@ var (
 		{},         // 7
 		{},         // 8
 		{},         // 9
-		{"Azazel", "Samael"}, // 10
-		{"Azazel"},         // 11
+		{"Azazel"}, // 10
+		{},         // 11
 		{},         // 12
 		{},         // 13
-		{},         // 14
-		{"Keeper"}, // 15
+		{"Keeper"}, // 14
+		{},         // 15
 		{},         // 16
 		{},         // 17
-		{},         // 18
-		{"Lilith"}, // 19
+		{"Lilith"}, // 18
+		{},         // 19
 		{},         // 20
 		{},         // 21
-		{},         // 22
-		{"Lilith"}, // 23
+		{"Lilith"}, // 22
+		{},         // 23
 		{},         // 24
 		{},         // 25
-		{},         // 26
-		{"Keeper"}, // 27
+		{"Keeper"}, // 26
+		{},         // 27
 		{},         // 28
-		{},         // 29
+		{"Azazel"}, // 29
 		{"Azazel"}, // 30
-		{"Azazel"}, // 31
+		{},         // 31
 		{},         // 32
-		{},         // 33
 	}
 )
 
@@ -148,8 +146,6 @@ func getBuild(race *models.Race) string {
 	// Get a random build
 	randBuildNum := getRandom(0, len(race.BuildsRemaining)-1)
 	log.Debug("randBuildNum:", randBuildNum)
-	randBuildNum = 14 // Monstro's Lung
-	log.Debug("randBuildNum*:", randBuildNum)
 	randBuild := race.BuildsRemaining[randBuildNum]
 	log.Debug("randBuild:", randBuild)
 
@@ -157,8 +153,6 @@ func getBuild(race *models.Race) string {
 	roundNum := len(race.Builds) + 1
 	character := race.Characters[roundNum-1]
 	log.Debug("character:", character)
-	character = "Keeper"
-	log.Debug("character*:", character)
 	synergizes := true
 	log.Debug("buildExceptions[randBuildNum]:", buildExceptions[randBuildNum])
 	for _, exceptedCharacter := range buildExceptions[randBuildNum] {
