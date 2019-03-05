@@ -43,7 +43,7 @@ var (
 	}
 
 	buildExceptions = [][]string{
-		{"Samae"},                              // 1
+		{"Samael"},                             // 1
 		{"Samael"},                             // 2
 		{"Cain", "Samson", "Azazel", "Samael"}, // 3
 		{}, // 4
