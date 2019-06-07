@@ -8,73 +8,75 @@ import (
 
 var (
 	builds = []string{
-		"20/20",                     // 1
-		"Chocolate Milk",            // 2
-		"Cricket's Body",            // 3
-		"Cricket's Head",            // 4
-		"Dead Eye",                  // 5
-		"Death's Touch",             // 6
-		"Dr. Fetus",                 // 7
-		"Epic Fetus",                // 8
-		"Ipecac",                    // 9
-		"Judas' Shadow",             // 10
-		"Lil' Brimstone",            // 11
-		"Magic Mushroom",            // 12
-		"Mom's Knife",               // 13
-		"Monstro's Lung",            // 14
-		"Polyphemus",                // 15
-		"Proptosis",                 // 16
-		"Sacrificial Dagger",        // 17
-		"Tech.5",                    // 18
-		"Tech X",                    // 19
-		"Brimstone",                 // 20
-		"Incubus",                   // 21
-		"Maw of the Void",           // 22
-		"Crown of Light",            // 23
-		"Godhead",                   // 24
-		"Sacred Heart",              // 25
-		"Mutant Spider + Inner Eye", // 26
-		"Technology + Coal",         // 27
-		"Ludovico + Parasite",       // 28
-		"Fire Mind + 13 luck",       // 29
-		"Tech Zero + more",          // 30
-		"Kamikaze! + Host Hat",      // 31
-		"Mega Blast + more",         // 32
+		"20/20",                            // 1
+		"Cricket's Body",                   // 2
+		"Cricket's Head",                   // 3
+		"Dead Eye",                         // 4
+		"Death's Touch",                    // 5
+		"Dr. Fetus",                        // 6
+		"Epic Fetus",                       // 7
+		"Ipecac",                           // 8
+		"Judas' Shadow",                    // 9
+		"Lil' Brimstone",                   // 10
+		"Magic Mushroom",                   // 11
+		"Mom's Knife",                      // 12
+		"Monstro's Lung",                   // 13
+		"Polyphemus",                       // 14
+		"Proptosis",                        // 15
+		"Sacrificial Dagger",               // 16
+		"Tech.5",                           // 17
+		"Tech X",                           // 18
+		"Brimstone",                        // 19
+		"Incubus",                          // 20
+		"Maw of the Void",                  // 21
+		"Crown of Light",                   // 22
+		"Godhead",                          // 23
+		"Sacred Heart",                     // 24
+		"Chocolate Milk + Steven",          // 25
+		"Jacob's Ladder + There's Options", // 26
+		"Mutant Spider + Inner Eye",        // 27
+		"Technology + Coal",                // 28
+		"Ludovico + Parasite",              // 29
+		"Fire Mind + 13 luck",              // 30
+		"Tech Zero + more",                 // 31
+		"Kamikaze! + Host Hat",             // 32
+		"Mega Blast + more",                // 33
 	}
 
 	buildExceptions = [][]string{
 		{"Samael"},                             // 1
-		{"Samael"},                             // 2
-		{"Cain", "Samson", "Azazel", "Samael"}, // 3
-		{}, // 4
-		{"Azazel", "Lilith", "Keeper"}, // 5
-		{},         // 6
-		{},         // 7
-		{},         // 8
-		{},         // 9
-		{"Azazel"}, // 10
-		{},         // 11
-		{},         // 12
-		{},         // 13
-		{"Keeper"}, // 14
-		{},         // 15
-		{},         // 16
-		{},         // 17
-		{"Lilith"}, // 18
-		{},         // 19
-		{},         // 20
-		{},         // 21
-		{"Lilith"}, // 22
-		{},         // 23
-		{},         // 24
-		{},         // 25
-		{"Keeper"}, // 26
-		{},         // 27
-		{},         // 28
-		{"Azazel"}, // 29
-		{"Azazel"}, // 30
-		{},         // 31
-		{},         // 32
+		{"Cain", "Samson", "Azazel", "Samael"}, // 2
+		{},                                     // 3
+		{"Azazel", "Lilith", "Keeper"},         // 4
+		{"The Forgotten"},                      // 5
+		{},                                     // 6
+		{},                                     // 7
+		{"Azazel"},                             // 8
+		{"Azazel", "The Forgotten"},            // 9
+		{"The Forgotten"},                      // 10
+		{},                                     // 11
+		{},                                     // 12
+		{"Keeper"},                             // 13
+		{},                                     // 14
+		{},                                     // 15
+		{},                                     // 16
+		{"Lilith"},                             // 17
+		{},                                     // 18
+		{},                                     // 19
+		{"The Forgotten"},                      // 20
+		{"Lilith"},                             // 21
+		{"Eve"},                                // 22
+		{},                                     // 23
+		{},                                     // 24
+		{"Samael"},                             // 25
+		{"Azazel"},                             // 26
+		{"Azazel", "Keeper"},                   // 27
+		{},                                     // 28
+		{},                                     // 29
+		{"Azazel", "The Forgotten"},            // 30
+		{"Azazel"},                             // 31
+		{},                                     // 32
+		{},                                     // 33
 	}
 )
 
