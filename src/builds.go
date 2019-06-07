@@ -52,7 +52,7 @@ var (
 		{},                                     // 6
 		{},                                     // 7
 		{"Azazel"},                             // 8
-		{"Azazel", "The Forgotten"},            // 9
+		{"Judas", "Azazel", "The Forgotten"},   // 9
 		{"The Forgotten"},                      // 10
 		{},                                     // 11
 		{},                                     // 12
