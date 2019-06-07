@@ -37,7 +37,7 @@ var (
 		"Mutant Spider + Inner Eye",        // 27
 		"Technology + Coal",                // 28
 		"Ludovico + Parasite",              // 29
-		"Fire Mind + 13 luck",              // 30
+		"Fire Mind + 13 Luck",              // 30
 		"Tech Zero + more",                 // 31
 		"Kamikaze! + Host Hat",             // 32
 		"Mega Blast + more",                // 33
@@ -73,7 +73,7 @@ var (
 		{"Azazel", "Keeper"},                   // 27
 		{},                                     // 28
 		{},                                     // 29
-		{"Azazel", "The Forgotten"},            // 30
+		{"Azazel", "Keeper", "The Forgotten"},  // 30
 		{"Azazel"},                             // 31
 		{},                                     // 32
 		{},                                     // 33
