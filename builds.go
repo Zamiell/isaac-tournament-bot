@@ -6,40 +6,52 @@ import (
 
 var (
 	buildExceptions = [][]string{
-		{},
-		{},                                    // 1
-		{"Cain", "Samson", "Azazel"},          // 2
-		{},                                    // 3
-		{"Azazel", "Lilith", "Keeper"},        // 4
-		{"The Forgotten"},                     // 5
-		{},                                    // 6
-		{},                                    // 7
-		{"Azazel"},                            // 8
-		{"Judas", "Azazel", "The Forgotten"},  // 9
-		{"The Forgotten"},                     // 10
-		{},                                    // 11
-		{},                                    // 12
-		{"Keeper"},                            // 13
-		{},                                    // 14
-		{},                                    // 15
-		{},                                    // 16
-		{"Lilith"},                            // 17
-		{},                                    // 18
-		{},                                    // 19
-		{"The Forgotten"},                     // 20
-		{"Lilith"},                            // 21
-		{"Eve"},                               // 22
-		{},                                    // 23
-		{},                                    // 24
-		{},                                    // 25
-		{"Azazel"},                            // 26
-		{"Azazel", "Keeper"},                  // 27
-		{},                                    // 28
-		{},                                    // 29
-		{"Azazel", "Keeper", "The Forgotten"}, // 30
-		{"Azazel"},                            // 31
-		{},                                    // 32
-		{},                                    // 33
+		{}, // #0 - n/a
+
+		// Treasure Room items
+		{"Cain", "Samson", "Azazel"},   // #1 - Cricket's Body
+		{},                             // #2 - Cricket's Head
+		{"Azazel", "Lilith", "Keeper"}, // #3 - Dead Eye
+		{"The Forgotten"},              // #4 - Death's Touch
+		{},                             // #5 - Dr. Fetus
+		{"Azazel"},                     // #6 - Ipecac
+		{},                             // #7 - Magic Mushroom
+		{},                             // #8 - Mom's Knife
+		{},                             // #9 - Polyphemus
+		{},                             // #10 - Proptosis
+		{},                             // #11 - Tech.5
+		{},                             // #12 - Tech X
+		{},                             // #13 - C Section
+
+		// Devil Room items
+		{}, // #14 - Brimstone
+		{}, // #15 - Maw of the Void
+
+		// Angel Room items
+		{"Eve"}, // #16 - Crown of Light
+		{},      // #17 - Sacred Heart
+		{},      // #18 - Spirit Sword
+		{},      // #19 - Revelation
+
+		// Secret Room items
+		{}, // #20 - Epic Fetus
+
+		// Custom items
+		{}, // #21 - Sawblade
+
+		// Builds
+		{"Azazel", "Keeper"},                  // #22 - 20/20 + The Inner Eye
+		{},                                    // #23 - Chocolate Milk + Steven
+		{},                                    // #24 - Godhead + Cupid's Arrow
+		{},                                    // #25 - Haemolacria + The Sad Onion
+		{"The Forgotten"},                     // #26 - Incubus + Incubus
+		{"Keeper"},                            // #27 - Monstro's Lung + The Sad Onion
+		{},                                    // #28 - Technology + A Lump of Coal
+		{},                                    // #29 - Twisted Pair + Twisted Pair
+		{},                                    // #30 - Pointy Rib + Eve's Mascara
+		{"Azazel", "Keeper", "The Forgotten"}, // #31 - Fire Mind + Mysterious Liquid + 13 Luck
+		{"Azazel", "Keeper", "The Forgotten"}, // #32 - Eye of the Occult + Loki's Horns + 15 Luck
+		{},                                    // #33 - Distant Admiration + Friend Zone + Forever Alone + BFFS!
 	}
 )
 
