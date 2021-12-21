@@ -351,7 +351,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		if tournament.Ruleset == "team" {
 			msg += discordUser1.Mention() + " and " + discordUser2.Mention() + " are the team captains; I will only listen to them.\n"
 		}
-		msg += "You can use suggest a time to your opponent with something like: `!time 6pm sat`\n"
+		msg += "You can suggest a time to your opponent with something like: `!time 6pm sat`\n"
 		msg += "If they accept with `!timeok`, then the match will be officially scheduled."
 		discordSend(channelID, msg)
 
