@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"strconv"
-	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -35,7 +34,7 @@ func commandDebug(m *discordgo.MessageCreate, args []string) {
 	}
 
 	msg := "DEBUG:\n"
-	msg += strconv.Itoa(len(race.Characters))
-	msg += strings.Join(race.Characters, ",")
+	msg += strconv.Itoa(len(race.Characters)) + "\n"
+	msg += "A" + sliceToString(race.Characters) + "A\n"
 	discordSend(m.ChannelID, msg)
 }
