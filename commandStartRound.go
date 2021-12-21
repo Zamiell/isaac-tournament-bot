@@ -98,7 +98,15 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			guild = v
 		}
 
-		members := guild.Members
+		var members []*discordgo.Member
+		if v, err := discordSession.GuildMembers(discordGuildID, "0", 1000); err != nil {
+			msg := "Failed to get the Discord guild members: " + err.Error()
+			log.Error(msg)
+			discordSend(m.ChannelID, msg)
+			return
+		} else {
+			members = v
+		}
 
 		// Find the Discord ID of the two racers and add them to the database if they are not already
 		var racer1 *User
