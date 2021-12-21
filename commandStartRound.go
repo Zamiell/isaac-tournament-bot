@@ -98,6 +98,17 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			guild = v
 		}
 
+		// Get the Discord guild members
+		var members []*discordgo.Member
+		if v, err := discord.GuildMembers(discordGuildID, "", 1000); err != nil {
+			msg := "Failed to get the Discord guild members: " + err.Error()
+			log.Error(msg)
+			discordSend(m.ChannelID, msg)
+			return
+		} else {
+			members = v
+		}
+
 		// Find the Discord ID of the two racers and add them to the database if they are not already
 		var racer1 *User
 		var racer2 *User
@@ -117,7 +128,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 					team2DiscordID = role.ID
 				}
 			}
-			for _, member := range guild.Members {
+			for _, member := range members {
 				if stringInSlice(discordTeamCaptainRoleID, member.Roles) && stringInSlice(team1DiscordID, member.Roles) {
 					discordUser1 = member.User
 					break
@@ -130,7 +141,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 				discordSend(m.ChannelID, msg)
 				return
 			}
-			for _, member := range guild.Members {
+			for _, member := range members {
 				if stringInSlice(discordTeamCaptainRoleID, member.Roles) && stringInSlice(team2DiscordID, member.Roles) {
 					discordUser2 = member.User
 					break
@@ -160,14 +171,14 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			}
 		} else {
 			// This is a 1v1 match
-			discordUser1 = discordGetUser(guild, player1Name)
+			discordUser1 = discordGetUserFromGuild(guild, player1Name)
 			if discordUser1 == nil {
 				msg := "Failed to find \"" + player1Name + "\" in the Discord server."
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
 			}
-			discordUser2 = discordGetUser(guild, player2Name)
+			discordUser2 = discordGetUserFromGuild(guild, player2Name)
 			if discordUser2 == nil {
 				msg := "Failed to find \"" + player2Name + "\" in this Discord server."
 				log.Error(msg)

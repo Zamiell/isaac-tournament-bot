@@ -206,10 +206,8 @@ func discordSend(channelID string, msg string) {
 	}
 }
 
-func discordGetUser(guild *discordgo.Guild, name string) *discordgo.User {
-	for i, member := range guild.Members {
-		log.Debug(i, member.User.ID, member.User.Username, member.Nick)
-
+func discordGetUserFromGuild(guild *discordgo.Guild, name string) *discordgo.User {
+	for _, member := range guild.Members {
 		username := member.Nick
 		if username == "" {
 			username = member.User.Username
