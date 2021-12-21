@@ -6,21 +6,39 @@ import (
 
 var (
 	characters = []string{
-		"Isaac",     // 1
-		"Magdalene", // 2
-		"Cain",      // 3
-		"Judas",     // 4
-		"Blue Baby", // 5
-		"Eve",       // 6
-		"Samson",    // 7
-		"Azazel",    // 8
-		"Lazarus",   // 9
-		"Eden",      // 10
-		"The Lost",  // 11
-		"Lilith",    // 12
-		"Keeper",    // 13
-		"Apollyon",  // 14
-		"Forgotten", // 15
+		"Isaac",
+		"Magdalene",
+		"Cain",
+		"Judas",
+		"Blue Baby",
+		"Eve",
+		"Samson",
+		"Azazel",
+		"Lazarus",
+		"Eden",
+		"The Lost",
+		"Lilith",
+		"Keeper",
+		"Apollyon",
+		"Forgotten",
+		"Bethany",
+		// "Jacob & Esau" // Meme character
+		"Tainted Isaac",
+		"Tainted Magdalene",
+		"Tainted Judas",
+		"Tainted Blue Baby",
+		"Tainted Eve",
+		"Tainted Samson",
+		"Tainted Azazel",
+		// "Tainted Lazarus", // Meme character
+		// "Tainted Eden", // Meme character
+		"Tainted Lost",
+		"Tainted Lilith",
+		"Tainted Keeper",
+		"Tainted Apollyon",
+		// "Tainted Forgotten", // Meme character
+		"Tainted Bethany",
+		"Tainted Jacob",
 	}
 )
 
