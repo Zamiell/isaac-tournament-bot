@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -11,29 +9,15 @@ import (
 func userGet(u *discordgo.User) (*User, error) {
 	var user *User
 
-	// Get the Discord guild object
-	var guild *discordgo.Guild
-	if v, err := discordSession.Guild(discordGuildID); err != nil {
+	// Get the Discord guild members
+	var members []*discordgo.Member
+	if v, err := discordSession.GuildMembers(discordGuildID, "0", 1000); err != nil {
 		return user, err
 	} else {
-		guild = v
+		members = v
 	}
 
-	// Get their custom nickname for the Discord server, if any
-	username := ""
-	for _, member := range guild.Members {
-		if member.User.ID != u.ID {
-			continue
-		}
-
-		username = member.Nick
-		if username == "" {
-			username = member.User.Username
-		}
-	}
-	if username == "" {
-		return user, errors.New("Failed to find \"" + u.Username + "\" in the Discord server.")
-	}
+	username := getDiscordName(members, u.ID)
 
 	// See if this user exists in the database already
 	var exists bool
@@ -56,7 +40,7 @@ func userGet(u *discordgo.User) (*User, error) {
 			return user, nil
 		}
 
-		// Their Discord nickname has changed since they were added to the database,
+		// Their Discord username/nickname has changed since they were added to the database,
 		// so we need to update it
 		user.Username = username
 		if err := modals.Users.SetUsername(u.ID, username); err != nil {

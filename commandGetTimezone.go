@@ -9,32 +9,22 @@ func commandGetTimezone(m *discordgo.MessageCreate, args []string) {
 		commandGetTimezonePrint(m)
 		return
 	}
+	username := args[0]
 
-	// Get the Discord guild object
-	var guild *discordgo.Guild
-	if v, err := discordSession.Guild(discordGuildID); err != nil {
-		msg := "Failed to get the Discord guild: " + err.Error()
+	// Get the Discord guild members
+	var members []*discordgo.Member
+	if v, err := discordSession.GuildMembers(discordGuildID, "0", 1000); err != nil {
+		msg := "Failed to get the Discord guild members: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		guild = v
+		members = v
 	}
 
-	// Find the discord ID of the user
-	var discordUser *discordgo.User
-	for _, member := range guild.Members {
-		username := member.Nick
-		if username == "" {
-			username = member.User.Username
-		}
-		if username == args[0] {
-			discordUser = member.User
-			break
-		}
-	}
+	discordUser := getDiscordUserByName(members, username)
 	if discordUser == nil {
-		msg := "Failed to find \"" + args[0] + "\" in the Discord server."
+		msg := "Failed to find \"" + username + "\" in the Discord server."
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return

@@ -210,16 +210,41 @@ func discordSend(channelID string, msg string) {
 	}
 }
 
-func discordGetUserFromGuild(members []*discordgo.Member, name string) *discordgo.User {
+func getDiscordUserByName(members []*discordgo.Member, name string) *discordgo.User {
 	for _, member := range members {
 		username := member.Nick
 		if username == "" {
 			username = member.User.Username
 		}
+
 		if username == name {
 			return member.User
 		}
 	}
 
 	return nil
+}
+
+func getDiscordUserByID(members []*discordgo.Member, id string) *discordgo.User {
+	for _, member := range members {
+		if member.User.ID == id {
+			return member.User
+		}
+	}
+
+	return nil
+}
+
+func getDiscordName(members []*discordgo.Member, id string) string {
+	for _, member := range members {
+		if member.User.ID == id {
+			if member.Nick != "" {
+				return member.Nick
+			}
+
+			return member.User.Username
+		}
+	}
+
+	return "Unknown"
 }

@@ -38,24 +38,18 @@ func commandForcePick(m *discordgo.MessageCreate, args []string) {
 		activeRacerDiscordID = race.Racer2.DiscordID
 	}
 
-	// Get the Discord guild object
-	var guild *discordgo.Guild
-	if v, err := discordSession.Guild(discordGuildID); err != nil {
-		msg := "Failed to get the Discord guild: " + err.Error()
+	// Get the Discord guild members
+	var members []*discordgo.Member
+	if v, err := discordSession.GuildMembers(discordGuildID, "0", 1000); err != nil {
+		msg := "Failed to get the Discord guild members: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	} else {
-		guild = v
+		members = v
 	}
 
-	var discordUser *discordgo.User
-	for _, member := range guild.Members {
-		if member.User.ID == activeRacerDiscordID {
-			discordUser = member.User
-			break
-		}
-	}
+	discordUser := getDiscordUserByID(members, activeRacerDiscordID)
 	if discordUser == nil {
 		msg := "Failed to find the active racer in the Discord server."
 		log.Error(msg)
