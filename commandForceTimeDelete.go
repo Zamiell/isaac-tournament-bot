@@ -35,7 +35,7 @@ func commandForceTimeDelete(m *discordgo.MessageCreate, args []string) {
 
 	// Get the Discord guild object
 	var guild *discordgo.Guild
-	if v, err := discord.Guild(discordGuildID); err != nil {
+	if v, err := discordSession.Guild(discordGuildID); err != nil {
 		msg := "Failed to get the Discord guild: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)

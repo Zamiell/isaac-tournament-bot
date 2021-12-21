@@ -11,7 +11,7 @@ func commandEndRound(m *discordgo.MessageCreate, args []string) {
 
 	// Get all of the channels
 	var channels []*discordgo.Channel
-	if v, err := discord.GuildChannels(discordGuildID); err != nil {
+	if v, err := discordSession.GuildChannels(discordGuildID); err != nil {
 		msg := "Failed to get the Discord server channels: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
@@ -43,7 +43,7 @@ func commandEndRound(m *discordgo.MessageCreate, args []string) {
 		}
 
 		// Delete it from Discord
-		if _, err := discord.ChannelDelete(channel.ID); err != nil {
+		if _, err := discordSession.ChannelDelete(channel.ID); err != nil {
 			msg := "Failed to delete the \"" + channel.Name + "\" channel: " + err.Error()
 			log.Error(msg)
 			discordSend(m.ChannelID, msg)

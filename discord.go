@@ -17,7 +17,7 @@ const (
 )
 
 var (
-	discord                  *discordgo.Session
+	discordSession           *discordgo.Session
 	discordBotID             string
 	discordGuildName         string
 	discordGuildID           string
@@ -49,18 +49,22 @@ func discordInit() {
 		log.Fatal("Failed to create a Discord session:", err)
 		return
 	} else {
-		discord = d
+		discordSession = d
 	}
 
 	// Register function handlers for various events
-	discord.AddHandler(discordReady)
-	discord.AddHandler(discordMessageCreate)
+	discordSession.AddHandler(discordReady)
+	discordSession.AddHandler(discordMessageCreate)
 
 	// Register function handlers for all of the commands
 	commandInit()
 
+	// Set all intents
+	// https://github.com/bwmarrin/discordgo/wiki/FAQ#gateway-intents
+	discordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
+
 	// Open the websocket and begin listening
-	if err := discord.Open(); err != nil {
+	if err := discordSession.Open(); err != nil {
 		log.Fatal("Error opening Discord session: ", err)
 		return
 	}
@@ -97,7 +101,7 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Get the ID of several roles
 	var roles []*discordgo.Role
-	if v, err := discord.GuildRoles(discordGuildID); err != nil {
+	if v, err := discordSession.GuildRoles(discordGuildID); err != nil {
 		log.Fatal("Failed to get the roles for the guild: " + err.Error())
 		return
 	} else {
@@ -128,7 +132,7 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Get the ID of the general channel
 	var channels []*discordgo.Channel
-	if v, err := discord.GuildChannels(discordGuildID); err != nil {
+	if v, err := discordSession.GuildChannels(discordGuildID); err != nil {
 		log.Fatal("Failed to get the Discord server channels: " + err.Error())
 	} else {
 		channels = v
@@ -146,7 +150,7 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 	}
 
 	// Get the Discord guild members
-	if err := discord.RequestGuildMembers(discordGuildID, "", 0, false); err != nil {
+	if err := discordSession.RequestGuildMembers(discordGuildID, "", 0, false); err != nil {
 		log.Fatal("Failed to request the Discord guild members: " + err.Error())
 	}
 }
@@ -154,7 +158,7 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Log the message
 	var channelName string
-	if v, err := discord.Channel(m.ChannelID); err != nil {
+	if v, err := discordSession.Channel(m.ChannelID); err != nil {
 		log.Error("Failed to get the channel name for the channel ID of \""+m.ChannelID+"\":", err)
 	} else {
 		channelName = v.Name
@@ -205,7 +209,7 @@ func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 */
 
 func discordSend(channelID string, msg string) {
-	if _, err := discord.ChannelMessageSend(channelID, msg); err != nil {
+	if _, err := discordSession.ChannelMessageSend(channelID, msg); err != nil {
 		log.Error("Failed to send \"" + msg + "\" to \"" + channelID + "\": " + err.Error())
 		return
 	}

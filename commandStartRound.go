@@ -44,7 +44,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 
 	// Get the Discord roles
 	var roles []*discordgo.Role
-	if v, err := discord.GuildRoles(discordGuildID); err != nil {
+	if v, err := discordSession.GuildRoles(discordGuildID); err != nil {
 		log.Fatal("Failed to get the roles for the guild: " + err.Error())
 		return
 	} else {
@@ -89,7 +89,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 
 		// Get the Discord guild object
 		var guild *discordgo.Guild
-		if v, err := discord.Guild(discordGuildID); err != nil {
+		if v, err := discordSession.Guild(discordGuildID); err != nil {
 			msg := "Failed to get the Discord guild: " + err.Error()
 			log.Error(msg)
 			discordSend(m.ChannelID, msg)
@@ -200,7 +200,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 
 		// Create a channel for this match
 		var channelID string
-		if v, err := discord.GuildChannelCreate(discordGuildID, channelName, discordgo.ChannelTypeGuildText); err != nil {
+		if v, err := discordSession.GuildChannelCreate(discordGuildID, channelName, discordgo.ChannelTypeGuildText); err != nil {
 			msg := "Failed to create the Discord channel of \"" + channelName + "\": " + err.Error()
 			log.Error(msg)
 			discordSend(m.ChannelID, msg)
@@ -293,7 +293,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 					Allow: permissionsReadWrite,
 				})
 		}
-		if _, err := discord.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
+		if _, err := discordSession.ChannelEditComplex(channelID, &discordgo.ChannelEdit{
 			PermissionOverwrites: permissions,
 			ParentID:             tournament.DiscordCategoryID,
 		}); err != nil {
@@ -366,7 +366,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 
 	// Rename the channel category
 	categoryName := "Round " + round + " - " + tournament.Ruleset
-	if _, err := discord.ChannelEdit(tournament.DiscordCategoryID, categoryName); err != nil {
+	if _, err := discordSession.ChannelEdit(tournament.DiscordCategoryID, categoryName); err != nil {
 		msg := "Failed to rename the channel category: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)

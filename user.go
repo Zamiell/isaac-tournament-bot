@@ -13,7 +13,7 @@ func userGet(u *discordgo.User) (*User, error) {
 
 	// Get the Discord guild object
 	var guild *discordgo.Guild
-	if v, err := discord.Guild(discordGuildID); err != nil {
+	if v, err := discordSession.Guild(discordGuildID); err != nil {
 		return user, err
 	} else {
 		guild = v

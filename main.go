@@ -61,7 +61,7 @@ func main() {
 	// Initialize the other parts of the program
 	loadAllBuilds()
 	discordInit()
-	defer discord.Close()
+	defer discordSession.Close()
 	challongeInit()
 	matchInit()
 	languageInit()

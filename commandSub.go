@@ -11,7 +11,7 @@ import (
 // Check to see if they are an administrator
 func isAdmin(m *discordgo.MessageCreate) bool {
 	var member *discordgo.Member
-	if v, err := discord.GuildMember(discordGuildID, m.Author.ID); err != nil {
+	if v, err := discordSession.GuildMember(discordGuildID, m.Author.ID); err != nil {
 		msg := "Failed to get the presence for the user: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
