@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	discordAdminRoleName       = "Admins"
-	discordBotRoleName         = "Bots"
-	discordCasterRoleName      = "Casters"
+	discordAdminRoleName       = "Admin"
+	discordBotRoleName         = "Bot"
+	discordCasterRoleName      = "Caster"
 	discordTeamCaptainRoleName = "Team Captain"
 	discordGeneralChannelName  = "general"
 )
