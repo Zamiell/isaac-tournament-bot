@@ -41,7 +41,7 @@ func isAdmin(m *discordgo.MessageCreate) bool {
 func getTimezone(timezone string) string {
 	msg := timezone + " "
 	msg += "(" + getTimezoneShort(timezone) + " / " + getTimezoneGMT(timezone) + ")"
-	return msg
+	return "`" + msg + "`"
 }
 
 func getTimezoneShort(timezone string) string {
