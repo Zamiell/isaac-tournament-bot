@@ -205,3 +205,19 @@ func discordSend(channelID string, msg string) {
 		return
 	}
 }
+
+func discordGetUser(guild *discordgo.Guild, name string) *discordgo.User {
+	for i, member := range guild.Members {
+		log.Debug(i, member.User.ID, member.User.Username, member.Nick)
+
+		username := member.Nick
+		if username == "" {
+			username = member.User.Username
+		}
+		if username == name {
+			return member.User
+		}
+	}
+
+	return nil
+}

@@ -103,8 +103,8 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		var racer2 *User
 		var team1DiscordID string
 		var team2DiscordID string
-		var discord1 *discordgo.User
-		var discord2 *discordgo.User
+		var discordUser1 *discordgo.User
+		var discordUser2 *discordgo.User
 		if tournament.Ruleset == "team" {
 			// This is a team match, so we only need to find the team captain
 			for _, role := range roles {
@@ -119,12 +119,12 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			}
 			for _, member := range guild.Members {
 				if stringInSlice(discordTeamCaptainRoleID, member.Roles) && stringInSlice(team1DiscordID, member.Roles) {
-					discord1 = member.User
+					discordUser1 = member.User
 					break
 				}
 			}
 
-			if discord1 == nil {
+			if discordUser1 == nil {
 				msg := "Failed to find \"" + player1Name + "\" (the team captain) in the Discord server."
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
@@ -132,17 +132,17 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			}
 			for _, member := range guild.Members {
 				if stringInSlice(discordTeamCaptainRoleID, member.Roles) && stringInSlice(team2DiscordID, member.Roles) {
-					discord2 = member.User
+					discordUser2 = member.User
 					break
 				}
 			}
-			if discord2 == nil {
+			if discordUser2 == nil {
 				msg := "Failed to find \"" + player2Name + "\" (the team captain) in the Discord server."
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
 			}
-			if v, err := userGet(discord1); err != nil {
+			if v, err := userGet(discordUser1); err != nil {
 				msg := "Failed to get the user from the database: " + err.Error()
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
@@ -150,7 +150,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			} else {
 				racer1 = v
 			}
-			if v, err := userGet(discord2); err != nil {
+			if v, err := userGet(discordUser2); err != nil {
 				msg := "Failed to get the user from the database: " + err.Error()
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
@@ -160,39 +160,21 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			}
 		} else {
 			// This is a 1v1 match
-			for _, member := range guild.Members {
-				username := member.Nick
-				if username == "" {
-					username = member.User.Username
-				}
-				if username == player1Name {
-					discord1 = member.User
-					break
-				}
-			}
-			if discord1 == nil {
+			discordUser1 = discordGetUser(guild, player1Name)
+			if discordUser1 == nil {
 				msg := "Failed to find \"" + player1Name + "\" in the Discord server."
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
 			}
-			for _, member := range guild.Members {
-				username := member.Nick
-				if username == "" {
-					username = member.User.Username
-				}
-				if username == player2Name {
-					discord2 = member.User
-					break
-				}
-			}
-			if discord2 == nil {
+			discordUser2 = discordGetUser(guild, player2Name)
+			if discordUser2 == nil {
 				msg := "Failed to find \"" + player2Name + "\" in this Discord server."
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
 			}
-			if v, err := userGet(discord1); err != nil {
+			if v, err := userGet(discordUser1); err != nil {
 				msg := "Failed to get the user from the database: " + err.Error()
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
@@ -200,7 +182,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			} else {
 				racer1 = v
 			}
-			if v, err := userGet(discord2); err != nil {
+			if v, err := userGet(discordUser2); err != nil {
 				msg := "Failed to get the user from the database: " + err.Error()
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
@@ -322,14 +304,14 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		// Find out if the racers have set their timezone
 		msg := ""
 		if racer1.Timezone.Valid {
-			msg += discord1.Mention() + " has a timezone of: " + getTimezone(racer1.Timezone.String) + "\n"
+			msg += discordUser1.Mention() + " has a timezone of: " + getTimezone(racer1.Timezone.String) + "\n"
 		} else {
-			msg += discord1.Mention() + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
+			msg += discordUser1.Mention() + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
 		}
 		if racer2.Timezone.Valid {
-			msg += discord2.Mention() + " has a timezone of: " + getTimezone(racer2.Timezone.String) + "\n"
+			msg += discordUser2.Mention() + " has a timezone of: " + getTimezone(racer2.Timezone.String) + "\n"
 		} else {
-			msg += discord2.Mention() + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
+			msg += discordUser2.Mention() + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
 		}
 
 		// Calculate the difference between the two timezones
@@ -350,21 +332,21 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 
 		// Find out if the racers have set their stream URL
 		if racer1.StreamURL.Valid {
-			msg += discord1.Mention() + " has a stream of: <" + racer1.StreamURL.String + ">\n"
+			msg += discordUser1.Mention() + " has a stream of: <" + racer1.StreamURL.String + ">\n"
 		} else {
-			msg += discord1.Mention() + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"
+			msg += discordUser1.Mention() + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"
 		}
 		if racer2.StreamURL.Valid {
-			msg += discord2.Mention() + " has a stream of: <" + racer2.StreamURL.String + ">\n"
+			msg += discordUser2.Mention() + " has a stream of: <" + racer2.StreamURL.String + ">\n"
 		} else {
-			msg += discord2.Mention() + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"
+			msg += discordUser2.Mention() + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"
 		}
 		msg += "\n"
 
 		// Give the welcome message
 		msg += "Please discuss the times that each of you are available to play this week.\n"
 		if tournament.Ruleset == "team" {
-			msg += discord1.Mention() + " and " + discord2.Mention() + " are the team captains; I will only listen to them.\n"
+			msg += discordUser1.Mention() + " and " + discordUser2.Mention() + " are the team captains; I will only listen to them.\n"
 		}
 		msg += "You can use suggest a time to your opponent with something like: `!time 6pm sat`\n"
 		msg += "If they accept with `!timeok`, then the match will be officially scheduled."
