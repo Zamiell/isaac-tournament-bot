@@ -2,6 +2,8 @@ package main
 
 import (
 	"database/sql"
+	"strconv"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -33,11 +35,7 @@ func commandDebug(m *discordgo.MessageCreate, args []string) {
 	}
 
 	msg := "DEBUG:\n"
-	if race.Racer1.CasterAlwaysOk {
-		msg += "Racer 1 \"" + race.Racer1.Username + "\" has enabled automatic caster approval.\n"
-	}
-	if race.Racer2.CasterAlwaysOk {
-		msg += "Racer 2 \"" + race.Racer2.Username + "\" has enabled automatic caster approval.\n"
-	}
+	msg += strconv.Itoa(len(race.Characters))
+	msg += strings.Join(race.Characters, ",")
 	discordSend(m.ChannelID, msg)
 }
