@@ -9,19 +9,19 @@ var (
 		{}, // #0 - n/a
 
 		// Treasure Room items
-		{"Cain", "Samson", "Azazel"},   // #1 - Cricket's Body
-		{},                             // #2 - Cricket's Head
-		{"Azazel", "Lilith", "Keeper"}, // #3 - Dead Eye
-		{"The Forgotten"},              // #4 - Death's Touch
-		{},                             // #5 - Dr. Fetus
-		{"Azazel"},                     // #6 - Ipecac
-		{},                             // #7 - Magic Mushroom
-		{},                             // #8 - Mom's Knife
-		{},                             // #9 - Polyphemus
-		{},                             // #10 - Proptosis
-		{},                             // #11 - Tech.5
-		{},                             // #12 - Tech X
-		{},                             // #13 - C Section
+		{"Cain", "Samson", "Azazel", "Tainted Azazel"}, // #1 - Cricket's Body
+		{}, // #2 - Cricket's Head
+		{"Azazel", "Lilith", "Keeper", "Tainted Azazel", "Tainted Keeper"}, // #3 - Dead Eye
+		{"The Forgotten"}, // #4 - Death's Touch
+		{},                // #5 - Dr. Fetus
+		{"Azazel"},        // #6 - Ipecac
+		{},                // #7 - Magic Mushroom
+		{},                // #8 - Mom's Knife
+		{},                // #9 - Polyphemus
+		{},                // #10 - Proptosis
+		{},                // #11 - Tech.5
+		{},                // #12 - Tech X
+		{},                // #13 - C Section
 
 		// Devil Room items
 		{}, // #14 - Brimstone
@@ -40,18 +40,18 @@ var (
 		{}, // #21 - Sawblade
 
 		// Builds
-		{"Azazel", "Keeper"},                  // #22 - 20/20 + The Inner Eye
-		{},                                    // #23 - Chocolate Milk + Steven
-		{},                                    // #24 - Godhead + Cupid's Arrow
-		{},                                    // #25 - Haemolacria + The Sad Onion
-		{"The Forgotten"},                     // #26 - Incubus + Incubus
-		{"Keeper"},                            // #27 - Monstro's Lung + The Sad Onion
-		{},                                    // #28 - Technology + A Lump of Coal
-		{},                                    // #29 - Twisted Pair + Twisted Pair
-		{},                                    // #30 - Pointy Rib + Eve's Mascara
-		{"Azazel", "Keeper", "The Forgotten"}, // #31 - Fire Mind + Mysterious Liquid + 13 Luck
-		{"Azazel", "Keeper", "The Forgotten"}, // #32 - Eye of the Occult + Loki's Horns + 15 Luck
-		{},                                    // #33 - Distant Admiration + Friend Zone + Forever Alone + BFFS!
+		{"Azazel", "Keeper", "Tainted Keeper"}, // #22 - 20/20 + The Inner Eye
+		{},                                     // #23 - Chocolate Milk + Steven
+		{},                                     // #24 - Godhead + Cupid's Arrow
+		{},                                     // #25 - Haemolacria + The Sad Onion
+		{"The Forgotten"},                      // #26 - Incubus + Incubus
+		{"Keeper", "Tainted Keeper"},           // #27 - Monstro's Lung + The Sad Onion
+		{},                                     // #28 - Technology + A Lump of Coal
+		{},                                     // #29 - Twisted Pair + Twisted Pair
+		{},                                     // #30 - Pointy Rib + Eve's Mascara
+		{"Azazel", "Keeper", "The Forgotten", "Tainted Azazel", "Tainted Keeper"}, // #31 - Fire Mind + Mysterious Liquid + 13 Luck
+		{"Azazel", "Keeper", "The Forgotten", "Tainted Azazel", "Tainted Keeper"}, // #32 - Eye of the Occult + Loki's Horns + 15 Luck
+		{}, // #33 - Distant Admiration + Friend Zone + Forever Alone + BFFS!
 	}
 )
 
