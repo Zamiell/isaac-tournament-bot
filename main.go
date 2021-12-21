@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"path"
+	"path/filepath"
 	"syscall"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -14,7 +15,7 @@ import (
 )
 
 var (
-	projectPath = path.Join(os.Getenv("GOPATH"), "src", "github.com", "Zamiell", "isaac-tournament-bot")
+	projectPath string
 	log         *logging.Logger
 	modals      *Models
 	builds      = make([][]IsaacItem, 0)
@@ -35,6 +36,14 @@ func main() {
 	log.Info("+--------------------------------+")
 	log.Info("| Starting isaac-tournament-bot. |")
 	log.Info("+--------------------------------+")
+
+	// Get the project path
+	// https://stackoverflow.com/questions/18537257/
+	if v, err := os.Executable(); err != nil {
+		log.Fatal("Failed to get the path of the currently running executable:", err)
+	} else {
+		projectPath = filepath.Dir(v)
+	}
 
 	// Load the ".env" file which contains environment variables with secret values
 	if err := godotenv.Load(path.Join(projectPath, ".env")); err != nil {
