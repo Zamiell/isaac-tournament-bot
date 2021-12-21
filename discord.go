@@ -144,6 +144,11 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 	if !found {
 		log.Fatal("Failed to find the \"" + discordGeneralChannelName + "\" channel.")
 	}
+
+	// Get the Discord guild members
+	if err := discord.RequestGuildMembers(discordGuildID, "", 0, false); err != nil {
+		log.Fatal("Failed to request the Discord guild members: " + err.Error())
+	}
 }
 
 func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
