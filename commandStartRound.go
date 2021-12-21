@@ -87,17 +87,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		foundPlayers = append(foundPlayers, player2Name)
 		round = floatToString(match["round"].(float64))
 
-		// Get the Discord guild object
-		var guild *discordgo.Guild
-		if v, err := discordSession.Guild(discordGuildID); err != nil {
-			msg := "Failed to get the Discord guild: " + err.Error()
-			log.Error(msg)
-			discordSend(m.ChannelID, msg)
-			return
-		} else {
-			guild = v
-		}
-
+		// Get the Discord guild members
 		var members []*discordgo.Member
 		if v, err := discordSession.GuildMembers(discordGuildID, "0", 1000); err != nil {
 			msg := "Failed to get the Discord guild members: " + err.Error()
@@ -170,14 +160,14 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			}
 		} else {
 			// This is a 1v1 match
-			discordUser1 = discordGetUserFromGuild(guild, player1Name)
+			discordUser1 = discordGetUserFromGuild(members, player1Name)
 			if discordUser1 == nil {
 				msg := "Failed to find \"" + player1Name + "\" in the Discord server."
 				log.Error(msg)
 				discordSend(m.ChannelID, msg)
 				return
 			}
-			discordUser2 = discordGetUserFromGuild(guild, player2Name)
+			discordUser2 = discordGetUserFromGuild(members, player2Name)
 			if discordUser2 == nil {
 				msg := "Failed to find \"" + player2Name + "\" in this Discord server."
 				log.Error(msg)

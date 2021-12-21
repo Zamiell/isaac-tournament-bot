@@ -148,11 +148,6 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 	if !found {
 		log.Fatal("Failed to find the \"" + discordGeneralChannelName + "\" channel.")
 	}
-
-	// Get the Discord guild members
-	if err := discordSession.RequestGuildMembers(discordGuildID, "", 0, false); err != nil {
-		log.Fatal("Failed to request the Discord guild members: " + err.Error())
-	}
 }
 
 func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -215,8 +210,8 @@ func discordSend(channelID string, msg string) {
 	}
 }
 
-func discordGetUserFromGuild(guild *discordgo.Guild, name string) *discordgo.User {
-	for _, member := range guild.Members {
+func discordGetUserFromGuild(members []*discordgo.Member, name string) *discordgo.User {
+	for _, member := range members {
 		username := member.Nick
 		if username == "" {
 			username = member.User.Username
