@@ -1,3 +1,20 @@
 #!/bin/bash
 
-GOPATH=/root/go /usr/local/go/bin/go run /root/go/src/github.com/Zamiell/isaac-tournament-bot/src/*.go
+# Get the directory of this script
+# https://stackoverflow.com/questions/59895/getting-the-source-directory-of-a-bash-script-from-within
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+# Get the name of the repository
+# https://stackoverflow.com/questions/23162299/how-to-get-the-last-part-of-dirname-in-bash/23162553
+REPO="$(basename "$DIR")"
+
+# Ensure that the "logs" directory exists
+# (if it does not exist, Supervisor will fail to start the service)
+mkdir -p "$DIR/logs"
+
+"$DIR/build.sh"
+if [[ $? -ne 0 ]]; then
+  exit 1
+fi
+cd "$DIR"
+"$DIR/$REPO"
