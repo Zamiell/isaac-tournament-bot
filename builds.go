@@ -85,8 +85,9 @@ var (
 
 		// #21 - Sawblade
 		// Bethany - Very complicated to play orbitals with her because she can't protect herself from losing the deal with soul hearts
+		// Tainted Eve - Impossible to play orbitals with Tainted Eve's clots, they will disappear very quickly
 		// Tainted Lost - Very complicated to play orbitals because of one-time mantles
-		{"Bethany", "Tainted Lost"},
+		{"Bethany", "Tainted Eve", "Tainted Lost"},
 
 		// ------
 		// Builds
