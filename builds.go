@@ -88,7 +88,10 @@ var (
 		// Tainted Lost - Very complicated to play orbitals because of one-time mantles
 		{"Bethany", "Tainted Lost"},
 
+		// ------
 		// Builds
+		// ------
+
 		{}, // #22 - 20/20 + The Inner Eye
 		{}, // #23 - Chocolate Milk + Steven
 
