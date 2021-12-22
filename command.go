@@ -94,6 +94,7 @@ func commandInit() {
 	commandHandlerMap["rand"] = commandRandom
 	commandHandlerMap["roll"] = commandRandom
 	commandHandlerMap["randchar"] = commandRandChar
+	commandHandlerMap["randcharacter"] = commandRandChar
 	commandHandlerMap["randbuild"] = commandRandBuild
 	commandHandlerMap["randitem"] = commandRandBuild
 	commandHandlerMap["getnext"] = commandGetNext
