@@ -15,6 +15,7 @@ func commandHelpGetMsg() string {
 	msg += "-----------------------------------------------------------------------\n"
 	msg += "!help                    Get a list of all of the commands\n"
 	msg += "!r+                      Get info about the Racing+ mod\n"
+	msg += "!bracket                 Get the link to the bracket\n"
 	msg += "!timezone                Get your stored timezone\n"
 	msg += "!timezone [timezone]     Set your stored timezone\n"
 	msg += "!gettimezone [username]  Get the timezone of the specified person\n"
@@ -84,6 +85,7 @@ func commandInit() {
 	commandHandlerMap["r+"] = commandRacingPlus
 	commandHandlerMap["racing+"] = commandRacingPlus
 	commandHandlerMap["racingplus"] = commandRacingPlus
+	commandHandlerMap["bracket"] = commandBracket
 	commandHandlerMap["timezone"] = commandTimezone
 	commandHandlerMap["gettimezone"] = commandGetTimezone
 	commandHandlerMap["stream"] = commandStream

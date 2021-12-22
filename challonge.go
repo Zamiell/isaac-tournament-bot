@@ -24,7 +24,7 @@ type Tournament struct {
 var (
 	challongeUsername string
 	challongeAPIKey   string
-	tournaments       = make(map[string]Tournament)
+	tournaments       = make(map[string]Tournament) // Indexed by Challonge URL suffix
 
 	// We don't want to use the default http.Client structure because it has no default timeout set
 	myHTTPClient = &http.Client{
@@ -110,7 +110,7 @@ func challongeInit() {
 			// log.Info("We are an admin of Challonge tournament: " + jsonTournament["name"].(string))
 			if jsonTournament["url"] == tournamentURL {
 				found = true
-				tournaments[tournamentURLs[i]] = Tournament{
+				tournaments[tournamentURL] = Tournament{
 					Name:              jsonTournament["name"].(string),
 					ChallongeURL:      tournamentURL,
 					ChallongeID:       jsonTournament["id"].(float64),
