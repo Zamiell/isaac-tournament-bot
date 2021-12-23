@@ -36,8 +36,9 @@ var (
 		{"Tainted Forgotten"},
 
 		// #6 - Ipecac
-		// Tainted Eve - Can cause unavoidable damage if a clot is behind you or shoot at an obstacle near you
-		{"Tainted Eve"},
+		// Azazel - The short-range brimstone causes self-damage
+		// Tainted Eve - Can cause unavoidable damage if a clot is behind you or shoots at an obstacle near you
+		{"Azazel", "Tainted Eve"},
 
 		{}, // #7 - Magic Mushroom
 		{}, // #8 - Mom's Knife
