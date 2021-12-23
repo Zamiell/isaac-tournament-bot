@@ -29,7 +29,8 @@ var (
 
 		// #4 - Death's Touch
 		// The Forgotten - The piercing shots do nothing for the bone club
-		{"The Forgotten"},
+		// Tainted Forgotten - The piercing shots do nothing for the bone club
+		{"The Forgotten", "Tainted Forgotten"},
 
 		// #5 - Dr. Fetus
 		// Tainted Forgotten - Very annoying to use with the skeleton body
