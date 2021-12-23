@@ -32,7 +32,7 @@ var (
 		{"The Forgotten"},
 
 		// #5 - Dr. Fetus
-		// Tainted Forgotten - Very annoying to use with the skeleton
+		// Tainted Forgotten - Very annoying to use with the skeleton body
 		{"Tainted Forgotten"},
 
 		// #6 - Ipecac
