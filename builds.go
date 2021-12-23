@@ -129,9 +129,11 @@ var (
 		{"Azazel", "The Forgotten", "Tainted Azazel", "Tainted Lost", "Tainted Forgotten"},
 
 		// #32 - Eye of the Occult + Loki's Horns + 15 Luck
+		// Azazel - Homing brimstone is too powerful, resulting in a build with a low-skill requirement
 		// The Forgotten - It is only a damage up on the bone club
+		// Tainted Azazel - Homing brimstone is too powerful, resulting in a build with a low-skill requirement
 		// Tainted Forgotten - It is only a damage up on the bone club
-		{"The Forgotten", "Tainted Forgotten"},
+		{"Azazel", "The Forgotten", "Tainted Azazel", "Tainted Forgotten"},
 
 		{}, // #33 - Distant Admiration + Friend Zone + Forever Alone + BFFS!
 	}
