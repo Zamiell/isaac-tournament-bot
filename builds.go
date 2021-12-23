@@ -124,13 +124,13 @@ var (
 		// Azazel - The synergy is only useful with a tear build
 		// The Forgotten - The synergy is only useful with a tear build
 		// Tainted Azazel - The synergy is only useful with a tear build
-		// Tainted Lost - Very high risks to hit yourself and lose the holy card early
+		// Tainted Lost - Too dangerous to be synergistic
 		// Tainted Forgotten - The synergy is only useful with a tear build
 		{"Azazel", "The Forgotten", "Tainted Azazel", "Tainted Lost", "Tainted Forgotten"},
 
 		// #32 - Eye of the Occult + Loki's Horns + 15 Luck
-		// The Forgotten - It's only a damage up on the bone club
-		// Tainted Forgotten - It's only a damage up on the bone club
+		// The Forgotten - It is only a damage up on the bone club
+		// Tainted Forgotten - It is only a damage up on the bone club
 		{"The Forgotten", "Tainted Forgotten"},
 
 		{}, // #33 - Distant Admiration + Friend Zone + Forever Alone + BFFS!
