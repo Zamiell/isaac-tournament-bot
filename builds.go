@@ -12,7 +12,11 @@ var (
 		// Treasure Room items
 		// -------------------
 
-		{}, // #1 - Cricket's Body
+		// #1 - Cricket's Body
+		// Azazel - The Brimstone beam inherits the split shots but they are not very good
+		// Tainted Azazel - The Brimstone beam inherits the split shots but they are not very good
+		{"Azazel", "Tainted Azazel"},
+
 		{}, // #2 - Cricket's Head
 
 		// #3 - Dead Eye
