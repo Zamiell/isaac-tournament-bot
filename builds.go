@@ -21,10 +21,11 @@ var (
 
 		// #3 - Dead Eye
 		// Azazel - The Brimstone beam prevents it from working
+		// Lilith - It is hard to be accurate when shots come from Incubus
 		// Keeper - It is hard to be accurate with triple shot
 		// Tainted Azazel - The Brimstone beam prevents it from working
 		// Tainted Keeper - It is hard to be accurate with quad shot
-		{"Azazel", "Keeper", "Tainted Azazel", "Tainted Keeper"},
+		{"Azazel", "Lilith", "Keeper", "Tainted Azazel", "Tainted Keeper"},
 
 		// #4 - Death's Touch
 		// The Forgotten - The piercing shots do nothing for the bone club
