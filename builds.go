@@ -103,17 +103,17 @@ var (
 		{}, // #23 - Chocolate Milk + Steven
 
 		// #24 - Godhead + Cupid's Arrow
-		// Azazel - Small damage up for a tears down, resulting in a lost of DPS overall
-		// The Forgotten - Does nothing on the bone club
-		// Tainted Forgotten - Small damage up for a tears down, resulting in a lost of DPS overall
+		// Azazel - Small damage up for a tears down, resulting in a loss of DPS overall
+		// The Forgotten - Does nothing with the bone club
+		// Tainted Forgotten - Does nothing with the bone club
 		{"Azazel", "The Forgotten", "Tainted Forgotten"},
 
 		{}, // #25 - Haemolacria + The Sad Onion
 		{}, // #26 - Incubus + Incubus
 
 		// #27 - Monstro's Lung + The Sad Onion
-		// Keeper - Huge tears down, resulting in a lost of DPS overall
-		// Tainted Keeper - Huge tears down, resulting in a lost of DPS overall
+		// Keeper - Huge tears down, resulting in a loss of DPS overall
+		// Tainted Keeper - Huge tears down, resulting in a loss of DPS overall
 		{"Keeper", "Tainted Keeper"},
 
 		{}, // #28 - Technology + A Lump of Coal
