@@ -22,7 +22,7 @@ var (
 		"Apollyon",
 		"Forgotten",
 		"Bethany",
-		// "Jacob & Esau" // Meme character
+		"Jacob & Esau", // Meme character
 		"Tainted Isaac",
 		"Tainted Magdalene",
 		"Tainted Judas",
