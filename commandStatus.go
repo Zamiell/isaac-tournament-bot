@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -21,6 +22,9 @@ func commandStatus(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	msg := "The current state of this race channel is: " + race.State
-	discordSend(m.ChannelID, msg)
+	msg1 := "The current state of this race channel is: " + race.State
+	discordSend(m.ChannelID, msg1)
+
+	msg2 := "The current builds are: " + strings.Join(race.Builds, ", ")
+	discordSend(m.ChannelID, msg2)
 }
