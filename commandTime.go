@@ -196,12 +196,7 @@ func getRaceScheduledTime(race *Race, user *User) string {
 		return "This match is not scheduled yet."
 	}
 
-	var timezone string
-	if user.Timezone.Valid {
-		timezone = user.Timezone.String
-	} else {
-		timezone = "UTC"
-	}
+	timezone := user.GetTimezone()
 
 	var verb string
 	if race.State == RaceStateInitial {

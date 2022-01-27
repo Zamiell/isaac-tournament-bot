@@ -26,6 +26,7 @@ func commandHelpGetMsg() string {
 	msg += "!randchar                Get a random character\n"
 	msg += "!randbuild               Get a random build\n"
 	msg += "!getnext                 Get the time of the next scheduled match\n"
+	msg += "!schedule                Get a list of all of the currently scheduled matches\n"
 	msg += "```\n"
 	msg += "Match commands (in a match channel):\n"
 	msg += "```\n"
@@ -98,6 +99,7 @@ func commandInit() {
 	commandHandlerMap["randbuild"] = commandRandBuild
 	commandHandlerMap["randitem"] = commandRandBuild
 	commandHandlerMap["getnext"] = commandGetNext
+	commandHandlerMap["schedule"] = commandSchedule
 
 	// Match commands
 	commandHandlerMap["time"] = commandTime

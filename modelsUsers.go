@@ -6,20 +6,6 @@ import (
 
 type Users struct{}
 
-type User struct {
-	DiscordID string
-	Username  string
-	// Matches the TZ column of this page:
-	// https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-	Timezone       sql.NullString
-	StreamURL      sql.NullString
-	CasterAlwaysOk bool
-}
-
-func (u *User) Mention() string {
-	return "<@" + u.DiscordID + ">"
-}
-
 func (*Users) Exists(discordID string) (bool, error) {
 	var id int
 	if err := db.QueryRow(`

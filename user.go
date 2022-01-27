@@ -1,8 +1,32 @@
 package main
 
 import (
+	"database/sql"
+
 	"github.com/bwmarrin/discordgo"
 )
+
+type User struct {
+	DiscordID string
+	Username  string
+	// Matches the TZ column of this page:
+	// https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	Timezone       sql.NullString
+	StreamURL      sql.NullString
+	CasterAlwaysOk bool
+}
+
+func (u *User) Mention() string {
+	return "<@" + u.DiscordID + ">"
+}
+
+func (u *User) GetTimezone() string {
+	if !u.Timezone.Valid {
+		return "UTC"
+	}
+
+	return u.Timezone.String
+}
 
 // Get this user from the database
 // (and create an entry if it does not exist already)
