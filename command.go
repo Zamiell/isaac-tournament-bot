@@ -118,6 +118,7 @@ func commandInit() {
 	commandHandlerMap["yes"] = commandYes
 	commandHandlerMap["no"] = commandNo
 	commandHandlerMap["score"] = commandScore
+	commandHandlerMap["status"] = commandStatus
 
 	// Admin-only commands
 	commandHandlerMap["settimezone"] = commandSetTimezone
