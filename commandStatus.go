@@ -30,7 +30,7 @@ func announceStatus(m *discordgo.MessageCreate, race *Race, shouldPing bool) {
 	if race.State == RaceStateInitial {
 		printStatusInitial(m, race, shouldPing)
 	} else if race.State == RaceStateScheduled {
-		printStatusScheduled(m, race, shouldPing)
+		printStatusScheduled(m, race)
 	} else if race.State == RaceStateVetoCharacters {
 
 	} else if race.State == RaceStateVetoBuilds {
@@ -111,10 +111,25 @@ func printStatusInitial(m *discordgo.MessageCreate, race *Race, shouldPing bool)
 	msg += "\n"
 
 	// Give the welcome message
-	msg += "Please discuss the times that each of you are available to play this week.\n"
-	msg += "You can suggest a time to your opponent with something like: `!time 6pm sat`\n"
-	msg += "If they accept with `!timeok`, then the match will be officially scheduled."
+	if race.DatetimeScheduled.Valid {
+		var racerThatNeedsToConfirmTime *User
+		if race.ActiveRacer == 1 {
+			racerThatNeedsToConfirmTime = racer2
+		} else {
+			racerThatNeedsToConfirmTime = racer1
+		}
+		msg += getRaceScheduledTime(race, racerThatNeedsToConfirmTime)
+		msg += "We are currently waiting on " + racerThatNeedsToConfirmTime.Username + " to confirm that this time is good."
+	} else {
+		msg += "Please discuss the times that each of you are available to play this week.\n"
+		msg += "You can suggest a time to your opponent with something like: `!time 6pm sat`\n"
+		msg += "If they accept with `!timeok`, then the match will be officially scheduled."
+	}
+
 	discordSend(race.ChannelID, msg)
 }
 
-func printStatusScheduled(m *discordgo.MessageCreate, race *Race, shouldPing bool) {}
+func printStatusScheduled(m *discordgo.MessageCreate, race *Race) {
+	msg := getRaceScheduleMessage(race, race.Racer1) // Default to using the first racer's timezone
+	discordSend(race.ChannelID, msg)
+}

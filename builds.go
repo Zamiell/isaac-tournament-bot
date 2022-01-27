@@ -207,16 +207,12 @@ func buildsRound(race *Race, msg string) {
 func getBuild(race *Race) string {
 	// Get a random build
 	randBuildNum := getRandomInt(0, len(race.BuildsRemaining)-1)
-	log.Debug("randBuildNum:", randBuildNum)
 	randBuild := race.BuildsRemaining[randBuildNum]
-	log.Debug("randBuild:", randBuild)
 
 	// Check to see if the item synergizes
 	roundNum := len(race.Builds) + 1
 	character := race.Characters[roundNum-1]
-	log.Debug("character:", character)
 	synergizes := true
-	log.Debug("buildExceptions[randBuildNum]:", buildExceptions[randBuildNum])
 	for _, exceptedCharacter := range buildExceptions[randBuildNum] {
 		log.Debug("exceptedCharacter:", exceptedCharacter)
 		if exceptedCharacter == character {

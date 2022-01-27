@@ -131,7 +131,11 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		buildsRemaining := make([]string, 0)
 		for _, build := range builds {
 			buildName := getBuildName(build)
-			buildsRemaining = append(buildsRemaining, buildName)
+
+			// The 0th element of the "builds.json" file is blank
+			if buildName != "" {
+				buildsRemaining = append(buildsRemaining, buildName)
+			}
 		}
 
 		// Create the race in the database

@@ -12,7 +12,6 @@ func floatToString(num float64) string {
 	return strconv.FormatFloat(num, 'f', -1, 64)
 }
 
-// From: http://golangcookbook.blogspot.com/2012/11/generate-random-number-in-given-range.html
 func getRandomInt(min int, max int) int {
 	rand.Seed(time.Now().UnixNano())
 	max++

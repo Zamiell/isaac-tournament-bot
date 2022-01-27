@@ -11,7 +11,7 @@ import (
 
 func commandTime(m *discordgo.MessageCreate, args []string) {
 	if len(args) == 0 {
-		commandSchedulePrint(m)
+		announceSchedule(m)
 		return
 	}
 
@@ -147,7 +147,7 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	discordSend(m.ChannelID, msg)
 }
 
-func commandSchedulePrint(m *discordgo.MessageCreate) {
+func announceSchedule(m *discordgo.MessageCreate) {
 	// Create the user in the database if it does not already exist
 	var user *User
 	if v, err := userGet(m.Author); err != nil {
@@ -173,18 +173,12 @@ func commandSchedulePrint(m *discordgo.MessageCreate) {
 		race = v
 	}
 
-	msg := ""
-	if race.DatetimeScheduled.Valid {
-		var timezone string
-		if user.Timezone.Valid {
-			timezone = user.Timezone.String
-		} else {
-			timezone = "UTC"
-		}
-		msg += "The currently scheduled time for the match is: *" + getDate(race.DatetimeScheduled.Time, timezone) + "*\n"
-	} else {
-		msg += "This match is not scheduled yet.\n"
-	}
+	msg := getRaceScheduleMessage(race, user)
+	discordSend(m.ChannelID, msg)
+}
+
+func getRaceScheduleMessage(race *Race, user *User) string {
+	msg := getRaceScheduledTime(race, user)
 
 	if race.State != RaceStateInitial {
 		msg += "Both racers have agreed to this time.\n"
@@ -193,5 +187,28 @@ func commandSchedulePrint(m *discordgo.MessageCreate) {
 		msg += "You can suggest a new time with: `!time [date & time]`\n"
 		msg += "e.g. `!time 6pm sat`"
 	}
-	discordSend(m.ChannelID, msg)
+
+	return msg
+}
+
+func getRaceScheduledTime(race *Race, user *User) string {
+	if !race.DatetimeScheduled.Valid {
+		return "This match is not scheduled yet."
+	}
+
+	var timezone string
+	if user.Timezone.Valid {
+		timezone = user.Timezone.String
+	} else {
+		timezone = "UTC"
+	}
+
+	var verb string
+	if race.State == RaceStateInitial {
+		verb = "proposed"
+	} else {
+		verb = "currently scheduled"
+	}
+
+	return "The " + verb + " time for the match is: *" + getDate(race.DatetimeScheduled.Time, timezone) + "*\n"
 }
