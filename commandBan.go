@@ -39,8 +39,8 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this race is in the banning phase
-	if race.State != "banningCharacters" &&
-		race.State != "banningBuilds" {
+	if race.State != RaceStateBanningCharacters &&
+		race.State != RaceStateBanningBuilds {
 
 		discordSend(m.ChannelID, "You can only ban something once the match has started.")
 		return
@@ -74,9 +74,9 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 
 	// Check to see if this is a valid index
 	var thingsRemaining []string
-	if race.State == "banningCharacters" {
+	if race.State == RaceStateBanningCharacters {
 		thingsRemaining = race.CharactersRemaining
-	} else if race.State == "banningBuilds" {
+	} else if race.State == RaceStateBanningBuilds {
 		thingsRemaining = race.BuildsRemaining
 	}
 	if choice < 0 || choice >= len(thingsRemaining) {
@@ -88,7 +88,7 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 	thing := thingsRemaining[choice]
 	thingsRemaining = deleteFromSlice(thingsRemaining, choice)
 
-	if race.State == "banningCharacters" {
+	if race.State == RaceStateBanningCharacters {
 		race.CharactersRemaining = thingsRemaining
 		if err := modals.Races.SetCharactersRemaining(race.ChannelID, race.CharactersRemaining); err != nil {
 			msg := "Failed to set the characters remaining for race \"" + race.Name() + "\": " + err.Error()
@@ -96,7 +96,7 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 			discordSend(m.ChannelID, msg)
 			return
 		}
-	} else if race.State == "banningBuilds" {
+	} else if race.State == RaceStateBanningBuilds {
 		race.BuildsRemaining = thingsRemaining
 		if err := modals.Races.SetBuildsRemaining(race.ChannelID, race.BuildsRemaining); err != nil {
 			msg := "Failed to set the builds remaining for race \"" + race.Name() + "\": " + err.Error()

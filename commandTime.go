@@ -58,7 +58,7 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this race has already been scheduled
-	if race.State != "initial" {
+	if race.State != RaceStateInitial {
 		discordSend(m.ChannelID, "The race has already been scheduled. To delete this time and start over, use the `!timedelete` command.")
 		return
 	}
@@ -186,7 +186,7 @@ func commandSchedulePrint(m *discordgo.MessageCreate) {
 		msg += "This match is not scheduled yet.\n"
 	}
 
-	if race.State != "initial" {
+	if race.State != RaceStateInitial {
 		msg += "Both racers have agreed to this time.\n"
 		msg += "To delete this time and start over, use the `!timedelete` command."
 	} else {

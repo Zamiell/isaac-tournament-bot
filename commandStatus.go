@@ -23,25 +23,62 @@ func commandStatus(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	printStatus(m, race)
+	announceStatus(m, race, false)
 }
 
-func printStatus(m *discordgo.MessageCreate, race *Race) {
+func announceStatus(m *discordgo.MessageCreate, race *Race, shouldPing bool) {
+	if race.State == RaceStateInitial {
+		printStatusInitial(m, race, shouldPing)
+	} else if race.State == RaceStateScheduled {
+		printStatusScheduled(m, race, shouldPing)
+	} else if race.State == RaceStateVetoCharacters {
 
+	} else if race.State == RaceStateVetoBuilds {
+
+	} else if race.State == RaceStateInProgress {
+
+	} else if race.State == RaceStateCompleted {
+
+	}
 }
 
-func printStatusPre() {
+func printStatusInitial(m *discordgo.MessageCreate, race *Race, shouldPing bool) {
+	racer1 := race.Racer1
+	racer2 := race.Racer2
+
+	var members []*discordgo.Member
+	if v, err := getDiscordMembers(); err != nil {
+		log.Error(err)
+		discordSend(m.ChannelID, err.Error())
+		return
+	} else {
+		members = v
+	}
+
+	discordUser1 := getDiscordUserByID(members, racer1.DiscordID)
+	discordUser2 := getDiscordUserByID(members, racer2.DiscordID)
+
+	var racer1NameToUse string
+	var racer2NameToUse string
+	if shouldPing {
+		racer1NameToUse = discordUser1.Mention()
+		racer2NameToUse = discordUser2.Mention()
+	} else {
+		racer1NameToUse = racer1.Username
+		racer2NameToUse = racer2.Username
+	}
+
 	// Find out if the racers have set their timezone
 	msg := ""
 	if racer1.Timezone.Valid {
-		msg += discordUser1.Mention() + " has a timezone of: " + getTimezone(racer1.Timezone.String) + "\n"
+		msg += racer1NameToUse + " has a timezone of: " + getTimezone(racer1.Timezone.String) + "\n"
 	} else {
-		msg += discordUser1.Mention() + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
+		msg += racer1NameToUse + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
 	}
 	if racer2.Timezone.Valid {
-		msg += discordUser2.Mention() + " has a timezone of: " + getTimezone(racer2.Timezone.String) + "\n"
+		msg += racer2NameToUse + " has a timezone of: " + getTimezone(racer2.Timezone.String) + "\n"
 	} else {
-		msg += discordUser2.Mention() + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
+		msg += racer2NameToUse + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
 	}
 
 	// Calculate the difference between the two timezones
@@ -62,24 +99,22 @@ func printStatusPre() {
 
 	// Find out if the racers have set their stream URL
 	if racer1.StreamURL.Valid {
-		msg += discordUser1.Mention() + " has a stream of: <" + racer1.StreamURL.String + ">\n"
+		msg += racer1NameToUse + " has a stream of: <" + racer1.StreamURL.String + ">\n"
 	} else {
-		msg += discordUser1.Mention() + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"
+		msg += racer1NameToUse + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"
 	}
 	if racer2.StreamURL.Valid {
-		msg += discordUser2.Mention() + " has a stream of: <" + racer2.StreamURL.String + ">\n"
+		msg += racer2NameToUse + " has a stream of: <" + racer2.StreamURL.String + ">\n"
 	} else {
-		msg += discordUser2.Mention() + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"
+		msg += racer2NameToUse + ", your stream is **not currently set**. Please set one with: `!stream [url]`\n"
 	}
 	msg += "\n"
 
 	// Give the welcome message
 	msg += "Please discuss the times that each of you are available to play this week.\n"
-	if tournament.Ruleset == "team" {
-		msg += discordUser1.Mention() + " and " + discordUser2.Mention() + " are the team captains; I will only listen to them.\n"
-	}
 	msg += "You can suggest a time to your opponent with something like: `!time 6pm sat`\n"
 	msg += "If they accept with `!timeok`, then the match will be officially scheduled."
-	discordSend(channelID, msg)
-
+	discordSend(race.ChannelID, msg)
 }
+
+func printStatusScheduled(m *discordgo.MessageCreate, race *Race, shouldPing bool) {}

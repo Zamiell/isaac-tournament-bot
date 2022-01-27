@@ -8,56 +8,6 @@ import (
 
 type Races struct{}
 
-type Race struct {
-	TournamentName      string
-	Racer1ID            int     // The "tournament_users" database ID
-	Racer1ChallongeID   float64 // The "participant" ID; needed to automatically set the winner through the Challonge API
-	Racer1              *User
-	Racer2ID            int     // The "tournament_users" database ID
-	Racer2ChallongeID   float64 // The "participant" ID; needed to automatically set the winner through the Challonge API
-	Racer2              *User
-	ChannelID           string // The Discord channel ID that was automatically created for this race
-	ChannelName         string // The Discord channel name that was automatically created for this race
-	ChallongeURL        string // The suffix of the Challonge URL for this tournament
-	ChallongeMatchID    string
-	BracketRound        string
-	State               RaceState
-	DatetimeScheduled   sql.NullTime
-	ActiveRacer         int
-	CharactersRemaining []string
-	Characters          []string
-	BuildsRemaining     []string
-	Builds              []string
-	Racer1Bans          int
-	Racer2Bans          int
-	Racer1Vetos         int
-	Racer2Vetos         int
-	NumVoted            int
-	Casts               []*Cast
-}
-
-type RaceState int
-
-const (
-	// Freshly created before both racers have confirmed a scheduled time
-	RaceStateInitial RaceState = iota
-	// Confirmed the time but before it starts
-	RaceStateScheduled
-	// Triggered 5 minutes before starting
-	RaceStateVetoCharacters
-	// Triggered 5 minutes before starting
-	RaceStateBanningCharacters
-	RaceStatePickingCharacters
-	RaceStateVetoBuilds
-	RaceStateInProgress
-	// After a score is reported
-	RaceStateCompleted
-)
-
-func (r *Race) Name() string {
-	return r.Racer1.Username + "-vs-" + r.Racer2.Username
-}
-
 func (*Races) Insert(racer1DiscordID string, racer2DiscordID string, race *Race) error {
 	charactersRemaining := sliceToString(race.CharactersRemaining)
 	buildsRemaining := sliceToString(race.BuildsRemaining)
@@ -256,7 +206,7 @@ func (*Races) GetNext() (string, error) {
 	return channelID, nil
 }
 
-func (*Races) SetState(channelID string, state string) error {
+func (*Races) SetState(channelID string, state RaceState) error {
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
 		UPDATE tournament_races

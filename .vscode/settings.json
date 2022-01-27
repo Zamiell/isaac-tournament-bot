@@ -6,10 +6,6 @@
 
   "editor.rulers": [100],
 
-  "files.associations": {
-    "*.tmpl": "html", // Golang HTML templates are saved as "tmpl" files
-  },
-
   // Linux line endings are used in this project
   "files.eol": "\n",
 

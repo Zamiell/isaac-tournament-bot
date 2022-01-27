@@ -39,8 +39,8 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this race is in the picking phase
-	if race.State != "pickingCharacters" &&
-		race.State != "pickingBuilds" {
+	if race.State != RaceStatePickingCharacters &&
+		race.State != RaceStatePickingBuilds {
 
 		discordSend(m.ChannelID, "You can only pick something once the banning phase has finished.")
 		return
@@ -66,10 +66,10 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 
 	// Check to see if this is a valid index
 	var thingsRemaining, things []string
-	if race.State == "pickingCharacters" {
+	if race.State == RaceStatePickingCharacters {
 		thingsRemaining = race.CharactersRemaining
 		things = race.Characters
-	} else if race.State == "pickingBuilds" {
+	} else if race.State == RaceStatePickingBuilds {
 		thingsRemaining = race.BuildsRemaining
 		things = race.Builds
 	}
@@ -83,7 +83,7 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 	thingsRemaining = deleteFromSlice(thingsRemaining, choice)
 	things = append(things, thing)
 
-	if race.State == "pickingCharacters" {
+	if race.State == RaceStatePickingCharacters {
 		race.CharactersRemaining = thingsRemaining
 		if err := modals.Races.SetCharactersRemaining(race.ChannelID, race.CharactersRemaining); err != nil {
 			msg := "Failed to set the characters remaining for race \"" + race.Name() + "\": " + err.Error()
@@ -99,7 +99,7 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 			discordSend(m.ChannelID, msg)
 			return
 		}
-	} else if race.State == "pickingBuilds" {
+	} else if race.State == RaceStatePickingBuilds {
 		race.BuildsRemaining = thingsRemaining
 		if err := modals.Races.SetBuildsRemaining(race.ChannelID, race.BuildsRemaining); err != nil {
 			msg := "Failed to set the builds remaining for race \"" + race.Name() + "\": " + err.Error()

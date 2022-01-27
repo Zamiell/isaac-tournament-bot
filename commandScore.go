@@ -39,7 +39,7 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this race is in progress
-	if race.State != "inProgress" {
+	if race.State != RaceStateInProgress {
 		discordSend(m.ChannelID, "You can only report the score once you have finished picking characters and builds.")
 		return
 	}
@@ -134,7 +134,7 @@ func commandScore(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Set the state
-	race.State = "completed"
+	race.State = RaceStateCompleted
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)

@@ -52,19 +52,19 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this race has been scheduled
-	if race.State == "initial" {
+	if race.State == RaceStateInitial {
 		discordSend(m.ChannelID, "You cannot volunteer to cast a match until a time has been scheduled by both of the racers.")
 		return
 	}
 
 	// Check to see if this race is in progress
-	if race.State == "inProgress" {
+	if race.State == RaceStateInProgress {
 		discordSend(m.ChannelID, "The match has already begun. You should not be bothering the players at this point.")
 		return
 	}
 
 	// Check to see if this race is already finished
-	if race.State == "completed" {
+	if race.State == RaceStateCompleted {
 		discordSend(m.ChannelID, "This match has already completed.")
 		return
 	}

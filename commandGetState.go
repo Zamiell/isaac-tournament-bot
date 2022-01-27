@@ -21,5 +21,6 @@ func commandGetState(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	discordSend(m.ChannelID, "The current state of the match is: "+race.State)
+	msg := string("The current state of the match is: " + race.State)
+	discordSend(m.ChannelID, msg)
 }

@@ -28,8 +28,8 @@ func commandTimeDelete(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this race has already been scheduled
-	if race.State == "initial" {
-		discordSend(m.ChannelID, "There is no need to rescheulde until both racers have already agreed to a time.")
+	if race.State == RaceStateInitial {
+		discordSend(m.ChannelID, "There is no need to reschedule until both racers have already agreed to a time.")
 		return
 	}
 
@@ -42,7 +42,7 @@ func commandTimeDelete(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Set the state
-	race.State = "initial"
+	race.State = RaceStateInitial
 	if err := modals.Races.SetState(m.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state: " + err.Error()
 		log.Error(msg)

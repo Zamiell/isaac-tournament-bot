@@ -44,7 +44,7 @@ func commandTimeOk(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this race has already been scheduled
-	if race.State != "initial" {
+	if race.State != RaceStateInitial {
 		discordSend(m.ChannelID, "Both racers have already agreed to a time, so you cannot confirm.")
 		return
 	}
@@ -74,14 +74,14 @@ func commandTimeOk(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Set the state
-	race.State = "scheduled"
+	race.State = RaceStateScheduled
 	if err := modals.Races.SetState(m.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)
 		return
 	}
-	log.Info("Race \"" + race.Name() + "\" is now in state: " + race.State)
+	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
 	msg := "The race time has been confirmed. I will notify you 5 minutes before the match begins.\n"
 	msg += "(To delete this time and start over, use the `!timedelete` command.)"

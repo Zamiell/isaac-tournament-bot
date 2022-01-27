@@ -1,5 +1,41 @@
 package main
 
+import (
+	"database/sql"
+)
+
+type Race struct {
+	TournamentName      string
+	Racer1ID            int     // The "tournament_users" database ID
+	Racer1ChallongeID   float64 // The "participant" ID; needed to automatically set the winner through the Challonge API
+	Racer1              *User
+	Racer2ID            int     // The "tournament_users" database ID
+	Racer2ChallongeID   float64 // The "participant" ID; needed to automatically set the winner through the Challonge API
+	Racer2              *User
+	ChannelID           string // The Discord channel ID that was automatically created for this race
+	ChannelName         string // The Discord channel name that was automatically created for this race
+	ChallongeURL        string // The suffix of the Challonge URL for this tournament
+	ChallongeMatchID    string
+	BracketRound        string
+	State               RaceState
+	DatetimeScheduled   sql.NullTime
+	ActiveRacer         int
+	CharactersRemaining []string
+	Characters          []string
+	BuildsRemaining     []string
+	Builds              []string
+	Racer1Bans          int
+	Racer2Bans          int
+	Racer1Vetos         int
+	Racer2Vetos         int
+	NumVoted            int
+	Casts               []*Cast
+}
+
+func (r *Race) Name() string {
+	return r.Racer1.Username + "-vs-" + r.Racer2.Username
+}
+
 // Get this race from the database
 func raceGet(channelID string) (*Race, error) {
 	var race *Race

@@ -34,7 +34,7 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this race is in the vetoing phase
-	if race.State != "vetoCharacters" && race.State != "vetoBuilds" {
+	if race.State != RaceStateVetoCharacters && race.State != RaceStateVetoBuilds {
 		discordSend(m.ChannelID, "You can only veto something once the characters have been chosen.")
 		return
 	}
@@ -55,7 +55,7 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 
 	// The character/build was already added, so remove it
 	var veto string
-	if race.State == "vetoCharacters" {
+	if race.State == RaceStateVetoCharacters {
 		veto = race.Characters[len(race.Characters)-1]
 		race.Characters = race.Characters[:len(race.Characters)-1] // Delete the last element
 		if err := modals.Races.SetCharacters(race.ChannelID, race.Characters); err != nil {
@@ -64,7 +64,7 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 			discordSend(m.ChannelID, msg)
 			return
 		}
-	} else if race.State == "vetoBuilds" {
+	} else if race.State == RaceStateVetoBuilds {
 		veto = race.Builds[len(race.Builds)-1]
 		race.Builds = race.Builds[:len(race.Builds)-1] // Delete the last element
 		if err := modals.Races.SetBuilds(race.ChannelID, race.Builds); err != nil {
@@ -102,9 +102,9 @@ func commandYes(m *discordgo.MessageCreate, args []string) {
 
 	incrementActiveRacer(race)
 	msg := m.Author.Mention() + " vetoed: *" + veto + "*\n\n"
-	if race.State == "vetoCharacters" {
+	if race.State == RaceStateVetoCharacters {
 		charactersRound(race, msg)
-	} else if race.State == "vetoBuilds" {
+	} else if race.State == RaceStateVetoBuilds {
 		buildsRound(race, msg)
 	}
 }

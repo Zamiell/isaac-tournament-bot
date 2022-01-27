@@ -33,7 +33,7 @@ func commandNo(m *discordgo.MessageCreate, args []string) {
 	}
 
 	// Check to see if this race is in the vetoing phase
-	if race.State != "vetoCharacters" && race.State != "vetoBuilds" {
+	if race.State != RaceStateVetoCharacters && race.State != RaceStateVetoBuilds {
 		discordSend(m.ChannelID, "You can only veto something once the match has started.")
 		return
 	}
@@ -54,9 +54,9 @@ func commandNo(m *discordgo.MessageCreate, args []string) {
 	}
 
 	incrementActiveRacer(race)
-	if race.State == "vetoCharacters" {
+	if race.State == RaceStateVetoCharacters {
 		charactersRound(race, "")
-	} else if race.State == "vetoBuilds" {
+	} else if race.State == RaceStateVetoBuilds {
 		buildsRound(race, "")
 	}
 }

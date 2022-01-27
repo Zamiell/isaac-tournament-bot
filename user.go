@@ -17,7 +17,12 @@ func userGet(u *discordgo.User) (*User, error) {
 		members = v
 	}
 
-	username := getDiscordName(members, u.ID)
+	var username string
+	if v, err := getDiscordNameByID(members, u.ID); err != nil {
+		return user, err
+	} else {
+		username = v
+	}
 
 	// See if this user exists in the database already
 	var exists bool

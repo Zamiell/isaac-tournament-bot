@@ -141,14 +141,14 @@ var (
 )
 
 func buildsStart(race *Race, msg string) {
-	race.State = "vetoBuilds"
+	race.State = RaceStateVetoBuilds
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(race.ChannelID, msg)
 		return
 	}
-	log.Info("Race \"" + race.Name() + "\" is now in state: " + race.State)
+	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
 	msg += "**Build Ban Phase**\n\n"
 	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " builds will randomly be chosen. Each racer will get one veto.\n"

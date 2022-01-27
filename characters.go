@@ -44,14 +44,14 @@ var (
 
 func charactersBanStart(race *Race) {
 	// Update the state
-	race.State = "banningCharacters"
+	race.State = RaceStateBanningCharacters
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(race.ChannelID, msg)
 		return
 	}
-	log.Info("Race \"" + race.Name() + "\" is now in state: " + race.State)
+	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
 	msg := matchBeginningAlert(race)
 
@@ -73,14 +73,14 @@ func charactersBanStart(race *Race) {
 
 func charactersPickStart(race *Race, msg string) {
 	// Set the state
-	race.State = "pickingCharacters"
+	race.State = RaceStatePickingCharacters
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(race.ChannelID, msg)
 		return
 	}
-	log.Info("Race \"" + race.Name() + "\" is now in state: " + race.State)
+	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
 	msg += "**Character Pick Phase**\n\n"
 	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " characters need to be picked.\n"
@@ -100,14 +100,14 @@ func charactersPickStart(race *Race, msg string) {
 
 func charactersVetoStart(race *Race) {
 	// Update the state
-	race.State = "vetoCharacters"
+	race.State = RaceStateVetoCharacters
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(race.ChannelID, msg)
 		return
 	}
-	log.Info("Race \"" + race.Name() + "\" is now in state: " + race.State)
+	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
 	msg := matchBeginningAlert(race)
 

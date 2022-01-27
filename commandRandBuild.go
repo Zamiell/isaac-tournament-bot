@@ -18,13 +18,15 @@ func commandRandBuild(m *discordgo.MessageCreate, args []string) {
 }
 
 func getBuildName(build []IsaacItem) string {
-	seperator := " + "
-	msg := ""
-	for _, item := range build {
-		msg += item.Name
-		msg += seperator
-	}
-	msg = strings.TrimSuffix(msg, seperator)
+	itemNames := getBuildItemNames(build)
+	return strings.Join(itemNames, " + ")
+}
 
-	return msg
+func getBuildItemNames(build []IsaacItem) []string {
+	itemNames := make([]string, 0)
+	for _, item := range build {
+		itemNames = append(itemNames, item.Name)
+	}
+
+	return itemNames
 }

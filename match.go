@@ -93,7 +93,7 @@ func matchStart(race *Race) {
 	}
 
 	// Check to see if this match has started already
-	if race.State != "scheduled" {
+	if race.State != RaceStateScheduled {
 		log.Info("Reached the \"matchStart\" function when the state was " + race.State + ". Doing nothing.")
 		return
 	}
@@ -151,7 +151,7 @@ func matchGetDescription(race *Race) string {
 }
 
 func matchEnd(race *Race, msg string) {
-	race.State = "inProgress"
+	race.State = RaceStateInProgress
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
