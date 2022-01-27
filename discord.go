@@ -13,7 +13,7 @@ const (
 	discordBotRoleName         = "Bot"
 	discordCasterRoleName      = "Caster"
 	discordTeamCaptainRoleName = "Team Captain"
-	discordGeneralChannelName  = "en-general"
+	discordGeneralChannelName  = "matches"
 )
 
 var (
