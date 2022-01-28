@@ -167,7 +167,8 @@ func (*Races) GetAllScheduled() ([]string, error) {
 	if v, err := db.Query(`
 		SELECT channel_id
 		FROM tournament_races
-		WHERE state = "scheduled"
+		WHERE state = "scheduled" AND datetime_scheduled != NULL
+		ORDER BY datetime_scheduled ASC
 	`); err != nil {
 		return nil, err
 	} else {

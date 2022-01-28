@@ -16,6 +16,8 @@ func commandSchedule(m *discordgo.MessageCreate, args []string) {
 		user = v
 	}
 
+	timezone := user.GetTimezone()
+
 	var channelIDs []string
 	if v, err := modals.Races.GetAllScheduled(); err != nil {
 		log.Fatal("Failed to get the scheduled races: " + err.Error())
@@ -41,8 +43,6 @@ func commandSchedule(m *discordgo.MessageCreate, args []string) {
 		} else {
 			race = v
 		}
-
-		timezone := user.GetTimezone()
 
 		msg += "**" + getDate(race.DatetimeScheduled.Time, timezone) + "**\n"
 		msg += matchGetDescription(race) + "\n"
