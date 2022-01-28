@@ -135,6 +135,7 @@ func matchGetDescription(race *Race) string {
 	msg += race.TournamentName + "\n"
 	msg += race.Name() + "\n"
 	msg += "```\n"
+
 	atLeastOneCaster := false
 	for _, cast := range race.Casts {
 		if cast.R1Permission && cast.R2Permission {
@@ -143,10 +144,12 @@ func matchGetDescription(race *Race) string {
 			msg += "<" + cast.Caster.StreamURL.String + ">\n"
 		}
 	}
+
 	if !atLeastOneCaster {
 		msg += "No-one has volunteered to cast this match. You can watch both racers here:\n"
 		msg += "<https://kadgar.net/live/" + race.Racer1.Username + "/" + race.Racer2.Username + ">"
 	}
+
 	return msg
 }
 

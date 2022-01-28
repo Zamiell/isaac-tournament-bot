@@ -44,7 +44,8 @@ func commandSchedule(m *discordgo.MessageCreate, args []string) {
 
 		timezone := user.GetTimezone()
 
-		msg += "- " + getDate(race.DatetimeScheduled.Time, timezone) + " - " + matchGetDescription(race) + "\n"
+		msg += "**" + getDate(race.DatetimeScheduled.Time, timezone) + "**\n"
+		msg += matchGetDescription(race) + "\n"
 	}
 
 	discordSend(m.ChannelID, msg)
