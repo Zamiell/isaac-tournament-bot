@@ -164,7 +164,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		}
 
 		// We re-get the race in the database so that the racer fields are filled in properly
-		if v, err := getRace(m.ChannelID); err != nil {
+		if v, err := getRace(channelID); err != nil {
 			msg := "Failed to get the race from the database: " + err.Error()
 			log.Error(msg)
 			discordSend(m.ChannelID, msg)
