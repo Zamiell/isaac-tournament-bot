@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"math"
+	"runtime/debug"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -47,10 +48,12 @@ func printStatusInitial(m *discordgo.MessageCreate, race *Race, shouldPing bool)
 	racer2 := race.Racer2
 
 	if racer1 == nil {
+		debug.PrintStack()
 		log.Fatal("Failed to print the status of race \"" + race.Name() + "\" since racer 1 was nil.")
 		return
 	}
 	if racer2 == nil {
+		debug.PrintStack()
 		log.Fatal("Failed to print the status of race \"" + race.Name() + "\" since racer 2 was nil.")
 		return
 	}
