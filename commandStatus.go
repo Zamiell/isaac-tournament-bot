@@ -46,6 +46,15 @@ func printStatusInitial(m *discordgo.MessageCreate, race *Race, shouldPing bool)
 	racer1 := race.Racer1
 	racer2 := race.Racer2
 
+	if racer1 == nil {
+		log.Error("Failed to print the status of race \"" + race.Name() + "\" since racer 1 was nil.")
+		return
+	}
+	if racer2 == nil {
+		log.Error("Failed to print the status of race \"" + race.Name() + "\" since racer 2 was nil.")
+		return
+	}
+
 	var members []*discordgo.Member
 	if v, err := getDiscordMembers(); err != nil {
 		log.Error(err)
