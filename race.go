@@ -32,8 +32,12 @@ type Race struct {
 	Casts               []*Cast
 }
 
-func (r *Race) Name() string {
-	return r.Racer1.Username + "-vs-" + r.Racer2.Username
+func (race *Race) Name() string {
+	if race.Racer1 == nil || race.Racer2 == nil {
+		return "unknown"
+	}
+
+	return race.Racer1.Username + "-vs-" + race.Racer2.Username
 }
 
 // Get this race from the database
