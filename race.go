@@ -41,7 +41,7 @@ func (race *Race) Name() string {
 }
 
 // Get this race from the database
-func raceGet(channelID string) (*Race, error) {
+func getRace(channelID string) (*Race, error) {
 	var race *Race
 	if v, err := modals.Races.Get(channelID); err != nil {
 		return race, err

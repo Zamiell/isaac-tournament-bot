@@ -33,7 +33,7 @@ func commandGetNext(m *discordgo.MessageCreate, args []string) {
 	}
 
 	var race *Race
-	if v, err := raceGet(channelID); err != nil {
+	if v, err := getRace(channelID); err != nil {
 		msg := "Failed to get the race from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(m.ChannelID, msg)

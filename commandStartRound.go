@@ -163,6 +163,16 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			return
 		}
 
+		// We re-get the race in the database so that the racer fields are filled in properly
+		if v, err := getRace(m.ChannelID); err != nil {
+			msg := "Failed to get the race from the database: " + err.Error()
+			log.Error(msg)
+			discordSend(m.ChannelID, msg)
+			return
+		} else {
+			race = v
+		}
+
 		// Send the introductory messages for the Discord channel
 		announceStatus(m, race, true)
 

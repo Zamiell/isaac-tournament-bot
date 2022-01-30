@@ -18,7 +18,7 @@ func commandForceBan(m *discordgo.MessageCreate, args []string) {
 
 	// Check to see if this is a race channel (and get the race from the database)
 	var race *Race
-	if v, err := raceGet(m.ChannelID); err == sql.ErrNoRows {
+	if v, err := getRace(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
 		return
 	} else if err != nil {

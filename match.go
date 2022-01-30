@@ -55,7 +55,7 @@ func matchInit() {
 	}
 	for _, channelID := range channelIDs {
 		var race *Race
-		if v, err := raceGet(channelID); err != nil {
+		if v, err := getRace(channelID); err != nil {
 			log.Fatal("Failed to get the race from the database: " + err.Error())
 			return
 		} else {
@@ -78,7 +78,7 @@ func matchStart(race *Race) {
 	time.Sleep(sleepDuration)
 
 	// Re-get the race from the database
-	if v, err := raceGet(race.ChannelID); err != nil {
+	if v, err := getRace(race.ChannelID); err != nil {
 		msg := "Failed to re-get the race from the database: " + err.Error()
 		log.Error(msg)
 		discordSend(race.ChannelID, msg)
