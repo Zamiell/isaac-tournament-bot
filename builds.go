@@ -72,9 +72,10 @@ var (
 		{}, // #17 - Sacred Heart
 
 		// #18 - Spirit Sword
+		// Lilith - Annoying because the sword goes to Incubus
 		// The Forgotten - No synergy with the bone
 		// Tainted Forgotten - No synergy with the bone
-		{"The Forgotten", "Tainted Forgotten"},
+		{"Lilith", "The Forgotten", "Tainted Forgotten"},
 
 		{}, // #19 - Revelation
 
