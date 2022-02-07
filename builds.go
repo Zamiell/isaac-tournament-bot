@@ -5,6 +5,7 @@ import (
 )
 
 var (
+	// This must be kept in sync with the build exceptions in "isaac-racing-server"
 	buildExceptions = [][]string{
 		{}, // #0 - n/a
 
