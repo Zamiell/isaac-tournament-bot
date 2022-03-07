@@ -27,6 +27,7 @@ CREATE TABLE tournament_races (
     state                 NVARCHAR(50)   NOT NULL, /* Definitions are listed in the "Race" struct */
     datetime_created      TIMESTAMP      NOT NULL  DEFAULT NOW(),
     datetime_scheduled    TIMESTAMP      NULL      DEFAULT NULL,
+    first_picker          INT            NOT NULL  DEFAULT 1,
     active_racer          INT            NOT NULL  DEFAULT 1,
     characters_remaining  NVARCHAR(500)  NOT NULL,
     characters            NVARCHAR(500)  NOT NULL  DEFAULT "",

@@ -99,7 +99,15 @@ func matchStart(race *Race) {
 	}
 
 	// Randomly decide who starts
-	race.ActiveRacer = getRandomInt(1, 2)
+	race.FirstPicker = getRandomInt(1, 2)
+	if err := modals.Races.SetFirstPicker(race.ChannelID, race.FirstPicker); err != nil {
+		msg := "Failed to set the first picker for race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(race.ChannelID, msg)
+		return
+	}
+
+	race.ActiveRacer = race.FirstPicker
 	if err := modals.Races.SetActiveRacer(race.ChannelID, race.ActiveRacer); err != nil {
 		msg := "Failed to set the active racer for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)

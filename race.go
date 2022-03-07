@@ -19,6 +19,7 @@ type Race struct {
 	BracketRound        string
 	State               RaceState
 	DatetimeScheduled   sql.NullTime
+	FirstPicker         int
 	ActiveRacer         int
 	CharactersRemaining []string
 	Characters          []string

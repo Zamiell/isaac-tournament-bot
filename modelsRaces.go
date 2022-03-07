@@ -117,6 +117,7 @@ func (*Races) Get(channelID string) (*Race, error) {
 			bracket_round,
 			state,
 			datetime_scheduled,
+			first_picker,
 			active_racer,
 			characters_remaining,
 			characters,
@@ -140,6 +141,7 @@ func (*Races) Get(channelID string) (*Race, error) {
 		&race.BracketRound,
 		&race.State,
 		&race.DatetimeScheduled,
+		&race.FirstPicker,
 		&race.ActiveRacer,
 		&charactersRemaining,
 		&characters,
@@ -417,5 +419,22 @@ func (*Races) SetScore(channelID string, score string) error {
 	defer stmt.Close()
 
 	_, err := stmt.Exec(score, channelID)
+	return err
+}
+
+func (*Races) SetFirstPicker(channelID string, firstPicker int) error {
+	var stmt *sql.Stmt
+	if v, err := db.Prepare(`
+		UPDATE tournament_races
+		SET first_picker = ?
+		WHERE channel_id = ?
+	`); err != nil {
+		return err
+	} else {
+		stmt = v
+	}
+	defer stmt.Close()
+
+	_, err := stmt.Exec(firstPicker, channelID)
 	return err
 }

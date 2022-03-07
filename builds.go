@@ -142,7 +142,7 @@ var (
 	}
 )
 
-func buildsStart(race *Race, msg string) {
+func buildsVetoStart(race *Race, msg string) {
 	race.State = RaceStateVetoBuilds
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
@@ -155,6 +155,22 @@ func buildsStart(race *Race, msg string) {
 	msg += "**Build Ban Phase**\n\n"
 	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " builds will randomly be chosen. Each racer will get one veto.\n"
 	msg += "- Use the `!yes` and `!no` commands to answer the questions.\n\n"
+
+	// The person who starts the vetos for the builds is the opposite of the person who got to start
+	// the vetos for the character
+	newActiveRacer := race.FirstPicker + 1
+	if newActiveRacer > 2 {
+		newActiveRacer = 1
+	}
+
+	race.ActiveRacer = newActiveRacer
+	if err := modals.Races.SetActiveRacer(race.ChannelID, race.ActiveRacer); err != nil {
+		msg := "Failed to set the active racer for race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(race.ChannelID, msg)
+		return
+	}
+
 	race.NumVoted = 2 // Set it to 2 so that it gives a new build
 	buildsRound(race, msg)
 }
