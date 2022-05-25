@@ -11,5 +11,6 @@ func languageInit() {
 		"es": "Spanish",
 		"ru": "Russian",
 		"cn": "Chinese",
+		"pl": "Polish",
 	}
 }
