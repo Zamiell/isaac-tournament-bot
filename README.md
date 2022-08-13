@@ -87,7 +87,7 @@ Install as a service (optional)
   - `systemctl enable supervisor` (this is needed due to [a quirk in Ubuntu 16.04](http://unix.stackexchange.com/questions/281774/ubuntu-server-16-04-cannot-get-supervisor-to-start-automatically))
 - Copy the configuration files:
   - `cp "/root/isaac-tournament-bot/install/supervisord/supervisord.conf" "/etc/supervisor/supervisord.conf"`
-  - `cp "/root/isaac-tournament-bot/install/supervisord/isaac-racing-server.conf" "/etc/supervisor/conf.d/isaac-tournament-bot.conf"`
+  - `cp "/root/isaac-tournament-bot/install/supervisord/isaac-tournament-bot.conf" "/etc/supervisor/conf.d/isaac-tournament-bot.conf"`
 - Start it: `systemctl start supervisor`
 
 Later, to manage the service:
