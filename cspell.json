@@ -1,6 +1,17 @@
 {
+    "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
     "version": "0.2",
-    "words": [
+    "files": [
+        "**"
+      ],
+      "enableFiletypes": [
+        "*"
+      ],
+      "enableGlobDot": true,
+      "ignorePaths": [
+        ".git/**"
+      ],
+      "words": [
         "BFFS",
         "bwmarrin",
         "casteralwaysnotok",
@@ -21,6 +32,7 @@
         "joho",
         "Monstro",
         "noforce",
+        "ruleset",
         "Sawblade",
         "setcasteralwaysnotok",
         "setcasteralwaysok",
