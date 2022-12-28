@@ -261,7 +261,7 @@ var (
 	}
 )
 
-func buildsBanStart(race *Race) {
+func buildsBanStart(race *Race, msg string) {
 	// Update the state
 	race.State = RaceStateBanningBuilds
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
@@ -272,7 +272,7 @@ func buildsBanStart(race *Race) {
 	}
 	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
-	msg := ""
+	msg += ""
 	msg += "**Build Ban Phase**\n\n"
 	msg += "- Each racer gets to ban " + strconv.Itoa(numBans) + " builds.\n"
 	msg += "- Use the `!ban` command to select a build.\n"
