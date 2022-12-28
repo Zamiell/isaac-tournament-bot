@@ -24,6 +24,7 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 	} else {
 		msg := "You cannot use this command in a race channel."
 		discordSend(m.ChannelID, msg)
+		return
 	}
 
 	// Go through all of the tournaments

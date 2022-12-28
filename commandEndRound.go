@@ -22,6 +22,7 @@ func commandEndRound(m *discordgo.MessageCreate, args []string) {
 	} else {
 		msg := "You cannot use this command in a race channel."
 		discordSend(m.ChannelID, msg)
+		return
 	}
 
 	// Get all of the channels
