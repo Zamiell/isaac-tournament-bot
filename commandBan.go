@@ -133,7 +133,14 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 		discordSend(race.ChannelID, msg)
 	} else {
 		msg += "\n"
-		charactersPickStart(race, msg)
+		if race.State == RaceStateBanningCharacters {
+			charactersPickStart(race, msg)
+		} else if race.State == RaceStateBanningBuilds {
+			buildsPickStart(race, msg)
+		} else {
+			msg += "The race state was invalid."
+			discordSend(race.ChannelID, msg)
+		}
 	}
 }
 
