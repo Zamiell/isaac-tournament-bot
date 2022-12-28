@@ -1,12 +1,27 @@
 package main
 
 import (
+	"database/sql"
+
 	"github.com/bwmarrin/discordgo"
 )
 
 func commandEndRound(m *discordgo.MessageCreate, args []string) {
 	if !isAdmin(m) {
 		return
+	}
+
+	// Check to see if this is a race channel
+	if _, err := getRace(m.ChannelID); err == sql.ErrNoRows {
+		// Do nothing
+	} else if err != nil {
+		msg := "Failed to get the race from the database: " + err.Error()
+		log.Error(msg)
+		discordSend(m.ChannelID, msg)
+		return
+	} else {
+		msg := "You cannot use this command in a race channel."
+		discordSend(m.ChannelID, msg)
 	}
 
 	// Get all of the channels
