@@ -261,6 +261,61 @@ var (
 	}
 )
 
+func buildsBanStart(race *Race) {
+	// Update the state
+	race.State = RaceStateBanningBuilds
+	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
+		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(race.ChannelID, msg)
+		return
+	}
+	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
+
+	msg := ""
+	msg += "**Build Ban Phase**\n\n"
+	msg += "- Each racer gets to ban " + strconv.Itoa(numBans) + " builds.\n"
+	msg += "- Use the `!ban` command to select a build.\n"
+	msg += "  e.g. `!ban 3` (to ban the 3rd build in the list)\n\n"
+	if race.ActiveRacer == 1 {
+		msg += race.Racer1.Mention()
+	} else if race.ActiveRacer == 2 {
+		msg += race.Racer2.Mention()
+	}
+	msg += ", you start! (randomly decided)\n\n"
+
+	msg += getBansRemaining(race, "builds")
+	msg += getRemaining(race, "builds")
+	discordSend(race.ChannelID, msg)
+}
+
+func buildsPickStart(race *Race, msg string) {
+	// Set the state
+	race.State = RaceStatePickingBuilds
+	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
+		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(race.ChannelID, msg)
+		return
+	}
+	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
+
+	msg += "**Build Pick Phase**\n\n"
+	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " builds need to be picked.\n"
+	msg += "- Use the `!pick` command to select a build.\n"
+	msg += "  e.g. `!pick 3` (to pick the 3rd build in the list)\n\n"
+	if race.ActiveRacer == 1 {
+		msg += race.Racer1.Mention()
+	} else if race.ActiveRacer == 2 {
+		msg += race.Racer2.Mention()
+	}
+	msg += ", you start!\n\n"
+
+	msg += getPicksRemaining(race, "builds")
+	msg += getRemaining(race, "builds")
+	discordSend(race.ChannelID, msg)
+}
+
 func buildsVetoStart(race *Race, msg string) {
 	race.State = RaceStateVetoBuilds
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
