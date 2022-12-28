@@ -121,7 +121,7 @@ func matchStart(race *Race) {
 	msg += matchGetDescription(race)
 	discordSend(discordGeneralChannelID, msg)
 
-	// TODO: Dynamically handle the kind of tournament
+	// TODO: Dynamically handle the kind of tournament.
 	charactersBanStart(race)
 	// charactersVetoStart(race)
 }

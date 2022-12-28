@@ -128,7 +128,7 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 	totalBansLeft := race.Racer1Bans + race.Racer2Bans
 	if totalBansLeft > 0 {
 		msg += getNext(race)
-		msg += getBansRemaining(race, "characters")
+		msg += getBansRemaining(race)
 		msg += getRemaining(race, "characters")
 		discordSend(race.ChannelID, msg)
 	} else {

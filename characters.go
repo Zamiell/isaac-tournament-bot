@@ -66,7 +66,7 @@ func charactersBanStart(race *Race) {
 	}
 	msg += ", you start! (randomly decided)\n\n"
 
-	msg += getBansRemaining(race, "characters")
+	msg += getBansRemaining(race)
 	msg += getRemaining(race, "characters")
 	discordSend(race.ChannelID, msg)
 }
@@ -188,9 +188,9 @@ func charactersEnd(race *Race, msg string) {
 
 	ruleset := tournaments[race.ChallongeURL].Ruleset
 	if ruleset == "seeded" {
-		// TODO: Dynamically handle the type of race.
-		// buildsVetoStart(race, msg)
+		// TODO: Dynamically handle the kind of tournament.
 		buildsBanStart(race, msg)
+		// buildsVetoStart(race, msg)
 	} else if ruleset == "unseeded" || ruleset == "team" {
 		matchEnd(race, msg)
 	} else {

@@ -272,6 +272,22 @@ func buildsBanStart(race *Race, msg string) {
 	}
 	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
+	// Update the number of bans
+	race.Racer1Bans = numBans
+	if err := modals.Races.SetBans(race.ChannelID, 1, race.Racer1Bans); err != nil {
+		msg := "Failed to set the bans for racer 1 on race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(race.ChannelID, msg)
+		return
+	}
+	race.Racer2Bans = numBans
+	if err := modals.Races.SetBans(race.ChannelID, 2, race.Racer2Bans); err != nil {
+		msg := "Failed to set the bans for racer 2 on race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(race.ChannelID, msg)
+		return
+	}
+
 	msg += ""
 	msg += "**Build Ban Phase**\n\n"
 	msg += "- Each racer gets to ban " + strconv.Itoa(numBans) + " builds.\n"
@@ -284,7 +300,7 @@ func buildsBanStart(race *Race, msg string) {
 	}
 	msg += ", you start! (randomly decided)\n\n"
 
-	msg += getBansRemaining(race, "builds")
+	msg += getBansRemaining(race)
 	msg += getRemaining(race, "builds")
 	discordSend(race.ChannelID, msg)
 }

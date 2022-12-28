@@ -79,10 +79,10 @@ func getDate(datetime time.Time, timezone string) string {
 	Match subroutines
 */
 
-func getBansRemaining(race *Race, thing string) string {
+func getBansRemaining(race *Race) string {
 	bansLeft := race.Racer1Bans + race.Racer2Bans
 	msg := "**" + strconv.Itoa(bansLeft) + " ban"
-	if bansLeft > 1 {
+	if bansLeft != 1 {
 		msg += "s"
 	}
 	msg += " to go.**\n"
@@ -102,7 +102,7 @@ func getPicksRemaining(race *Race, thing string) string {
 
 	picksLeft := tournaments[race.ChallongeURL].BestOf - len(things)
 	msg := "**" + strconv.Itoa(picksLeft) + " pick"
-	if picksLeft > 1 {
+	if picksLeft != 1 {
 		msg += "s"
 	}
 	msg += " to go.**\n"
