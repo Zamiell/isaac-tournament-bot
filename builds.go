@@ -272,7 +272,7 @@ func buildsBanStart(race *Race, msg string) {
 	}
 	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
-	// Update the number of bans
+	// Initialize the number of bans
 	race.Racer1Bans = numBans
 	if err := modals.Races.SetBans(race.ChannelID, 1, race.Racer1Bans); err != nil {
 		msg := "Failed to set the bans for racer 1 on race \"" + race.Name() + "\": " + err.Error()
@@ -301,7 +301,7 @@ func buildsBanStart(race *Race, msg string) {
 	msg += ", you start! (randomly decided)\n\n"
 
 	msg += getBansRemaining(race)
-	msg += getRemaining(race, "builds")
+	msg += getRemaining(race)
 	discordSend(race.ChannelID, msg)
 }
 
@@ -327,8 +327,8 @@ func buildsPickStart(race *Race, msg string) {
 	}
 	msg += ", you start!\n\n"
 
-	msg += getPicksRemaining(race, "builds")
-	msg += getRemaining(race, "builds")
+	msg += getPicksRemaining(race)
+	msg += getRemaining(race)
 	discordSend(race.ChannelID, msg)
 }
 

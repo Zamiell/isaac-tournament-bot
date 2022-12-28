@@ -67,7 +67,7 @@ func charactersBanStart(race *Race) {
 	msg += ", you start! (randomly decided)\n\n"
 
 	msg += getBansRemaining(race)
-	msg += getRemaining(race, "characters")
+	msg += getRemaining(race)
 	discordSend(race.ChannelID, msg)
 }
 
@@ -93,8 +93,8 @@ func charactersPickStart(race *Race, msg string) {
 	}
 	msg += ", you start!\n\n"
 
-	msg += getPicksRemaining(race, "characters")
-	msg += getRemaining(race, "characters")
+	msg += getPicksRemaining(race)
+	msg += getRemaining(race)
 	discordSend(race.ChannelID, msg)
 }
 

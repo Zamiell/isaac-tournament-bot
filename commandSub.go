@@ -89,15 +89,15 @@ func getBansRemaining(race *Race) string {
 	return msg
 }
 
-func getPicksRemaining(race *Race, thing string) string {
+func getPicksRemaining(race *Race) string {
 	var things []string
-	if thing == "characters" {
+	if race.State == RaceStateBanningCharacters || race.State == RaceStatePickingCharacters {
 		things = race.Characters
-	} else if thing == "builds" {
+	} else if race.State == RaceStateBanningBuilds || race.State == RaceStatePickingBuilds {
 		things = race.Builds
 	} else {
-		log.Error("The \"getPicksRemaining\" function was passed an invalid thing.")
-		return ""
+		log.Error("The \"getPicksRemaining\" function was called when the race state was invalid.")
+		return "error"
 	}
 
 	picksLeft := tournaments[race.ChallongeURL].BestOf - len(things)
@@ -109,15 +109,18 @@ func getPicksRemaining(race *Race, thing string) string {
 	return msg
 }
 
-func getRemaining(race *Race, thing string) string {
+func getRemaining(race *Race) string {
+	var thing string
 	var thingsRemaining []string
-	if thing == "characters" {
+	if race.State == RaceStateBanningCharacters || race.State == RaceStatePickingCharacters {
+		thing = "characters"
 		thingsRemaining = race.CharactersRemaining
-	} else if thing == "builds" {
+	} else if race.State == RaceStateBanningBuilds || race.State == RaceStatePickingBuilds {
+		thing = "builds"
 		thingsRemaining = race.BuildsRemaining
 	} else {
-		log.Error("The \"getRemaining\" function was passed an invalid thing.")
-		return ""
+		log.Error("The \"getRemaining\" function was called when the race state was invalid.")
+		return "error"
 	}
 
 	// Build column 1
