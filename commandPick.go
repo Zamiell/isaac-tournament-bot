@@ -111,7 +111,7 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 		}
 
 		race.Builds = things
-		if err := modals.Races.SetBuilds(race.ChannelID, race.Characters); err != nil {
+		if err := modals.Races.SetBuilds(race.ChannelID, race.Builds); err != nil {
 			msg := "Failed to set the builds for race \"" + race.Name() + "\": " + err.Error()
 			log.Error(msg)
 			discordSend(m.ChannelID, msg)
