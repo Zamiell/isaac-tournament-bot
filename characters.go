@@ -43,6 +43,8 @@ var (
 )
 
 func charactersBanStart(race *Race) {
+	msg := matchBeginningAlert(race)
+
 	// Update the state
 	race.State = RaceStateBanningCharacters
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
@@ -53,7 +55,21 @@ func charactersBanStart(race *Race) {
 	}
 	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
-	msg := matchBeginningAlert(race)
+	// Initialize the number of bans
+	race.Racer1Bans = numBans
+	if err := modals.Races.SetBans(race.ChannelID, 1, race.Racer1Bans); err != nil {
+		msg := "Failed to set the bans for racer 1 on race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(race.ChannelID, msg)
+		return
+	}
+	race.Racer2Bans = numBans
+	if err := modals.Races.SetBans(race.ChannelID, 2, race.Racer2Bans); err != nil {
+		msg := "Failed to set the bans for racer 2 on race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		discordSend(race.ChannelID, msg)
+		return
+	}
 
 	msg += "**Character Ban Phase**\n\n"
 	msg += "- Each racer gets to ban " + strconv.Itoa(numBans) + " characters.\n"
@@ -192,7 +208,7 @@ func charactersEnd(race *Race, msg string) {
 		buildsBanStart(race, msg)
 		// buildsVetoStart(race, msg)
 	} else if ruleset == "unseeded" || ruleset == "team" {
-		matchEnd(race, msg)
+		matchSetInProgressAndPrintSummary(race, msg)
 	} else {
 		msg += "Unknown tournament ruleset for tournament \"" + race.TournamentName + "\"."
 		log.Error(msg)

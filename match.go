@@ -161,7 +161,7 @@ func matchGetDescription(race *Race) string {
 	return msg
 }
 
-func matchEnd(race *Race, msg string) {
+func matchSetInProgressAndPrintSummary(race *Race, msg string) {
 	race.State = RaceStateInProgress
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()

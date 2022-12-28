@@ -288,7 +288,6 @@ func buildsBanStart(race *Race, msg string) {
 		return
 	}
 
-	msg += ""
 	msg += "**Build Ban Phase**\n\n"
 	msg += "- Each racer gets to ban " + strconv.Itoa(numBans) + " builds.\n"
 	msg += "- Use the `!ban` command to select a build.\n"
@@ -377,7 +376,7 @@ func buildsRound(race *Race, msg string) {
 		}
 
 		if len(race.Builds) == tournaments[race.ChallongeURL].BestOf {
-			matchEnd(race, msg)
+			matchSetInProgressAndPrintSummary(race, msg)
 			return
 		}
 
@@ -410,6 +409,27 @@ func buildsRound(race *Race, msg string) {
 	}
 	msg += ", do you want to veto this build? Use `!yes` or `!no` to answer."
 	discordSend(race.ChannelID, msg)
+}
+
+func buildsEnd(race *Race, msg string) {
+	// Unlike the "charactersEnd" function, we don't print the builds, since they will be displayed
+	// in the summary.
+
+	// Reset the vetos
+	race.Racer1Vetos = numVetos
+	if err := modals.Races.SetVetos(race.ChannelID, 1, numVetos); err != nil {
+		msg := "Failed to set the vetos for \"" + race.Racer1.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		return
+	}
+	race.Racer2Vetos = numVetos
+	if err := modals.Races.SetVetos(race.ChannelID, 2, numVetos); err != nil {
+		msg := "Failed to set the vetos for \"" + race.Racer2.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		return
+	}
+
+	matchSetInProgressAndPrintSummary(race, msg)
 }
 
 func getBuild(race *Race) string {
