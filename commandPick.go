@@ -124,14 +124,15 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 	msg := m.Author.Mention() + " picked **" + thing + "**.\n"
 	picksLeft := tournaments[race.ChallongeURL].BestOf - len(things)
 	fmt.Println("------------------------------------------------------")
+	fmt.Println("race state:", race.State)
 	fmt.Println("picksLeft:", picksLeft)
 	fmt.Printf("things: %v", things)
 	fmt.Println("------------------------------------------------------")
 
 	if picksLeft > 0 {
-		msg += getNext(race)
-		msg += getPicksRemaining(race)
-		msg += getRemaining(race)
+		msg += getNextMsg(race)
+		msg += getPicksRemainingMsg(race)
+		msg += getRemainingThingsMsg(race)
 		discordSend(race.ChannelID, msg)
 	} else {
 		msg += "\n"

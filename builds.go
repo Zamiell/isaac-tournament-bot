@@ -300,7 +300,7 @@ func buildsBanStart(race *Race, msg string) {
 	msg += ", you start! (randomly decided)\n\n"
 
 	msg += getBansRemaining(race)
-	msg += getRemaining(race)
+	msg += getRemainingThingsMsg(race)
 	discordSend(race.ChannelID, msg)
 }
 
@@ -326,8 +326,8 @@ func buildsPickStart(race *Race, msg string) {
 	}
 	msg += ", you start!\n\n"
 
-	msg += getPicksRemaining(race)
-	msg += getRemaining(race)
+	msg += getPicksRemainingMsg(race)
+	msg += getRemainingThingsMsg(race)
 	discordSend(race.ChannelID, msg)
 }
 

@@ -89,7 +89,7 @@ func getBansRemaining(race *Race) string {
 	return msg
 }
 
-func getPicksRemaining(race *Race) string {
+func getPicksRemainingMsg(race *Race) string {
 	var things []string
 	if race.State == RaceStateBanningCharacters || race.State == RaceStatePickingCharacters {
 		things = race.Characters
@@ -109,7 +109,7 @@ func getPicksRemaining(race *Race) string {
 	return msg
 }
 
-func getRemaining(race *Race) string {
+func getRemainingThingsMsg(race *Race) string {
 	var thing string
 	var thingsRemaining []string
 	if race.State == RaceStateBanningCharacters || race.State == RaceStatePickingCharacters {
@@ -161,7 +161,7 @@ func getRemaining(race *Race) string {
 	return msg
 }
 
-func getNext(race *Race) string {
+func getNextMsg(race *Race) string {
 	var msg string
 	if race.ActiveRacer == 1 {
 		msg = race.Racer1.Mention()
