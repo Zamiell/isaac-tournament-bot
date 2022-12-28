@@ -122,8 +122,11 @@ func matchStart(race *Race) {
 	discordSend(discordGeneralChannelID, msg)
 
 	// TODO: Dynamically handle the kind of tournament.
-	// charactersBanStart(race)
-	charactersVetoStart(race)
+	if numBans > 0 {
+		charactersBanStart(race)
+	} else {
+		charactersVetoStart(race)
+	}
 }
 
 func matchBeginningAlert(race *Race) string {
