@@ -2,7 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"strconv"
+	"fmt"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -34,7 +34,13 @@ func commandDebug(m *discordgo.MessageCreate, args []string) {
 	}
 
 	msg := "DEBUG:\n"
-	msg += strconv.Itoa(len(race.Characters)) + "\n"
-	msg += "A" + sliceToString(race.Characters) + "A\n"
+	msg += fmt.Sprintf("State: %v\n", race.State)
+	msg += fmt.Sprintf("ActiveRacer: %v\n", race.ActiveRacer)
+	msg += fmt.Sprintf("Racer1ID: %v\n", race.Racer1ID)
+	msg += fmt.Sprintf("Racer2ID: %v\n", race.Racer2ID)
+	msg += fmt.Sprintf("Characters: %v\n", race.Characters)
+	msg += fmt.Sprintf("CharactersRemaining: %v\n", race.CharactersRemaining)
+	msg += fmt.Sprintf("Builds: %v\n", race.Builds)
+	msg += fmt.Sprintf("BuildsRemaining: %v\n", race.BuildsRemaining)
 	discordSend(m.ChannelID, msg)
 }
