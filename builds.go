@@ -380,7 +380,7 @@ func buildsRound(race *Race, msg string) {
 			return
 		}
 
-		msg += getBuild(race)
+		msg += assignRandomBuild(race)
 	}
 
 	if (race.Racer1Vetos == 0 && race.Racer2Vetos == 0) || // Both racer have used all of their vetos
@@ -432,7 +432,7 @@ func buildsEnd(race *Race, msg string) {
 	matchSetInProgressAndPrintSummary(race, msg)
 }
 
-func getBuild(race *Race) string {
+func assignRandomBuild(race *Race) string {
 	// Get a random build
 	randBuildNum := getRandomInt(0, len(race.BuildsRemaining)-1)
 	randBuild := race.BuildsRemaining[randBuildNum]
@@ -451,7 +451,7 @@ func getBuild(race *Race) string {
 	if !synergizes {
 		// Get a new random build
 		log.Info("The randomly selected build of \"" + randBuild + "\" does not synergize with \"" + character + "\". Trying again...")
-		return getBuild(race)
+		return assignRandomBuild(race)
 	}
 
 	// Add it to the builds

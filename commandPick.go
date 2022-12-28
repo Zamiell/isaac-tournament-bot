@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
@@ -64,7 +65,6 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 	// Account for the fact that the array is 0 indexed and the choices presented to the user begin at 1
 	choice--
 
-	// Check to see if this is a valid index
 	var thingsRemaining, things []string
 	if race.State == RaceStatePickingCharacters {
 		thingsRemaining = race.CharactersRemaining
@@ -73,6 +73,8 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 		thingsRemaining = race.BuildsRemaining
 		things = race.Builds
 	}
+
+	// Check to see if this is a valid index
 	if choice < 0 || choice >= len(thingsRemaining) {
 		discordSend(m.ChannelID, "\""+args[0]+"\" is not a valid choice.")
 		return
@@ -121,6 +123,11 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 
 	msg := m.Author.Mention() + " picked **" + thing + "**.\n"
 	picksLeft := tournaments[race.ChallongeURL].BestOf - len(things)
+	fmt.Println("------------------------------------------------------")
+	fmt.Println("picksLeft:", picksLeft)
+	fmt.Printf("things: %v", things)
+	fmt.Println("------------------------------------------------------")
+
 	if picksLeft > 0 {
 		msg += getNext(race)
 		msg += getPicksRemaining(race)

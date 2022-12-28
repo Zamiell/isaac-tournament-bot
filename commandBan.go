@@ -72,19 +72,20 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 	// Account for the fact that the array is 0 indexed and the choices presented to the user begin at 1
 	choice--
 
-	// Check to see if this is a valid index
 	var thingsRemaining []string
 	if race.State == RaceStateBanningCharacters {
 		thingsRemaining = race.CharactersRemaining
 	} else if race.State == RaceStateBanningBuilds {
 		thingsRemaining = race.BuildsRemaining
 	}
+
+	// Check to see if this is a valid index
 	if choice < 0 || choice >= len(thingsRemaining) {
 		discordSend(m.ChannelID, "\""+args[0]+"\" is not a valid choice.")
 		return
 	}
 
-	// Ban the item
+	// Ban the thing
 	thing := thingsRemaining[choice]
 	thingsRemaining = deleteFromSlice(thingsRemaining, choice)
 

@@ -150,7 +150,7 @@ func charactersRound(race *Race, msg string) {
 			return
 		}
 
-		msg += getCharacter(race)
+		msg += assignRandomCharacter(race)
 	}
 
 	if (race.Racer1Vetos == 0 && race.Racer2Vetos == 0) || // Both racers have used all of their vetos
@@ -216,7 +216,7 @@ func charactersEnd(race *Race, msg string) {
 	}
 }
 
-func getCharacter(race *Race) string {
+func assignRandomCharacter(race *Race) string {
 	// Get a random character
 	randCharacterNum := getRandomInt(0, len(race.CharactersRemaining)-1)
 	randCharacter := race.CharactersRemaining[randCharacterNum]
