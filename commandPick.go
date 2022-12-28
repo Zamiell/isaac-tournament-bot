@@ -128,9 +128,9 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 		discordSend(race.ChannelID, msg)
 	} else {
 		msg += "\n"
-		if race.State == RaceStateBanningCharacters {
+		if race.State == RaceStatePickingCharacters {
 			charactersEnd(race, msg)
-		} else if race.State == RaceStateBanningBuilds {
+		} else if race.State == RaceStatePickingBuilds {
 			buildsEnd(race, msg)
 		} else {
 			msg += "The race state was invalid."
