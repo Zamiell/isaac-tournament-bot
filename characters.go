@@ -205,8 +205,8 @@ func charactersEnd(race *Race, msg string) {
 	ruleset := tournaments[race.ChallongeURL].Ruleset
 	if ruleset == "seeded" {
 		// TODO: Dynamically handle the kind of tournament.
-		buildsBanStart(race, msg)
-		// buildsVetoStart(race, msg)
+		// buildsBanStart(race, msg)
+		buildsVetoStart(race, msg)
 	} else if ruleset == "unseeded" || ruleset == "team" {
 		matchSetInProgressAndPrintSummary(race, msg)
 	} else {
