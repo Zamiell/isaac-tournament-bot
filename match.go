@@ -17,7 +17,7 @@ var (
 func matchInit() {
 	// Read the configuration from environment variables.
 	tournamentTypeString := os.Getenv("TOURNAMENT_TYPE")
-	if len(tournamentType) == 0 {
+	if len(tournamentTypeString) == 0 {
 		log.Fatal("The \"TOURNAMENT_TYPE\" environment variable is blank. Set it in the \".env\" file.")
 		return
 	}
