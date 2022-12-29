@@ -13,7 +13,7 @@ var (
 )
 
 func matchInit() {
-	// Read the configuration from environment variables
+	// Read the configuration from environment variables.
 	tournamentTypeString := os.Getenv("TOURNAMENT_TYPE")
 	if len(tournamentType) == 0 {
 		log.Fatal("The \"TOURNAMENT_TYPE\" environment variable is blank. Set it in the \".env\" file.")
@@ -53,13 +53,13 @@ func matchInit() {
 		numVetos = v
 	}
 
-	// Make sure the build exceptions match the builds
+	// Make sure the build exceptions match the builds.
 	if len(builds) != len(buildExceptions) {
 		log.Fatal("The builds were updated without also modifying the build exceptions.")
 		return
 	}
 
-	// Schedule Discord pings for when each scheduled match starts
+	// Schedule Discord pings for when each scheduled match starts.
 	var channelIDs []string
 	if v, err := modals.Races.GetAllScheduled(); err != nil {
 		log.Fatal("Failed to get the scheduled races: " + err.Error())
@@ -81,7 +81,7 @@ func matchInit() {
 }
 
 func matchStart(race *Race) {
-	// Sleep until the match starts
+	// Sleep until the match starts.
 	origStartTime := race.DatetimeScheduled.Time
 	sleepDuration := race.DatetimeScheduled.Time.Sub(time.Now().UTC())
 	if sleepDuration < 5*time.Minute {
@@ -91,7 +91,7 @@ func matchStart(race *Race) {
 	}
 	time.Sleep(sleepDuration)
 
-	// Re-get the race from the database
+	// Re-get the race from the database.
 	if v, err := getRace(race.ChannelID); err != nil {
 		msg := "Failed to re-get the race from the database: " + err.Error()
 		log.Error(msg)
@@ -101,18 +101,18 @@ func matchStart(race *Race) {
 		race = v
 	}
 
-	// Check to see if the race has been rescheduled
+	// Check to see if the race has been rescheduled.
 	if origStartTime != race.DatetimeScheduled.Time {
 		return
 	}
 
-	// Check to see if this match has started already
+	// Check to see if this match has started already.
 	if race.State != RaceStateScheduled {
 		log.Info("Reached the \"matchStart\" function when the state was " + race.State + ". Doing nothing.")
 		return
 	}
 
-	// Randomly decide who starts
+	// Randomly decide who starts.
 	race.FirstPicker = getRandomInt(1, 2)
 	if err := modals.Races.SetFirstPicker(race.ChannelID, race.FirstPicker); err != nil {
 		msg := "Failed to set the first picker for race \"" + race.Name() + "\": " + err.Error()
@@ -129,13 +129,12 @@ func matchStart(race *Race) {
 		return
 	}
 
-	// Announce that the match is starting in the general channel
+	// Announce that the match is starting in the general channel.
 	msg := "------------------------------------------\n"
 	msg += "A race is scheduled to begin in 5 minutes:\n\n"
 	msg += matchGetDescription(race)
 	discordSend(discordGeneralChannelID, msg)
 
-	// TODO: Dynamically handle the kind of tournament.
 	if numBans > 0 {
 		charactersBanStart(race)
 	} else {
@@ -144,10 +143,10 @@ func matchStart(race *Race) {
 }
 
 func matchBeginningAlert(race *Race) string {
-	// Alert the racers that the race is about to start
+	// Alert the racers that the race is about to start.
 	msg := race.Racer1.Mention() + " and " + race.Racer2.Mention() + " - the race is scheduled to start in 5 minutes.\n\n"
 
-	// Alert the casters that the race is about to start
+	// Alert the casters that the race is about to start.
 	for _, cast := range race.Casts {
 		msg += cast.Caster.Mention() + ", you are scheduled to cast this match in " + languageMap[cast.Language] + " in 5 minutes at: <" + cast.Caster.StreamURL.String + ">\n\n"
 	}
@@ -156,7 +155,7 @@ func matchBeginningAlert(race *Race) string {
 }
 
 func matchGetDescription(race *Race) string {
-	msg := "```\n" // This is necessary because underscores in usernames can mess up the formatting
+	msg := "```\n" // This is necessary because underscores in usernames can mess up the formatting.
 	msg += race.TournamentName + "\n"
 	msg += race.Name() + "\n"
 	msg += "```\n"

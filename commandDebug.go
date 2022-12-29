@@ -19,7 +19,7 @@ func commandDebug(m *discordgo.MessageCreate, args []string) {
 		}
 	*/
 
-	// Check to see if this is a race channel (and get the race from the database)
+	// Check to see if this is a race channel (and get the race from the database).
 	var race *Race
 	if v, err := getRace(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")

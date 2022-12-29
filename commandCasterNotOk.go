@@ -8,7 +8,7 @@ import (
 )
 
 func commandCasterNotOk(m *discordgo.MessageCreate, args []string) {
-	// Check to see if this is a race channel (and get the race from the database)
+	// Check to see if this is a race channel (and get the race from the database).
 	var race *Race
 	if v, err := getRace(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
@@ -22,19 +22,19 @@ func commandCasterNotOk(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	// Check to see if this person is one of the two racers
+	// Check to see if this person is one of the two racers.
 	if m.Author.ID != race.Racer1.DiscordID && m.Author.ID != race.Racer2.DiscordID {
 		discordSend(m.ChannelID, "You cannot deny caster permission for a match that you are not participating in.")
 		return
 	}
 
-	// Check to see if someone is casting this match
+	// Check to see if someone is casting this match.
 	if len(race.Casts) == 0 {
 		discordSend(m.ChannelID, "No-one has volunteered to cast this match, so there is no need to deny permission.")
 		return
 	}
 
-	// Find out whether they are racer 1 or racer 2
+	// Find out whether they are racer 1 or racer 2.
 	racerNum := 1
 	racerName := race.Racer1.Username
 	if m.Author.ID == race.Racer2.DiscordID {
@@ -42,7 +42,7 @@ func commandCasterNotOk(m *discordgo.MessageCreate, args []string) {
 		racerName = race.Racer2.Username
 	}
 
-	// Check to see if they have already given permission to everyone who has volunteered to cast
+	// Check to see if they have already given permission to everyone who has volunteered to cast.
 	numPermission := 0
 	var cast *Cast
 	for _, c := range race.Casts {
@@ -58,11 +58,12 @@ func commandCasterNotOk(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Get the corresponding cast
-	// (there may be two or more casts for this match)
+	// Get the corresponding cast.
+	// (There may be two or more casts for this match.)
 	if numPermission >= 2 {
-		// Check to see if they specified the caster's name that they are denying permission to
-		// (they only need to do this if there are two or more casters that are awaiting permission)
+		// Check to see if they specified the caster's name that they are denying permission to.
+		// (They only need to do this if there are two or more casters that are awaiting
+		// permission.)
 		if len(args) != 1 {
 			commandCasterNotOkPrint(m)
 			return
@@ -81,7 +82,7 @@ func commandCasterNotOk(m *discordgo.MessageCreate, args []string) {
 		}
 	}
 
-	// Delete this cast from the database
+	// Delete this cast from the database.
 	if err := modals.Casts.Delete(race.ChannelID, cast.Caster.DiscordID); err != nil {
 		msg := "Failed to delete the cast from the database: " + err.Error()
 		log.Error(msg)

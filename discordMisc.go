@@ -13,8 +13,8 @@ func discordSend(channelID string, msg string) {
 	}
 }
 
-// Other calls to "discordSession.GuildMembers" should be refactored here,
-// but I don't have the heart to do this right now
+// Other calls to "discordSession.GuildMembers" should be refactored here, but I don't have the
+// heart to do this right now.
 func getDiscordMembers() ([]*discordgo.Member, error) {
 	members, err := discordSession.GuildMembers(discordGuildID, "0", 1000)
 

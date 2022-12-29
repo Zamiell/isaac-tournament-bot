@@ -15,7 +15,7 @@ func commandSetStream(m *discordgo.MessageCreate, args []string) {
 	}
 	username := args[0]
 
-	// Get the Discord guild members
+	// Get the Discord guild members.
 	var members []*discordgo.Member
 	if v, err := discordSession.GuildMembers(discordGuildID, "0", 1000); err != nil {
 		msg := "Failed to get the Discord guild members: " + err.Error()
@@ -35,7 +35,7 @@ func commandSetStream(m *discordgo.MessageCreate, args []string) {
 	}
 
 	m.Author = discordUser
-	args = args[1:] // This will be an empty slice if there is nothing after the command
+	args = args[1:] // This will be an empty slice if there is nothing after the command.
 	commandStream(m, args)
 }
 

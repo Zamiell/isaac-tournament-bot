@@ -7,7 +7,7 @@ import (
 )
 
 func commandGetNext(m *discordgo.MessageCreate, args []string) {
-	// Create the user in the database if it does not already exist
+	// Create the user in the database if it does not already exist.
 	var user *User
 	if v, err := userGet(m.Author); err != nil {
 		msg := "Failed to get the user from the database: " + err.Error()

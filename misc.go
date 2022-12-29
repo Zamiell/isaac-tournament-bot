@@ -37,7 +37,7 @@ func stringInSlice(a string, list []string) bool {
 }
 
 func stringToSlice(str string) []string {
-	// "strings.Split" will return a slice of length one if fed an empty string
+	// "strings.Split" will return a slice of length one if fed an empty string.
 	if str == "" {
 		return make([]string, 0)
 	}

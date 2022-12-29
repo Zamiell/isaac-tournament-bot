@@ -7,7 +7,7 @@ import (
 )
 
 func commandNo(m *discordgo.MessageCreate, args []string) {
-	// Check to see if this is a race channel (and get the race from the database)
+	// Check to see if this is a race channel (and get the race from the database).
 	var race *Race
 	if v, err := getRace(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
@@ -21,7 +21,7 @@ func commandNo(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	// Check to see if this person is one of the two racers
+	// Check to see if this person is one of the two racers.
 	var racerNum int
 	if m.Author.ID == race.Racer1.DiscordID {
 		racerNum = 1
@@ -32,19 +32,19 @@ func commandNo(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this race is in the vetoing phase
+	// Check to see if this race is in the vetoing phase.
 	if race.State != RaceStateVetoCharacters && race.State != RaceStateVetoBuilds {
 		discordSend(m.ChannelID, "You can only veto something once the match has started.")
 		return
 	}
 
-	// Check to see if it is their turn
+	// Check to see if it is their turn.
 	if race.ActiveRacer != racerNum {
 		discordSend(m.ChannelID, "It is not your turn.")
 		return
 	}
 
-	// Set the number of people who have voted on this build
+	// Set the number of people who have voted on this build.
 	race.NumVoted++
 	if err := modals.Races.SetNumVoted(race.ChannelID, race.NumVoted); err != nil {
 		msg := "Failed to set the NumVoted for race \"" + race.Name() + "\": " + err.Error()

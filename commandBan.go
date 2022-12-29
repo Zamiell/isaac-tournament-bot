@@ -13,7 +13,7 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this is a race channel (and get the race from the database)
+	// Check to see if this is a race channel (and get the race from the database).
 	var race *Race
 	if v, err := getRace(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
@@ -27,7 +27,7 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	// Check to see if this person is one of the two racers
+	// Check to see if this person is one of the two racers.
 	var racerNum int
 	if m.Author.ID == race.Racer1.DiscordID {
 		racerNum = 1
@@ -38,7 +38,7 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this race is in the banning phase
+	// Check to see if this race is in the banning phase.
 	if race.State != RaceStateBanningCharacters &&
 		race.State != RaceStateBanningBuilds {
 
@@ -46,13 +46,13 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if it is their turn
+	// Check to see if it is their turn.
 	if race.ActiveRacer != racerNum {
 		discordSend(m.ChannelID, "It is not your turn.")
 		return
 	}
 
-	// Check to see if they have any bans left
+	// Check to see if they have any bans left.
 	if (racerNum == 1 && race.Racer1Bans == 0) ||
 		(racerNum == 2 && race.Racer2Bans == 0) {
 
@@ -60,7 +60,7 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this is a valid number
+	// Check to see if this is a valid number.
 	var choice int
 	if v, err := strconv.Atoi(args[0]); err != nil {
 		discordSend(m.ChannelID, "\""+args[0]+"\" is not a number.")
@@ -69,7 +69,8 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 		choice = v
 	}
 
-	// Account for the fact that the array is 0 indexed and the choices presented to the user begin at 1
+	// Account for the fact that the array is 0 indexed and the choices presented to the user begin
+	// at 1.
 	choice--
 
 	var thingsRemaining []string
@@ -79,13 +80,13 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 		thingsRemaining = race.BuildsRemaining
 	}
 
-	// Check to see if this is a valid index
+	// Check to see if this is a valid index.
 	if choice < 0 || choice >= len(thingsRemaining) {
 		discordSend(m.ChannelID, "\""+args[0]+"\" is not a valid choice.")
 		return
 	}
 
-	// Ban the thing
+	// Ban the thing.
 	thing := thingsRemaining[choice]
 	thingsRemaining = deleteFromSlice(thingsRemaining, choice)
 
@@ -107,7 +108,7 @@ func commandBan(m *discordgo.MessageCreate, args []string) {
 		}
 	}
 
-	// Decrement their bans
+	// Decrement their bans.
 	var bansLeft int
 	if racerNum == 1 {
 		race.Racer1Bans--

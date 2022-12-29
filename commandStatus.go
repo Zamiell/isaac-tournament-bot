@@ -10,7 +10,7 @@ import (
 )
 
 func commandStatus(m *discordgo.MessageCreate, args []string) {
-	// Check to see if this is a race channel (and get the race from the database)
+	// Check to see if this is a race channel (and get the race from the database).
 	var race *Race
 	if v, err := getRace(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
@@ -80,7 +80,7 @@ func printStatusInitial(m *discordgo.MessageCreate, race *Race, shouldPing bool)
 		racer2NameToUse = racer2.Username
 	}
 
-	// Find out if the racers have set their timezone
+	// Find out if the racers have set their timezone.
 	msg := ""
 	if racer1.Timezone.Valid {
 		msg += racer1NameToUse + " has a timezone of: " + getTimezone(racer1.Timezone.String) + "\n"
@@ -93,7 +93,7 @@ func printStatusInitial(m *discordgo.MessageCreate, race *Race, shouldPing bool)
 		msg += racer2NameToUse + ", your timezone is **not currently set**. Please set one with: `!timezone [timezone]`\n"
 	}
 
-	// Calculate the difference between the two timezones
+	// Calculate the difference between the two timezones.
 	if racer1.Timezone.Valid && racer2.Timezone.Valid {
 		loc1, _ := time.LoadLocation(racer1.Timezone.String)
 		loc2, _ := time.LoadLocation(racer2.Timezone.String)
@@ -109,7 +109,7 @@ func printStatusInitial(m *discordgo.MessageCreate, race *Race, shouldPing bool)
 	}
 	msg += "\n"
 
-	// Find out if the racers have set their stream URL
+	// Find out if the racers have set their stream URL.
 	if racer1.StreamURL.Valid {
 		msg += racer1NameToUse + " has a stream of: <" + racer1.StreamURL.String + ">\n"
 	} else {
@@ -122,7 +122,7 @@ func printStatusInitial(m *discordgo.MessageCreate, race *Race, shouldPing bool)
 	}
 	msg += "\n"
 
-	// Give the welcome message
+	// Give the welcome message.
 	if race.DatetimeScheduled.Valid {
 		var racerThatNeedsToConfirmTime *User
 		if race.ActiveRacer == 1 {
@@ -142,6 +142,6 @@ func printStatusInitial(m *discordgo.MessageCreate, race *Race, shouldPing bool)
 }
 
 func printStatusScheduled(m *discordgo.MessageCreate, race *Race) {
-	msg := getRaceScheduleMessage(race, race.Racer1) // Default to using the first racer's timezone
+	msg := getRaceScheduleMessage(race, race.Racer1) // Default to using the first racer's timezone.
 	discordSend(race.ChannelID, msg)
 }

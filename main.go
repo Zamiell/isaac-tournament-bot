@@ -22,7 +22,7 @@ var (
 )
 
 func main() {
-	// Initialize logging
+	// Initialize logging:
 	// http://godoc.org/github.com/op/go-logging#Formatter
 	log = logging.MustGetLogger("isaac-tournament-bot")
 	loggingBackend := logging.NewLogBackend(os.Stdout, "", 0)
@@ -37,7 +37,7 @@ func main() {
 	log.Info("| Starting isaac-tournament-bot. |")
 	log.Info("+--------------------------------+")
 
-	// Get the project path
+	// Get the project path:
 	// https://stackoverflow.com/questions/18537257/
 	if v, err := os.Executable(); err != nil {
 		log.Fatal("Failed to get the path of the currently running executable:", err)
@@ -45,12 +45,12 @@ func main() {
 		projectPath = filepath.Dir(v)
 	}
 
-	// Load the ".env" file which contains environment variables with secret values
+	// Load the ".env" file which contains environment variables with secret values.
 	if err := godotenv.Load(path.Join(projectPath, ".env")); err != nil {
 		log.Fatal("Failed to load .env file:", err)
 	}
 
-	// Initialize the database model
+	// Initialize the database model.
 	if v, err := NewModels(); err != nil {
 		log.Fatal("Failed to open the database:", err)
 	} else {
@@ -58,7 +58,7 @@ func main() {
 	}
 	defer modals.Close()
 
-	// Initialize the other parts of the program
+	// Initialize the other parts of the program.
 	loadAllBuilds()
 	discordInit()
 	defer discordSession.Close()
@@ -67,14 +67,14 @@ func main() {
 	languageInit()
 	log.Info("The bot has successfully initialized.")
 
-	// Wait here until CTRL-C or other term signal is received
+	// Wait here until CTRL-C or other term signal is received.
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
 }
 
 func loadAllBuilds() {
-	libPath := getLibPath()
+	libPath := getLibraryPath()
 	jsonFilePath := path.Join(libPath, "builds.json")
 	var jsonFile []byte
 	if v, err := ioutil.ReadFile(jsonFilePath); err != nil {
@@ -88,8 +88,7 @@ func loadAllBuilds() {
 	}
 }
 
-func getLibPath() string {
-	// Get the library path
+func getLibraryPath() string {
 	libPath := path.Join(projectPath, "lib", "node_modules", "isaac-racing-common", "src")
 	if _, err := os.Stat(libPath); os.IsNotExist(err) {
 		log.Fatal("The library path at \"" + libPath + "\" does not exist. Did you forget to run \"npm install\" in the \"lib\" subdirectory?")

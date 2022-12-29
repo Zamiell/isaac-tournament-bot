@@ -5,7 +5,7 @@ import (
 	"errors"
 	"os"
 
-	// This is the documented way to use the driver
+	// This is the documented way to use the driver.
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -13,24 +13,24 @@ var (
 	db *sql.DB
 )
 
-// Models contains a list of objects representing database tables
+// Models contains a list of objects representing database tables.
 type Models struct {
 	Races
 	Users
 	Casts
 }
 
-// Init opens a database connection based on the credentials in the ".env" file
+// Init opens a database connection based on the credentials in the ".env" file.
 func NewModels() (*Models, error) {
-	// Read the database configuration from environment variables
-	// (it was loaded from the .env file in main.go)
+	// Read the database configuration from environment variables.
+	// (It was loaded from the ".env" file in "main.go".)
 	dbHost := os.Getenv("DB_HOST")
 	if len(dbHost) == 0 {
 		dbHost = "localhost"
 	}
 	dbPort := os.Getenv("DB_PORT")
 	if len(dbPort) == 0 {
-		// 3306 is the default port for MariaDB
+		// 3306 is the default port for MariaDB.
 		dbPort = "3306"
 	}
 	dbUser := os.Getenv("DB_USER")
@@ -46,7 +46,7 @@ func NewModels() (*Models, error) {
 		return nil, errors.New("the \"DB_NAME\" environment variable is blank; set it in the \".env\" file")
 	}
 
-	// Initialize the database
+	// Initialize the database.
 	dsn := dbUser + ":" + dbPass + "@(" + dbHost + ":" + dbPort + ")/" + dbName + "?parseTime=true"
 	if v, err := sql.Open("mysql", dsn); err != nil {
 		return nil, err
@@ -54,11 +54,11 @@ func NewModels() (*Models, error) {
 		db = v
 	}
 
-	// Create the model
+	// Create the model.
 	return &Models{}, nil
 }
 
-// Close exposes the ability to close the underlying database connection
+// Close exposes the ability to close the underlying database connection.
 func (*Models) Close() {
 	db.Close()
 }

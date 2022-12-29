@@ -8,7 +8,7 @@ import (
 	humanize "github.com/dustin/go-humanize"
 )
 
-// Check to see if they are an administrator
+// Check to see if they are an administrator.
 func isAdmin(m *discordgo.MessageCreate) bool {
 	var member *discordgo.Member
 	if v, err := discordSession.GuildMember(discordGuildID, m.Author.ID); err != nil {
@@ -123,7 +123,7 @@ func getRemainingThingsMsg(race *Race) string {
 		return "error"
 	}
 
-	// Build column 1
+	// Build column 1.
 	lines := make([]string, 0)
 	column1length := 0
 	halfwayPoint := int(float64((len(thingsRemaining) - 1) / 2))
@@ -135,7 +135,7 @@ func getRemainingThingsMsg(race *Race) string {
 		}
 	}
 
-	// Add padding to column 1
+	// Add padding to column 1.
 	column1length += 6 // A minimum of 6 spaces in between columns
 	for i := 0; i < len(lines); i++ {
 		for len(lines[i]) < column1length {
@@ -143,7 +143,7 @@ func getRemainingThingsMsg(race *Race) string {
 		}
 	}
 
-	// Build column 2
+	// Build column 2.
 	lineCounter := 0
 	for i := halfwayPoint + 1; i < len(thingsRemaining); i++ {
 		line := strconv.Itoa(i+1) + " - " + thingsRemaining[i]
@@ -151,7 +151,7 @@ func getRemainingThingsMsg(race *Race) string {
 		lineCounter++
 	}
 
-	// Make the string
+	// Make the string.
 	msg := "Current " + thing + " remaining:\n\n"
 	msg += "```\n"
 	for _, line := range lines {
@@ -173,7 +173,7 @@ func getNextMsg(race *Race) string {
 }
 
 func incrementActiveRacer(race *Race) {
-	// Increment the active racer
+	// Increment the active racer.
 	race.ActiveRacer++
 	if race.ActiveRacer > 2 {
 		race.ActiveRacer = 1

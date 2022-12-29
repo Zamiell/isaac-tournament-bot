@@ -31,7 +31,7 @@ var (
 )
 
 func discordInit() {
-	// Read the OAuth secret from the environment variable
+	// Read the OAuth secret from the environment variable.
 	discordToken := os.Getenv("DISCORD_TOKEN")
 	if len(discordToken) == 0 {
 		log.Fatal("The \"DISCORD_TOKEN\" environment variable is blank. Set it in the \".env\" file.")
@@ -44,7 +44,7 @@ func discordInit() {
 		return
 	}
 
-	// Bot accounts must be prefixed with "Bot"
+	// Bot accounts must be prefixed with "Bot".
 	if d, err := discordgo.New("Bot " + discordToken); err != nil {
 		log.Fatal("Failed to create a Discord session:", err)
 		return
@@ -52,18 +52,18 @@ func discordInit() {
 		discordSession = d
 	}
 
-	// Register function handlers for various events
+	// Register function handlers for various events.
 	discordSession.AddHandler(discordReady)
 	discordSession.AddHandler(discordMessageCreate)
 
-	// Register function handlers for all of the commands
+	// Register function handlers for all of the commands.
 	commandInit()
 
-	// Set all intents
+	// Set all intents:
 	// https://github.com/bwmarrin/discordgo/wiki/FAQ#gateway-intents
 	discordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAll)
 
-	// Open the websocket and begin listening
+	// Open the websocket and begin listening.
 	if err := discordSession.Open(); err != nil {
 		log.Fatal("Error opening Discord session: ", err)
 		return
@@ -78,7 +78,7 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 	log.Info("Discord bot connected with username: " + event.User.Username)
 	discordBotID = event.User.ID
 
-	// Get the guild ID
+	// Get the guild ID.
 	var guilds []*discordgo.UserGuild
 	if v, err := s.UserGuilds(0, "", ""); err != nil {
 		log.Fatal("Failed to get the Discord guilds:", err)
@@ -99,7 +99,7 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 		log.Fatal("Failed to find the ID of the \"" + discordGuildName + "\" Discord server.")
 	}
 
-	// Get the ID of several roles
+	// Get the ID of several roles.
 	var roles []*discordgo.Role
 	if v, err := discordSession.GuildRoles(discordGuildID); err != nil {
 		log.Fatal("Failed to get the roles for the guild: " + err.Error())
@@ -130,7 +130,7 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 		log.Fatal("Failed to find the role of \"@everyone\".")
 	}
 
-	// Get the ID of the general channel
+	// Get the ID of the general channel.
 	var channels []*discordgo.Channel
 	if v, err := discordSession.GuildChannels(discordGuildID); err != nil {
 		log.Fatal("Failed to get the Discord server channels: " + err.Error())
@@ -151,7 +151,7 @@ func discordReady(s *discordgo.Session, event *discordgo.Ready) {
 }
 
 func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	// Log the message
+	// Log the message.
 	var channelName string
 	if v, err := discordSession.Channel(m.ChannelID); err != nil {
 		log.Error("Failed to get the channel name for the channel ID of \""+m.ChannelID+"\":", err)
@@ -160,35 +160,35 @@ func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	log.Info("[#" + channelName + "] <" + m.Author.Username + "#" + m.Author.Discriminator + "> " + m.Content)
 
-	// Ignore all messages created by the bot itself
+	// Ignore all messages created by the bot itself.
 	if m.Author.ID == discordBotID {
 		return
 	}
 
-	// First, look for people mentioning the bot
-	// (the second condition accounts for if we have a server nickname)
+	// First, look for people mentioning the bot.
+	// (The second condition accounts for if we have a server nickname.)
 	if strings.Contains(m.Content, "<@"+discordBotID+">") || strings.Contains(m.Content, "<@!"+discordBotID+">") {
 		discordSend(m.ChannelID, "ping me again\nI DARE YOU")
 		return
 	}
 
-	// Second, look for exact greetings
+	// Second, look for exact greetings.
 	if strings.ToLower(m.Content) == "hello willy" {
 		discordSend(m.ChannelID, "hello buttface, idgaf")
 		return
 	}
 
-	// Commands for this bot will start with a "!", so we can ignore everything else
+	// Commands for this bot will start with a "!", so we can ignore everything else.
 	args := strings.Split(m.Content, " ")
 	command := args[0]
-	args = args[1:] // This will be an empty slice if there is nothing after the command
+	args = args[1:] // This will be an empty slice if there is nothing after the command.
 	if !strings.HasPrefix(command, "!") {
 		return
 	}
 	command = strings.TrimPrefix(command, "!")
-	command = strings.ToLower(command) // Commands are case-insensitive
+	command = strings.ToLower(command) // Commands are case-insensitive.
 
-	// Check to see if there is a command handler for this command
+	// Check to see if there is a command handler for this command.
 	if _, ok := commandHandlerMap[command]; !ok {
 		discordSend(m.ChannelID, "That is not a valid command.")
 		return

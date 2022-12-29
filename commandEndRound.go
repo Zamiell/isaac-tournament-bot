@@ -11,9 +11,9 @@ func commandEndRound(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this is a race channel
+	// Check to see if this is a race channel.
 	if _, err := getRace(m.ChannelID); err == sql.ErrNoRows {
-		// Do nothing
+		// Do nothing.
 	} else if err != nil {
 		msg := "Failed to get the race from the database: " + err.Error()
 		log.Error(msg)
@@ -25,7 +25,7 @@ func commandEndRound(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Get all of the channels
+	// Get all of the channels.
 	var channels []*discordgo.Channel
 	if v, err := discordSession.GuildChannels(discordGuildID); err != nil {
 		msg := "Failed to get the Discord server channels: " + err.Error()
@@ -49,7 +49,7 @@ func commandEndRound(m *discordgo.MessageCreate, args []string) {
 			continue
 		}
 
-		// Delete it from the database
+		// Delete it from the database.
 		deletedChannels = true
 		if err := modals.Races.Delete(channel.ID); err != nil {
 			msg := "Failed to delete the race from the database: " + err.Error()
@@ -58,7 +58,7 @@ func commandEndRound(m *discordgo.MessageCreate, args []string) {
 			return
 		}
 
-		// Delete it from Discord
+		// Delete it from Discord.
 		if _, err := discordSession.ChannelDelete(channel.ID); err != nil {
 			msg := "Failed to delete the \"" + channel.Name + "\" channel: " + err.Error()
 			log.Error(msg)

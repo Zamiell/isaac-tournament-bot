@@ -22,7 +22,7 @@ var (
 		"Apollyon",
 		"Forgotten",
 		"Bethany",
-		"Jacob & Esau", // Meme character
+		"Jacob & Esau",
 		"Tainted Isaac",
 		"Tainted Magdalene",
 		"Tainted Judas",
@@ -45,7 +45,7 @@ var (
 func charactersBanStart(race *Race) {
 	msg := matchBeginningAlert(race)
 
-	// Update the state
+	// Update the state.
 	race.State = RaceStateBanningCharacters
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
@@ -55,7 +55,7 @@ func charactersBanStart(race *Race) {
 	}
 	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
-	// Initialize the number of bans
+	// Initialize the number of bans.
 	race.Racer1Bans = numBans
 	if err := modals.Races.SetBans(race.ChannelID, 1, race.Racer1Bans); err != nil {
 		msg := "Failed to set the bans for racer 1 on race \"" + race.Name() + "\": " + err.Error()
@@ -88,7 +88,7 @@ func charactersBanStart(race *Race) {
 }
 
 func charactersPickStart(race *Race, msg string) {
-	// Set the state
+	// Set the state.
 	race.State = RaceStatePickingCharacters
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
@@ -115,7 +115,7 @@ func charactersPickStart(race *Race, msg string) {
 }
 
 func charactersVetoStart(race *Race) {
-	// Update the state
+	// Update the state.
 	race.State = RaceStateVetoCharacters
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
@@ -134,13 +134,13 @@ func charactersVetoStart(race *Race) {
 	}
 	msg += ".\n"
 	msg += "- Use the `!yes` and `!no` commands to answer the questions.\n\n"
-	race.NumVoted = 2 // Set it to 2 so that it gives a new character
+	race.NumVoted = 2 // Set it to 2 so that it gives a new character.
 	charactersRound(race, msg)
 }
 
 func charactersRound(race *Race, msg string) {
 	if race.NumVoted == 2 {
-		// Both racers have voted, so get a new character
+		// Both racers have voted, so get a new character.
 		race.NumVoted = 0
 		if err := modals.Races.SetNumVoted(race.ChannelID, race.NumVoted); err != nil {
 			msg := "Failed to set the NumVoted for race \"" + race.Name() + "\": " + err.Error()
@@ -157,9 +157,9 @@ func charactersRound(race *Race, msg string) {
 		msg += assignRandomCharacter(race)
 	}
 
-	if (race.Racer1Vetos == 0 && race.Racer2Vetos == 0) || // Both racers have used all of their vetos
-		(race.ActiveRacer == 1 && race.Racer1Vetos == 0) || // It is racer 1's turn and they have already used their vetos
-		(race.ActiveRacer == 2 && race.Racer2Vetos == 0) { // It is racer 2's turn and they have already used their vetos
+	if (race.Racer1Vetos == 0 && race.Racer2Vetos == 0) || // Both racers have used all of their vetos.
+		(race.ActiveRacer == 1 && race.Racer1Vetos == 0) || // It is racer 1's turn and they have already used their vetos.
+		(race.ActiveRacer == 2 && race.Racer2Vetos == 0) { // It is racer 2's turn and they have already used their vetos.
 
 		log.Info("Skipping racer " + strconv.Itoa(race.ActiveRacer) + "'s turn, since they do not have a veto.")
 
@@ -192,7 +192,7 @@ func charactersEnd(race *Race, msg string) {
 	}
 	msg += "\n"
 
-	// Reset the vetos
+	// Reset the vetos.
 	race.Racer1Vetos = numVetos
 	if err := modals.Races.SetVetos(race.ChannelID, 1, numVetos); err != nil {
 		msg := "Failed to set the vetos for \"" + race.Racer1.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
@@ -223,11 +223,11 @@ func charactersEnd(race *Race, msg string) {
 }
 
 func assignRandomCharacter(race *Race) string {
-	// Get a random character
+	// Get a random character.
 	randCharacterNum := getRandomInt(0, len(race.CharactersRemaining)-1)
 	randCharacter := race.CharactersRemaining[randCharacterNum]
 
-	// Add it to the characters
+	// Add it to the characters.
 	race.Characters = append(race.Characters, randCharacter)
 	if err := modals.Races.SetCharacters(race.ChannelID, race.Characters); err != nil {
 		msg := "Failed to set the characters for race \"" + race.Name() + "\": " + err.Error()
@@ -235,7 +235,7 @@ func assignRandomCharacter(race *Race) string {
 		return msg
 	}
 
-	// Remove it from the available characters
+	// Remove it from the available characters.
 	race.CharactersRemaining = deleteFromSlice(race.CharactersRemaining, randCharacterNum)
 	if err := modals.Races.SetCharactersRemaining(race.ChannelID, race.CharactersRemaining); err != nil {
 		msg := "Failed to set the characters for race \"" + race.Name() + "\": " + err.Error()

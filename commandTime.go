@@ -15,13 +15,13 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if they might be mistakenly trying to do the "!timeok" command
+	// Check to see if they might be mistakenly trying to do the "!timeok" command.
 	if len(args) == 1 && args[0] == "ok" {
 		commandTimeOk(m, args)
 		return
 	}
 
-	// Create the user in the database if it does not already exist
+	// Create the user in the database if it does not already exist.
 	var user *User
 	if v, err := userGet(m.Author); err != nil {
 		msg := "Failed to get the user from the database: " + err.Error()
@@ -32,7 +32,7 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 		user = v
 	}
 
-	// Check to see if this is a race channel (and get the race from the database)
+	// Check to see if this is a race channel (and get the race from the database).
 	var race *Race
 	if v, err := getRace(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
@@ -46,7 +46,7 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	// Check to see if this person is one of the two racers
+	// Check to see if this person is one of the two racers.
 	var activeRacer int
 	if m.Author.ID == race.Racer1.DiscordID {
 		activeRacer = 1
@@ -57,25 +57,25 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this race has already been scheduled
+	// Check to see if this race has already been scheduled.
 	if race.State != RaceStateInitial {
 		discordSend(m.ChannelID, "The race has already been scheduled. To delete this time and start over, use the `!timedelete` command.")
 		return
 	}
 
-	// Check to see if this person has a timezone specified
+	// Check to see if this person has a timezone specified.
 	if !user.Timezone.Valid {
 		discordSend(m.ChannelID, "You must specify a timezone with the `!timezone` command before you can suggest a time for the match.")
 		return
 	}
 
-	// Check to see if this person has a stream specified
+	// Check to see if this person has a stream specified.
 	if !user.StreamURL.Valid {
 		discordSend(m.ChannelID, "You must specify a stream URL with the `!stream` command before you can suggest a time for the match.")
 		return
 	}
 
-	// Check to see if this is a valid time
+	// Check to see if this is a valid time.
 	input := strings.Join(args, " ")
 	var datetime time.Time
 	if v, err := dateparser.Parse(input); err != nil {
@@ -86,23 +86,23 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 		datetime = v
 	}
 
-	// Get the timezone offset for this person
+	// Get the timezone offset for this person:
 	// https://stackoverflow.com/questions/34975007/in-go-how-can-i-extract-the-value-of-my-current-local-time-offset
 	loc, _ := time.LoadLocation(user.Timezone.String)
 	t := time.Now().In(loc)
 	_, offset := t.Zone()
 
-	// Change the time to correspond to the local time zone
+	// Change the time to correspond to the local time zone.
 	datetime = datetime.Add(time.Second * time.Duration(offset) * -1)
 
-	// Check to see if it is in the future
+	// Check to see if it is in the future.
 	difference := datetime.Sub(time.Now().UTC())
 	if difference < 0 {
 		discordSend(m.ChannelID, "You must schedule a date in the future.")
 		return
 	}
 
-	// Set the new scheduled time
+	// Set the new scheduled time.
 	if err := modals.Races.SetDatetimeScheduled(m.ChannelID, datetime, activeRacer); err != nil {
 		msg := "Failed to update the scheduled time: " + err.Error()
 		log.Error(msg)
@@ -122,7 +122,7 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 
 	timezonesEqual := false
 	if racer1.Timezone.Valid && racer2.Timezone.Valid {
-		// Get the short name of their time zone so that we can add it to their submitted time
+		// Get the short name of their time zone so that we can add it to their submitted time.
 		loc1, _ := time.LoadLocation(racer1.Timezone.String)
 		loc2, _ := time.LoadLocation(racer2.Timezone.String)
 		now := time.Now()
@@ -148,7 +148,7 @@ func commandTime(m *discordgo.MessageCreate, args []string) {
 }
 
 func announceSchedule(m *discordgo.MessageCreate) {
-	// Create the user in the database if it does not already exist
+	// Create the user in the database if it does not already exist.
 	var user *User
 	if v, err := userGet(m.Author); err != nil {
 		msg := "Failed to get the user from the database: " + err.Error()
@@ -159,7 +159,7 @@ func announceSchedule(m *discordgo.MessageCreate) {
 		user = v
 	}
 
-	// Check to see if this is a race channel (and get the race from the database)
+	// Check to see if this is a race channel (and get the race from the database).
 	var race *Race
 	if v, err := getRace(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")

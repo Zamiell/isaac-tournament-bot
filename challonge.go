@@ -16,7 +16,7 @@ type Tournament struct {
 	Name              string
 	ChallongeURL      string
 	ChallongeID       float64
-	Ruleset           string // Can be "seeded", "unseeded" and "team"
+	Ruleset           Ruleset
 	DiscordCategoryID string
 	BestOf            int
 }
@@ -24,16 +24,16 @@ type Tournament struct {
 var (
 	challongeUsername string
 	challongeAPIKey   string
-	tournaments       = make(map[string]Tournament) // Indexed by Challonge URL suffix
+	tournaments       = make(map[string]Tournament) // Indexed by Challonge URL suffix.
 
-	// We don't want to use the default http.Client structure because it has no default timeout set
+	// We don't want to use the default http.Client structure because it has no default timeout set.
 	myHTTPClient = &http.Client{
 		Timeout: 10 * time.Second,
 	}
 )
 
 func challongeInit() {
-	// Read the Challonge configuration from the environment variables
+	// Read the Challonge configuration from the environment variables.
 	challongeUsername = os.Getenv("CHALLONGE_USERNAME")
 	if len(challongeUsername) == 0 {
 		log.Fatal("The \"CHALLONGE_USERNAME\" environment variable is blank. Set it in the \".env\" file.")
@@ -58,7 +58,15 @@ func challongeInit() {
 		log.Fatal("The \"TOURNAMENT_RULESETS\" environment variable is blank. Set it in the \".env\" file.")
 		return
 	}
-	tournamentRulesets := strings.Split(tournamentRulesetsString, ",")
+	tournamentRulesetsStringSlice := strings.Split(tournamentRulesetsString, ",")
+	tournamentRulesets := make([]Ruleset, 0)
+	for _, ruleset := range tournamentRulesetsStringSlice {
+		if ruleset != "seeded" && ruleset != "unseeded" && ruleset != "team" {
+			log.Fatal("The \"TOURNAMENT_RULESETS\" environment variable is set to \"" + ruleset + "\", which is an invalid value.")
+			return
+		}
+		tournamentRulesets = append(tournamentRulesets, Ruleset(ruleset))
+	}
 
 	tournamentDiscordCategoryIDsString := os.Getenv("TOURNAMENT_DISCORD_CATEGORY_IDS")
 	if len(tournamentDiscordCategoryIDsString) == 0 {
@@ -74,7 +82,7 @@ func challongeInit() {
 	}
 	tournamentBestOfStrings := strings.Split(tournamentBestOfString, ",")
 
-	// Validate that all of the "best of" values are numbers
+	// Validate that all of the "best of" values are numbers.
 	tournamentBestOf := make([]int, 0)
 	for _, bestOfString := range tournamentBestOfStrings {
 		if v, err := strconv.Atoi(bestOfString); err != nil {
@@ -85,7 +93,7 @@ func challongeInit() {
 		}
 	}
 
-	// Get all of the Challonge user's tournaments
+	// Get all of the Challonge user's tournaments.
 	apiURL := "https://api.challonge.com/v1/tournaments.json?"
 	apiURL += "api_key=" + challongeAPIKey
 	var raw []byte
@@ -101,13 +109,12 @@ func challongeInit() {
 		log.Fatal("Failed to unmarshal the Challonge JSON:", err)
 	}
 
-	// Figure out the ID for all the tournaments listed in the environment variable
+	// Figure out the ID for all the tournaments listed in the environment variable.
 	for i, tournamentURL := range tournamentURLs {
 		found := false
 		for _, v := range jsonTournaments {
 			vMap := v.(map[string]interface{})
 			jsonTournament := vMap["tournament"].(map[string]interface{})
-			// log.Info("We are an admin of Challonge tournament: " + jsonTournament["name"].(string))
 			if jsonTournament["url"] == tournamentURL {
 				found = true
 				tournaments[tournamentURL] = Tournament{
@@ -128,8 +135,6 @@ func challongeInit() {
 }
 
 func challongeGetJSON(method string, apiURL string, data io.Reader) ([]byte, error) {
-	//log.Info("Making a "+method+" request to Challonge:", apiURL) // Uncomment when debugging
-
 	var req *http.Request
 	if v, err := http.NewRequest(method, apiURL, data); err != nil {
 		return nil, err
@@ -160,18 +165,18 @@ func challongeGetJSON(method string, apiURL string, data io.Reader) ([]byte, err
 }
 
 func challongeGetParticipantName(tournament map[string]interface{}, participantID float64) string {
-	// Go through all of the participants in this tournament
+	// Go through all of the participants in this tournament.
 	for _, v := range tournament["participants"].([]interface{}) {
 		vMap := v.(map[string]interface{})
 		participant := vMap["participant"].(map[string]interface{})
 
-		// First, check the normal ID
+		// First, check the normal ID.
 		if participant["id"].(float64) == participantID {
 			return participant["name"].(string)
 		}
 
-		// Second, all check the group player IDs
-		// (this is needed if the tournament happens to have group stages)
+		// Second, all check the group player IDs.
+		// (This is needed if the tournament happens to have group stages.)
 		groupIDs := participant["group_player_ids"].([]interface{})
 		for _, groupID := range groupIDs {
 			if groupID.(float64) == participantID {

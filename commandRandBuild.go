@@ -9,7 +9,7 @@ import (
 
 func commandRandBuild(m *discordgo.MessageCreate, args []string) {
 	numBuilds := len(builds) - 1
-	randomBuildNum := getRandomInt(1, numBuilds) // The 0th build is blank
+	randomBuildNum := getRandomInt(1, numBuilds) // The 0th build is blank.
 	randomBuild := builds[randomBuildNum]
 	randomBuildName := getBuildName(randomBuild)
 	msg := "Random build between 1 and " + strconv.Itoa(numBuilds) + ":\n"

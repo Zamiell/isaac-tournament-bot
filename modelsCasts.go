@@ -8,7 +8,7 @@ import (
 type Casts struct{}
 
 type Cast struct {
-	CasterID     int // The database ID of the user casting
+	CasterID     int // The database ID of the user casting.
 	Caster       *User
 	R1Permission bool
 	R2Permission bool

@@ -11,7 +11,7 @@ func commandGetTimezone(m *discordgo.MessageCreate, args []string) {
 	}
 	username := args[0]
 
-	// Get the Discord guild members
+	// Get the Discord guild members.
 	var members []*discordgo.Member
 	if v, err := discordSession.GuildMembers(discordGuildID, "0", 1000); err != nil {
 		msg := "Failed to get the Discord guild members: " + err.Error()

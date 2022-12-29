@@ -262,7 +262,7 @@ var (
 )
 
 func buildsBanStart(race *Race, msg string) {
-	// Update the state
+	// Update the state.
 	race.State = RaceStateBanningBuilds
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
@@ -272,7 +272,7 @@ func buildsBanStart(race *Race, msg string) {
 	}
 	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
-	// Initialize the number of bans
+	// Initialize the number of bans.
 	race.Racer1Bans = numBans
 	if err := modals.Races.SetBans(race.ChannelID, 1, race.Racer1Bans); err != nil {
 		msg := "Failed to set the bans for racer 1 on race \"" + race.Name() + "\": " + err.Error()
@@ -305,7 +305,7 @@ func buildsBanStart(race *Race, msg string) {
 }
 
 func buildsPickStart(race *Race, msg string) {
-	// Set the state
+	// Set the state.
 	race.State = RaceStatePickingBuilds
 	if err := modals.Races.SetState(race.ChannelID, race.State); err != nil {
 		msg := "Failed to set the state for race \"" + race.Name() + "\": " + err.Error()
@@ -349,8 +349,8 @@ func buildsVetoStart(race *Race, msg string) {
 	msg += ".\n"
 	msg += "- Use the `!yes` and `!no` commands to answer the questions.\n\n"
 
-	// The person who starts the vetos for the builds is the opposite of the person who got to start
-	// the vetos for the character
+	// The person who starts the vetos for the builds is the opposite of the person who got to
+	// start the vetos for the character.
 	newActiveRacer := race.FirstPicker + 1
 	if newActiveRacer > 2 {
 		newActiveRacer = 1
@@ -364,13 +364,13 @@ func buildsVetoStart(race *Race, msg string) {
 		return
 	}
 
-	race.NumVoted = 2 // Set it to 2 so that it gives a new build
+	race.NumVoted = 2 // Set it to 2 so that it gives a new build.
 	buildsRound(race, msg)
 }
 
 func buildsRound(race *Race, msg string) {
 	if race.NumVoted == 2 {
-		// Both racers have voted, so get a new build
+		// Both racers have voted, so get a new build.
 		race.NumVoted = 0
 		if err := modals.Races.SetNumVoted(race.ChannelID, race.NumVoted); err != nil {
 			msg := "Failed to set the NumVoted for race \"" + race.Name() + "\": " + err.Error()
@@ -387,9 +387,9 @@ func buildsRound(race *Race, msg string) {
 		msg += assignRandomBuild(race)
 	}
 
-	if (race.Racer1Vetos == 0 && race.Racer2Vetos == 0) || // Both racer have used all of their vetos
-		(race.ActiveRacer == 1 && race.Racer1Vetos == 0) || // It is racer 1's turn and they have already used their vetos
-		(race.ActiveRacer == 2 && race.Racer2Vetos == 0) { // It is racer 2's turn and they have already used their vetos
+	if (race.Racer1Vetos == 0 && race.Racer2Vetos == 0) || // Both racer have used all of their vetos.
+		(race.ActiveRacer == 1 && race.Racer1Vetos == 0) || // It is racer 1's turn and they have already used their vetos.
+		(race.ActiveRacer == 2 && race.Racer2Vetos == 0) { // It is racer 2's turn and they have already used their vetos.
 
 		log.Info("Skipping racer " + strconv.Itoa(race.ActiveRacer) + "'s turn, since they do not have a veto.")
 
@@ -419,7 +419,7 @@ func buildsEnd(race *Race, msg string) {
 	// Unlike the "charactersEnd" function, we don't print the builds, since they will be displayed
 	// in the summary.
 
-	// Reset the vetos
+	// Reset the vetos.
 	race.Racer1Vetos = numVetos
 	if err := modals.Races.SetVetos(race.ChannelID, 1, numVetos); err != nil {
 		msg := "Failed to set the vetos for \"" + race.Racer1.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
@@ -437,11 +437,11 @@ func buildsEnd(race *Race, msg string) {
 }
 
 func assignRandomBuild(race *Race) string {
-	// Get a random build
+	// Get a random build.
 	randBuildNum := getRandomInt(0, len(race.BuildsRemaining)-1)
 	randBuild := race.BuildsRemaining[randBuildNum]
 
-	// Check to see if the item synergizes
+	// Check to see if the item synergizes.
 	roundNum := len(race.Builds) + 1
 	character := race.Characters[roundNum-1]
 	synergizes := true
@@ -453,12 +453,12 @@ func assignRandomBuild(race *Race) string {
 		}
 	}
 	if !synergizes {
-		// Get a new random build
+		// Get a new random build.
 		log.Info("The randomly selected build of \"" + randBuild + "\" does not synergize with \"" + character + "\". Trying again...")
 		return assignRandomBuild(race)
 	}
 
-	// Add it to the builds
+	// Add it to the builds.
 	race.Builds = append(race.Builds, randBuild)
 	if err := modals.Races.SetBuilds(race.ChannelID, race.Builds); err != nil {
 		msg := "Failed to set the builds for race \"" + race.Name() + "\": " + err.Error()
@@ -466,7 +466,7 @@ func assignRandomBuild(race *Race) string {
 		return msg
 	}
 
-	// Remove it from the available builds
+	// Remove it from the available builds.
 	race.BuildsRemaining = deleteFromSlice(race.BuildsRemaining, randBuildNum)
 	if err := modals.Races.SetBuildsRemaining(race.ChannelID, race.BuildsRemaining); err != nil {
 		msg := "Failed to set the builds for race \"" + race.Name() + "\": " + err.Error()

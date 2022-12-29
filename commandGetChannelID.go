@@ -14,7 +14,7 @@ func commandGetChannelID(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Get the Discord guild object
+	// Get the Discord guild object.
 	var guild *discordgo.Guild
 	if v, err := discordSession.Guild(discordGuildID); err != nil {
 		msg := "Failed to get the Discord guild: " + err.Error()
@@ -25,7 +25,7 @@ func commandGetChannelID(m *discordgo.MessageCreate, args []string) {
 		guild = v
 	}
 
-	// Go through all of the channels
+	// Go through all of the channels.
 	for _, channel := range guild.Channels {
 		if channel.Name == args[0] {
 			msg := "Found channel \"" + args[0] + "\": **" + channel.ID + "**"

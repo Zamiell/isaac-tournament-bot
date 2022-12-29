@@ -14,7 +14,7 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this is a race channel (and get the race from the database)
+	// Check to see if this is a race channel (and get the race from the database).
 	var race *Race
 	if v, err := getRace(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
@@ -28,7 +28,7 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	// Check to see if this person is one of the two racers
+	// Check to see if this person is one of the two racers.
 	var racerNum int
 	if m.Author.ID == race.Racer1.DiscordID {
 		racerNum = 1
@@ -39,7 +39,7 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this race is in the picking phase
+	// Check to see if this race is in the picking phase.
 	if race.State != RaceStatePickingCharacters &&
 		race.State != RaceStatePickingBuilds {
 
@@ -47,13 +47,13 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if it is their turn
+	// Check to see if it is their turn.
 	if race.ActiveRacer != racerNum {
 		discordSend(m.ChannelID, "It is not your turn.")
 		return
 	}
 
-	// Check to see if this is a valid number
+	// Check to see if this is a valid number.
 	var choice int
 	if v, err := strconv.Atoi(args[0]); err != nil {
 		discordSend(m.ChannelID, "\""+args[0]+"\" is not a number.")
@@ -62,7 +62,8 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 		choice = v
 	}
 
-	// Account for the fact that the array is 0 indexed and the choices presented to the user begin at 1
+	// Account for the fact that the array is 0 indexed and the choices presented to the user begin
+	// at 1.
 	choice--
 
 	var thingsRemaining, things []string
@@ -74,13 +75,13 @@ func commandPick(m *discordgo.MessageCreate, args []string) {
 		things = race.Builds
 	}
 
-	// Check to see if this is a valid index
+	// Check to see if this is a valid index.
 	if choice < 0 || choice >= len(thingsRemaining) {
 		discordSend(m.ChannelID, "\""+args[0]+"\" is not a valid choice.")
 		return
 	}
 
-	// Pick the thing
+	// Pick the thing.
 	thing := thingsRemaining[choice]
 	thingsRemaining = deleteFromSlice(thingsRemaining, choice)
 	things = append(things, thing)

@@ -13,9 +13,9 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if this is a race channel
+	// Check to see if this is a race channel.
 	if _, err := getRace(m.ChannelID); err == sql.ErrNoRows {
-		// Do nothing
+		// Do nothing.
 	} else if err != nil {
 		msg := "Failed to get the race from the database: " + err.Error()
 		log.Error(msg)
@@ -27,14 +27,14 @@ func commandStartRound(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Go through all of the tournaments
+	// Go through all of the tournaments.
 	for _, tournament := range tournaments {
 		startRound(m, tournament, false)
 	}
 }
 
 func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) {
-	// Get the tournament from Challonge
+	// Get the tournament from Challonge.
 	apiURL := "https://api.challonge.com/v1/tournaments/" + floatToString(tournament.ChallongeID) + ".json?"
 	apiURL += "api_key=" + challongeAPIKey + "&include_participants=1&include_matches=1"
 	var raw []byte
@@ -56,7 +56,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 	}
 	jsonTournament := vMap["tournament"].(map[string]interface{})
 
-	// Get the Discord guild members
+	// Get the Discord guild members.
 	var discordMembers []*discordgo.Member
 	if v, err := discordSession.GuildMembers(discordGuildID, "0", 1000); err != nil {
 		msg := "Failed to get the Discord guild members: " + err.Error()
@@ -67,7 +67,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		discordMembers = v
 	}
 
-	// Get the Discord roles
+	// Get the Discord roles.
 	var discordRoles []*discordgo.Role
 	if v, err := discordSession.GuildRoles(discordGuildID); err != nil {
 		msg := "Failed to get the roles for the guild: " + err.Error()
@@ -78,7 +78,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		discordRoles = v
 	}
 
-	// Get all of the open matches
+	// Get all of the open matches.
 	foundMatches := false
 	foundPlayers := make([]string, 0)
 	var round string
@@ -89,7 +89,6 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			continue
 		}
 
-		// Local variables
 		foundMatches = true
 		player1ID := match["player1_id"].(float64)
 		player2ID := match["player2_id"].(float64)
@@ -98,7 +97,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		challongeMatchID := floatToString(match["id"].(float64))
 		channelName := player1Name + "-vs-" + player2Name
 
-		// Check to see if we have already created a channel for either of these players
+		// Check to see if we have already created a channel for either of these players.
 		playerAlreadyHasChannel := false
 		for _, p := range foundPlayers {
 			if p == player1Name || p == player2Name {
@@ -147,13 +146,13 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		for _, build := range builds {
 			buildName := getBuildName(build)
 
-			// The 0th element of the "builds.json" file is blank
+			// The 0th element of the "builds.json" file is blank.
 			if buildName != "" {
 				buildsRemaining = append(buildsRemaining, buildName)
 			}
 		}
 
-		// Create the race in the database
+		// Create the race in the database.
 		race := &Race{
 			TournamentName:      tournament.Name,
 			Racer1ChallongeID:   player1ID,
@@ -178,7 +177,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			return
 		}
 
-		// We re-get the race in the database so that the racer fields are filled in properly
+		// We re-get the race in the database so that the racer fields are filled in properly.
 		if v, err := getRace(channelID); err != nil {
 			msg := "Failed to get the race from the database: " + err.Error()
 			log.Error(msg)
@@ -188,7 +187,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			race = v
 		}
 
-		// Send the introductory messages for the Discord channel
+		// Send the introductory messages for the Discord channel.
 		announceStatus(m, race, true)
 
 		log.Info("Started race: " + channelName)
@@ -201,8 +200,8 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 		return
 	}
 
-	// Rename the channel category
-	categoryName := "Round " + round + " - " + tournament.Ruleset
+	// Rename the channel category.
+	categoryName := "Round " + round + " - " + string(tournament.Ruleset)
 	if _, err := discordSession.ChannelEdit(tournament.DiscordCategoryID, categoryName); err != nil {
 		msg := "Failed to rename the channel category: " + err.Error()
 		log.Error(msg)
@@ -221,7 +220,7 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 	}
 }
 
-// Find the Discord ID of the two racers and add them to the database if they are not already
+// Find the Discord ID of the two racers and add them to the database if they are not already.
 func getDiscordIDsForMatch(
 	tournament Tournament,
 	members []*discordgo.Member,
@@ -236,7 +235,7 @@ func getDiscordIDsForMatch(
 	return getDiscordIDsForMatch1v1(members, roles, player1Name, player2Name)
 }
 
-// Since this is a team match, we only need to find the team captain
+// Since this is a team match, we only need to find the team captain.
 func getDiscordIDsForMatchTeam(
 	members []*discordgo.Member,
 	roles []*discordgo.Role,
@@ -324,8 +323,9 @@ func createDiscordChannelForMatch(
 		channelID = v.ID
 	}
 
-	// Put the channel in the correct category and give access to the two racers
-	// (channels in this category have "Read Text Channels & See Voice Channels" disabled for everyone except for admins/casters/bots)
+	// Put the channel in the correct category and give access to the two racers.
+	// (Channels in this category have "Read Text Channels & See Voice Channels" disabled for
+	// everyone except for admins/casters/bots.)
 	permissionsReadWrite := int64(discordgo.PermissionViewChannel |
 		discordgo.PermissionSendMessages |
 		discordgo.PermissionEmbedLinks |
@@ -339,14 +339,14 @@ func createDiscordChannelForMatch(
 			Deny: permissionsReadWrite,
 		},
 
-		// Allow bots to see + talk in this channel
+		// Allow bots to see + talk in this channel.
 		&discordgo.PermissionOverwrite{
 			ID:    discordBotRoleID,
 			Type:  discordgo.PermissionOverwriteTypeRole,
 			Allow: permissionsReadWrite,
 		},
 
-		// Allow all casters to see + talk in this channel
+		// Allow all casters to see + talk in this channel.
 		&discordgo.PermissionOverwrite{
 			ID:    discordCasterRoleID,
 			Type:  discordgo.PermissionOverwriteTypeRole,

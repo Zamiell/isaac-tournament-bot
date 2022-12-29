@@ -12,7 +12,7 @@ func commandRandom(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Ensure that both arguments are numbers
+	// Ensure that both arguments are numbers.
 	var min int
 	if v, err := strconv.Atoi(args[0]); err != nil {
 		discordSend(m.ChannelID, "\""+args[0]+"\" is not a number.")

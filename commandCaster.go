@@ -7,7 +7,7 @@ import (
 )
 
 func commandCaster(m *discordgo.MessageCreate, args []string) {
-	// Check to see if this is a race channel (and get the race from the database)
+	// Check to see if this is a race channel (and get the race from the database).
 	var race *Race
 	if v, err := getRace(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
@@ -21,13 +21,13 @@ func commandCaster(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	// Check to see if someone is casting this match
+	// Check to see if someone is casting this match.
 	if len(race.Casts) == 0 {
 		discordSend(m.ChannelID, "No-one has volunteered to cast this match yet.")
 		return
 	}
 
-	// Display all of the casts for this match
+	// Display all of the casts for this match.
 	msg := ""
 	for _, cast := range race.Casts {
 		if cast.R1Permission && cast.R2Permission {

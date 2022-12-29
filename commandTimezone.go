@@ -14,7 +14,7 @@ func commandTimezone(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Create the user in the database if it does not already exist
+	// Create the user in the database if it does not already exist.
 	var user *User
 	if v, err := userGet(m.Author); err != nil {
 		msg := "Failed to get the user from the database: " + err.Error()
@@ -25,7 +25,7 @@ func commandTimezone(m *discordgo.MessageCreate, args []string) {
 		user = v
 	}
 
-	// See if the submitted timezone is a short timezone
+	// See if the submitted timezone is a short timezone.
 	tz := timezone.New()
 	newTimezone := args[0]
 	if _, err := tz.GetTzAbbreviationInfo(strings.ToUpper(newTimezone)); err == nil {
@@ -51,7 +51,7 @@ func commandTimezone(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// See if the submitted timezone is valid
+	// See if the submitted timezone is valid.
 	if _, err := time.LoadLocation(newTimezone); err != nil {
 		msg := "That is not a valid timezone. The submitted timezone has to exactly match the TZ column of the following page:\n"
 		msg += "<https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>\n"
@@ -60,7 +60,7 @@ func commandTimezone(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Set the new timezone
+	// Set the new timezone.
 	if err := modals.Users.SetTimezone(m.Author.ID, newTimezone); err != nil {
 		msg := "Failed to update the timezone: " + err.Error()
 		log.Error(msg)

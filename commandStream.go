@@ -14,7 +14,7 @@ func commandStream(m *discordgo.MessageCreate, args []string) {
 	}
 	streamURL := args[0]
 
-	// Create the user in the database if it does not already exist
+	// Create the user in the database if it does not already exist.
 	var user *User
 	if v, err := userGet(m.Author); err != nil {
 		msg := "Failed to get the user from the database: " + err.Error()
@@ -25,10 +25,10 @@ func commandStream(m *discordgo.MessageCreate, args []string) {
 		user = v
 	}
 
-	// Lower-case the URL
+	// Lower-case the URL.
 	streamURL = strings.ToLower(streamURL)
 
-	// Fill in the URL in case they were lazy when typing it
+	// Fill in the URL in case they were lazy when typing it.
 	if strings.HasPrefix(streamURL, "http://") {
 		streamURL = strings.Replace(streamURL, "http://", "https://", -1)
 	}
@@ -43,14 +43,14 @@ func commandStream(m *discordgo.MessageCreate, args []string) {
 	}
 	streamURL = strings.TrimSuffix(streamURL, "/")
 
-	// Validate that the stream is a full URL
+	// Validate that the stream is a full URL.
 	if _, err := url.ParseRequestURI(streamURL); err != nil {
 		msg := "That is not a valid URL."
 		discordSend(m.ChannelID, msg)
 		return
 	}
 
-	// Set the new stream
+	// Set the new stream.
 	if err := modals.Users.SetStreamURL(m.Author.ID, streamURL); err != nil {
 		msg := "Failed to update the stream: " + err.Error()
 		log.Error(msg)

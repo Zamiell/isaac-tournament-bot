@@ -28,12 +28,11 @@ func (u *User) GetTimezone() string {
 	return u.Timezone.String
 }
 
-// Get this user from the database
-// (and create an entry if it does not exist already)
+// Get this user from the database (and create an entry if it does not exist already).
 func userGet(u *discordgo.User) (*User, error) {
 	var user *User
 
-	// Get the Discord guild members
+	// Get the Discord guild members.
 	var members []*discordgo.Member
 	if v, err := discordSession.GuildMembers(discordGuildID, "0", 1000); err != nil {
 		return user, err
@@ -48,7 +47,7 @@ func userGet(u *discordgo.User) (*User, error) {
 		username = v
 	}
 
-	// See if this user exists in the database already
+	// See if this user exists in the database already.
 	var exists bool
 	if v, err := modals.Users.Exists(u.ID); err != nil {
 		return user, err
@@ -56,7 +55,7 @@ func userGet(u *discordgo.User) (*User, error) {
 		exists = v
 	}
 
-	// This Discord ID already exists in the database, so return it
+	// This Discord ID already exists in the database, so return it.
 	if exists {
 		if v, err := modals.Users.GetFromDiscordID(u.ID); err != nil {
 			return user, err
@@ -65,12 +64,12 @@ func userGet(u *discordgo.User) (*User, error) {
 		}
 
 		if user.Username == username {
-			// Their username in the database matches the Discord nickname
+			// Their username in the database matches the Discord nickname.
 			return user, nil
 		}
 
-		// Their Discord username/nickname has changed since they were added to the database,
-		// so we need to update it
+		// Their Discord username/nickname has changed since they were added to the database, so we
+		// need to update it.
 		user.Username = username
 		if err := modals.Users.SetUsername(u.ID, username); err != nil {
 			return user, err
@@ -79,7 +78,7 @@ func userGet(u *discordgo.User) (*User, error) {
 		}
 	}
 
-	// This Discord ID does not exist in the database, so create it
+	// This Discord ID does not exist in the database, so create it.
 	user = &User{
 		DiscordID: u.ID,
 		Username:  u.Username,

@@ -227,7 +227,7 @@ func (*Races) SetState(channelID string, state RaceState) error {
 }
 
 func (*Races) SetDatetimeScheduled(channelID string, datetimeScheduled time.Time, activeRacer int) error {
-	// activeRacer is the racer who suggested the time
+	// activeRacer is the racer who suggested the time.
 	var stmt *sql.Stmt
 	if v, err := db.Prepare(`
 		UPDATE tournament_races

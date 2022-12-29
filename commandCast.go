@@ -14,7 +14,7 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 	}
 	language := strings.ToLower(args[0])
 
-	// Check to see if this is a race channel (and get the race from the database)
+	// Check to see if this is a race channel (and get the race from the database).
 	var race *Race
 	if v, err := getRace(m.ChannelID); err == sql.ErrNoRows {
 		discordSend(m.ChannelID, "You can only use that command in a race channel.")
@@ -28,7 +28,7 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 		race = v
 	}
 
-	// Create the user in the database if it does not already exist
+	// Create the user in the database if it does not already exist.
 	var user *User
 	if v, err := userGet(m.Author); err != nil {
 		msg := "Failed to get the user from the database: " + err.Error()
@@ -39,37 +39,37 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 		user = v
 	}
 
-	// Check to see if they have a stream set
+	// Check to see if they have a stream set.
 	if !user.StreamURL.Valid {
 		discordSend(m.ChannelID, "You cannot volunteer to cast a match if you do not have a stream URL set. Please set one first with the `!stream` command.")
 		return
 	}
 
-	// Check to see if this person is one of the two racers
+	// Check to see if this person is one of the two racers.
 	if m.Author.ID == race.Racer1.DiscordID || m.Author.ID == race.Racer2.DiscordID {
 		discordSend(m.ChannelID, "You cannot cast a match that you are participating in.")
 		return
 	}
 
-	// Check to see if this race has been scheduled
+	// Check to see if this race has been scheduled.
 	if race.State == RaceStateInitial {
 		discordSend(m.ChannelID, "You cannot volunteer to cast a match until a time has been scheduled by both of the racers.")
 		return
 	}
 
-	// Check to see if this race is in progress
+	// Check to see if this race is in progress.
 	if race.State == RaceStateInProgress {
 		discordSend(m.ChannelID, "The match has already begun. You should not be bothering the players at this point.")
 		return
 	}
 
-	// Check to see if this race is already finished
+	// Check to see if this race is already finished.
 	if race.State == RaceStateCompleted {
 		discordSend(m.ChannelID, "This match has already completed.")
 		return
 	}
 
-	// Check to see if this is a valid language
+	// Check to see if this is a valid language.
 	valid := false
 	var languageFull string
 	for k, v := range languageMap {
@@ -89,7 +89,7 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	// Check to see if they are already casting this match
+	// Check to see if they are already casting this match.
 	for _, cast := range race.Casts {
 		if cast.Caster.DiscordID == m.Author.ID {
 			msg := "You have already volunteered to cast this match."
@@ -98,7 +98,7 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 		}
 	}
 
-	// Check to see if someone else is already casting this match in that language
+	// Check to see if someone else is already casting this match in that language.
 	for _, cast := range race.Casts {
 		if cast.Language == language {
 			msg := "This match is already being casted in " + languageFull + " by `" + cast.Caster.Username + "`."
@@ -107,7 +107,7 @@ func commandCast(m *discordgo.MessageCreate, args []string) {
 		}
 	}
 
-	// Add them as a new caster
+	// Add them as a new caster.
 	if err := modals.Casts.Insert(race.ChannelID, user.DiscordID, language); err != nil {
 		msg := "Failed to insert the new cast in the database: " + err.Error()
 		log.Error(msg)
