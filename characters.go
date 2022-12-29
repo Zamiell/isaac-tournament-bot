@@ -56,14 +56,14 @@ func charactersBanStart(race *Race) {
 	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
 	// Initialize the number of bans.
-	race.Racer1Bans = numBans
+	race.Racer1Bans = numCharacterBans
 	if err := modals.Races.SetBans(race.ChannelID, 1, race.Racer1Bans); err != nil {
 		msg := "Failed to set the bans for racer 1 on race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(race.ChannelID, msg)
 		return
 	}
-	race.Racer2Bans = numBans
+	race.Racer2Bans = numCharacterBans
 	if err := modals.Races.SetBans(race.ChannelID, 2, race.Racer2Bans); err != nil {
 		msg := "Failed to set the bans for racer 2 on race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
@@ -72,7 +72,7 @@ func charactersBanStart(race *Race) {
 	}
 
 	msg += "**Character Ban Phase**\n\n"
-	msg += "- Each racer gets to ban " + strconv.Itoa(numBans) + " characters.\n"
+	msg += "- Each racer gets to ban " + strconv.Itoa(numCharacterBans) + " characters.\n"
 	msg += "- Use the `!ban` command to select a character.\n"
 	msg += "  e.g. `!ban 3` (to ban the 3rd character in the list)\n\n"
 	if race.ActiveRacer == 1 {
@@ -125,11 +125,25 @@ func charactersVetoStart(race *Race) {
 	}
 	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
+	// Initialize the number of vetos.
+	race.Racer1Vetos = numCharacterVetos
+	if err := modals.Races.SetVetos(race.ChannelID, 1, numCharacterVetos); err != nil {
+		msg := "Failed to set the vetos for \"" + race.Racer1.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		return
+	}
+	race.Racer2Vetos = numCharacterVetos
+	if err := modals.Races.SetVetos(race.ChannelID, 2, numCharacterVetos); err != nil {
+		msg := "Failed to set the vetos for \"" + race.Racer2.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		return
+	}
+
 	msg := matchBeginningAlert(race)
 
 	msg += "**Character Veto Phase**\n\n"
-	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " characters will randomly be chosen. Each racer will get " + strconv.Itoa(numVetos) + " veto"
-	if numVetos != 1 {
+	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " characters will randomly be chosen. Each racer will get " + strconv.Itoa(numCharacterVetos) + " veto"
+	if numCharacterVetos != 1 {
 		msg += "s"
 	}
 	msg += ".\n"
@@ -192,31 +206,20 @@ func charactersEnd(race *Race, msg string) {
 	}
 	msg += "\n"
 
-	// Reset the vetos.
-	race.Racer1Vetos = numVetos
-	if err := modals.Races.SetVetos(race.ChannelID, 1, numVetos); err != nil {
-		msg := "Failed to set the vetos for \"" + race.Racer1.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
-		log.Error(msg)
-		return
-	}
-	race.Racer2Vetos = numVetos
-	if err := modals.Races.SetVetos(race.ChannelID, 2, numVetos); err != nil {
-		msg := "Failed to set the vetos for \"" + race.Racer2.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
-		log.Error(msg)
-		return
-	}
-
 	ruleset := tournaments[race.ChallongeURL].Ruleset
 	if ruleset == "seeded" {
-		if numBans > 0 {
+		if tournamentType == TournamentTypeBanPick {
 			buildsBanStart(race, msg)
-		} else {
+		} else if tournamentType == TournamentTypeVeto {
 			buildsVetoStart(race, msg)
+		} else {
+			msg := "Unknown tournament type for tournament: " + race.TournamentName
+			discordSend(discordGeneralChannelID, msg)
 		}
 	} else if ruleset == "unseeded" || ruleset == "team" {
 		matchSetInProgressAndPrintSummary(race, msg)
 	} else {
-		msg += "Unknown tournament ruleset for tournament \"" + race.TournamentName + "\"."
+		msg += "Unknown tournament ruleset for tournament: " + race.TournamentName
 		log.Error(msg)
 		discordSend(race.ChannelID, msg)
 	}

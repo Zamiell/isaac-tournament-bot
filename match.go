@@ -7,9 +7,11 @@ import (
 )
 
 var (
-	tournamentType TournamentType
-	numBans        int
-	numVetos       int
+	tournamentType    TournamentType
+	numCharacterBans  int
+	numBuildBans      int
+	numCharacterVetos int
+	numBuildVetos     int
 )
 
 func matchInit() {
@@ -24,33 +26,58 @@ func matchInit() {
 		log.Fatal("The \"TOURNAMENT_TYPE\" environment variable is set to \"" + tournamentTypeString + "\", which is an invalid value.")
 		return
 	}
-
 	tournamentType = TournamentType(tournamentTypeString)
 
-	numBansString := os.Getenv("NUM_BANS")
-	if len(numBansString) == 0 {
-		log.Fatal("The \"NUM_BANS\" environment variable is blank. Set it in the \".env\" file.")
+	numCharacterBansString := os.Getenv("NUM_CHARACTER_BANS")
+	if len(numCharacterBansString) == 0 {
+		log.Fatal("The \"NUM_CHARACTER_BANS\" environment variable is blank. Set it in the \".env\" file.")
 		return
 	}
 
-	if v, err := strconv.Atoi(numBansString); err != nil {
-		log.Fatal("The \"NUM_BANS\" environment variable is not a number.")
+	if v, err := strconv.Atoi(numCharacterBansString); err != nil {
+		log.Fatal("The \"NUM_CHARACTER_BANS\" environment variable is not a number.")
 		return
 	} else {
-		numBans = v
+		numCharacterBans = v
 	}
 
-	numVetosString := os.Getenv("NUM_VETOS")
-	if len(numBansString) == 0 {
-		log.Fatal("The \"NUM_VETOS\" environment variable is blank. Set it in the \".env\" file.")
+	numBuildBansString := os.Getenv("NUM_BUILD_BANS")
+	if len(numBuildBansString) == 0 {
+		log.Fatal("The \"NUM_BUILD_BANS\" environment variable is blank. Set it in the \".env\" file.")
 		return
 	}
 
-	if v, err := strconv.Atoi(numVetosString); err != nil {
-		log.Fatal("The \"NUM_VETOS\" environment variable is not a number.")
+	if v, err := strconv.Atoi(numBuildBansString); err != nil {
+		log.Fatal("The \"NUM_BUILD_BANS\" environment variable is not a number.")
 		return
 	} else {
-		numVetos = v
+		numBuildBans = v
+	}
+
+	numCharacterVetosString := os.Getenv("NUM_CHARACTER_VETOS")
+	if len(numCharacterVetosString) == 0 {
+		log.Fatal("The \"NUM_CHARACTER_VETOS\" environment variable is blank. Set it in the \".env\" file.")
+		return
+	}
+
+	if v, err := strconv.Atoi(numCharacterVetosString); err != nil {
+		log.Fatal("The \"NUM_CHARACTER_VETOS\" environment variable is not a number.")
+		return
+	} else {
+		numCharacterVetos = v
+	}
+
+	numBuildVetosString := os.Getenv("NUM_BUILD_VETOS")
+	if len(numBuildVetosString) == 0 {
+		log.Fatal("The \"NUM_BUILD_VETOS\" environment variable is blank. Set it in the \".env\" file.")
+		return
+	}
+
+	if v, err := strconv.Atoi(numBuildVetosString); err != nil {
+		log.Fatal("The \"NUM_BUILD_VETOS\" environment variable is not a number.")
+		return
+	} else {
+		numBuildVetos = v
 	}
 
 	// Make sure the build exceptions match the builds.
@@ -135,10 +162,13 @@ func matchStart(race *Race) {
 	msg += matchGetDescription(race)
 	discordSend(discordGeneralChannelID, msg)
 
-	if numBans > 0 {
+	if tournamentType == TournamentTypeBanPick {
 		charactersBanStart(race)
-	} else {
+	} else if tournamentType == TournamentTypeVeto {
 		charactersVetoStart(race)
+	} else {
+		msg := "Unknown tournament type for tournament: " + race.TournamentName
+		discordSend(discordGeneralChannelID, msg)
 	}
 }
 

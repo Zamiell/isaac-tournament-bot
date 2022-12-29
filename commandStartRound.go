@@ -165,10 +165,10 @@ func startRound(m *discordgo.MessageCreate, tournament Tournament, dryRun bool) 
 			State:               RaceStateInitial,
 			CharactersRemaining: characters,
 			BuildsRemaining:     buildsRemaining,
-			Racer1Bans:          numBans,
-			Racer2Bans:          numBans,
-			Racer1Vetos:         numVetos,
-			Racer2Vetos:         numVetos,
+			Racer1Bans:          0, // Initialized before banning begins.
+			Racer2Bans:          0, // Initialized before banning begins.
+			Racer1Vetos:         0, // Initialized before vetoing begins.
+			Racer2Vetos:         0, // Initialized before vetoing begins.
 		}
 		if err := modals.Races.Insert(racer1DiscordID, racer2DiscordID, race); err != nil {
 			msg := "Failed to create the race in the database: " + err.Error()

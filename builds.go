@@ -273,14 +273,14 @@ func buildsBanStart(race *Race, msg string) {
 	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
 	// Initialize the number of bans.
-	race.Racer1Bans = numBans
+	race.Racer1Bans = numBuildBans
 	if err := modals.Races.SetBans(race.ChannelID, 1, race.Racer1Bans); err != nil {
 		msg := "Failed to set the bans for racer 1 on race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
 		discordSend(race.ChannelID, msg)
 		return
 	}
-	race.Racer2Bans = numBans
+	race.Racer2Bans = numBuildBans
 	if err := modals.Races.SetBans(race.ChannelID, 2, race.Racer2Bans); err != nil {
 		msg := "Failed to set the bans for racer 2 on race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
@@ -289,7 +289,7 @@ func buildsBanStart(race *Race, msg string) {
 	}
 
 	msg += "**Build Ban Phase**\n\n"
-	msg += "- Each racer gets to ban " + strconv.Itoa(numBans) + " builds.\n"
+	msg += "- Each racer gets to ban " + strconv.Itoa(numBuildBans) + " builds.\n"
 	msg += "- Use the `!ban` command to select a build.\n"
 	msg += "  e.g. `!ban 3` (to ban the 3rd build in the list)\n\n"
 	if race.ActiveRacer == 1 {
@@ -341,9 +341,23 @@ func buildsVetoStart(race *Race, msg string) {
 	}
 	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
+	// Initialize the number of vetos.
+	race.Racer1Vetos = numBuildVetos
+	if err := modals.Races.SetVetos(race.ChannelID, 1, numBuildVetos); err != nil {
+		msg := "Failed to set the vetos for \"" + race.Racer1.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		return
+	}
+	race.Racer2Vetos = numBuildVetos
+	if err := modals.Races.SetVetos(race.ChannelID, 2, numBuildVetos); err != nil {
+		msg := "Failed to set the vetos for \"" + race.Racer2.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
+		log.Error(msg)
+		return
+	}
+
 	msg += "**Build Ban Phase**\n\n"
-	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " builds will randomly be chosen. Each racer will get " + strconv.Itoa(numVetos) + " veto"
-	if numVetos != 1 {
+	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " builds will randomly be chosen. Each racer will get " + strconv.Itoa(numBuildVetos) + " veto"
+	if numBuildVetos != 1 {
 		msg += "s"
 	}
 	msg += ".\n"
@@ -418,21 +432,6 @@ func buildsRound(race *Race, msg string) {
 func buildsEnd(race *Race, msg string) {
 	// Unlike the "charactersEnd" function, we don't print the builds, since they will be displayed
 	// in the summary.
-
-	// Reset the vetos.
-	race.Racer1Vetos = numVetos
-	if err := modals.Races.SetVetos(race.ChannelID, 1, numVetos); err != nil {
-		msg := "Failed to set the vetos for \"" + race.Racer1.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
-		log.Error(msg)
-		return
-	}
-	race.Racer2Vetos = numVetos
-	if err := modals.Races.SetVetos(race.ChannelID, 2, numVetos); err != nil {
-		msg := "Failed to set the vetos for \"" + race.Racer2.Username + "\" on race \"" + race.Name() + "\": " + err.Error()
-		log.Error(msg)
-		return
-	}
-
 	matchSetInProgressAndPrintSummary(race, msg)
 }
 

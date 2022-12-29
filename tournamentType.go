@@ -4,6 +4,6 @@ type TournamentType string
 
 // See the comment in ".env_template".
 const (
-	BanPick = "banPick"
-	Veto    = "veto"
+	TournamentTypeBanPick = "banPick"
+	TournamentTypeVeto    = "veto"
 )
