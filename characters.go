@@ -128,7 +128,11 @@ func charactersVetoStart(race *Race) {
 	msg := matchBeginningAlert(race)
 
 	msg += "**Character Veto Phase**\n\n"
-	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " characters will randomly be chosen. Each racer will get one veto.\n"
+	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " characters will randomly be chosen. Each racer will get " + strconv.Itoa(numVetos) + " veto"
+	if numVetos != 1 {
+		msg += "s"
+	}
+	msg += ".\n"
 	msg += "- Use the `!yes` and `!no` commands to answer the questions.\n\n"
 	race.NumVoted = 2 // Set it to 2 so that it gives a new character
 	charactersRound(race, msg)

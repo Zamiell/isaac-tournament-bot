@@ -342,7 +342,11 @@ func buildsVetoStart(race *Race, msg string) {
 	log.Info("Race \""+race.Name()+"\" is now in state:", race.State)
 
 	msg += "**Build Ban Phase**\n\n"
-	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " builds will randomly be chosen. Each racer will get one veto.\n"
+	msg += "- " + strconv.Itoa(tournaments[race.ChallongeURL].BestOf) + " builds will randomly be chosen. Each racer will get " + strconv.Itoa(numVetos) + " veto"
+	if numVetos != 1 {
+		msg += "s"
+	}
+	msg += ".\n"
 	msg += "- Use the `!yes` and `!no` commands to answer the questions.\n\n"
 
 	// The person who starts the vetos for the builds is the opposite of the person who got to start
