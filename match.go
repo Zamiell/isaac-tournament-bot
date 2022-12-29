@@ -7,12 +7,26 @@ import (
 )
 
 var (
-	numBans  int
-	numVetos int
+	tournamentType TournamentType
+	numBans        int
+	numVetos       int
 )
 
 func matchInit() {
 	// Read the configuration from environment variables
+	tournamentTypeString := os.Getenv("TOURNAMENT_TYPE")
+	if len(tournamentType) == 0 {
+		log.Fatal("The \"TOURNAMENT_TYPE\" environment variable is blank. Set it in the \".env\" file.")
+		return
+	}
+
+	if tournamentTypeString != "banPick" && tournamentTypeString != "veto" {
+		log.Fatal("The \"TOURNAMENT_TYPE\" environment variable is set to \"" + tournamentTypeString + "\", which is an invalid value.")
+		return
+	}
+
+	tournamentType = TournamentType(tournamentTypeString)
+
 	numBansString := os.Getenv("NUM_BANS")
 	if len(numBansString) == 0 {
 		log.Fatal("The \"NUM_BANS\" environment variable is blank. Set it in the \".env\" file.")
