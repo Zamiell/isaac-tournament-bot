@@ -6,40 +6,50 @@ import (
 
 var (
 	characters = []string{
-		"Isaac",
-		"Magdalene",
-		"Cain",
-		"Judas",
-		"Blue Baby",
-		"Eve",
-		"Samson",
-		"Azazel",
-		"Lazarus",
-		"Eden",
-		"The Lost",
-		"Lilith",
-		"Keeper",
-		"Apollyon",
-		"Forgotten",
-		"Bethany",
-		"Jacob & Esau",
-		"Tainted Isaac",
-		"Tainted Magdalene",
-		// "Tainted Cain", // Meme character
-		"Tainted Judas",
-		"Tainted Blue Baby",
-		"Tainted Eve",
-		"Tainted Samson",
-		"Tainted Azazel",
-		// "Tainted Lazarus", // Meme character
-		// "Tainted Eden", // Meme character
-		"Tainted Lost",
-		"Tainted Lilith",
-		"Tainted Keeper",
-		"Tainted Apollyon",
-		// "Tainted Forgotten", // Meme character
-		"Tainted Bethany",
-		"Tainted Jacob",
+		// Normal characters
+		"Isaac",     // 0
+		"Magdalene", // 1
+		"Cain",      // 2
+		"Judas",     // 3
+		"Blue Baby", // 4
+		"Eve",       // 5
+		"Samson",    // 6
+		"Azazel",    // 7
+		"Lazarus",   // 8
+		"Eden",      // 9
+		"The Lost",  // 10
+		// "Lazarus II", // 11
+		// "Dark Judas", // 12
+		"Lilith",    // 13
+		"Keeper",    // 14
+		"Apollyon",  // 15
+		"Forgotten", // 16
+		// "The Soul", // 17
+		"Bethany",      // 18
+		"Jacob & Esau", // 19
+		// "Esau", // 20
+
+		// Tainted characters
+		"Tainted Isaac",     // 21
+		"Tainted Magdalene", // 22
+		// "Tainted Cain", // 23 - Meme character
+		"Tainted Judas",     // 24
+		"Tainted Blue Baby", // 25
+		"Tainted Eve",       // 26
+		"Tainted Samson",    // 27
+		"Tainted Azazel",    // 28
+		// "Tainted Lazarus", // 29 - Meme character
+		// "Tainted Eden", // 30 - Meme character
+		"Tainted Lost",     // 31
+		"Tainted Lilith",   // 32
+		"Tainted Keeper",   // 33
+		"Tainted Apollyon", // 34
+		// "Tainted Forgotten", // 35 - Meme character
+		"Tainted Bethany", // 36
+		"Tainted Jacob",   // 37
+		// "Dead Tainted Lazarus", // 38
+		// "Dead Tainted Jacob", // 39
+		// "Tainted Soul", // 40
 	}
 )
 
