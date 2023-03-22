@@ -25,6 +25,7 @@ var (
 		"Jacob & Esau",
 		"Tainted Isaac",
 		"Tainted Magdalene",
+		// "Tainted Cain", // Meme character
 		"Tainted Judas",
 		"Tainted Blue Baby",
 		"Tainted Eve",
