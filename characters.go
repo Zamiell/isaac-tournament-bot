@@ -40,16 +40,19 @@ var (
 		"Tainted Azazel",    // 28
 		// "Tainted Lazarus", // 29 - Meme character
 		// "Tainted Eden", // 30 - Meme character
-		"Tainted Lost",     // 31
-		"Tainted Lilith",   // 32
-		"Tainted Keeper",   // 33
-		"Tainted Apollyon", // 34
-		// "Tainted Forgotten", // 35 - Meme character
-		"Tainted Bethany", // 36
-		"Tainted Jacob",   // 37
+		"Tainted Lost",      // 31
+		"Tainted Lilith",    // 32
+		"Tainted Keeper",    // 33
+		"Tainted Apollyon",  // 34
+		"Tainted Forgotten", // 35
+		"Tainted Bethany",   // 36
+		"Tainted Jacob",     // 37
 		// "Dead Tainted Lazarus", // 38
 		// "Dead Tainted Jacob", // 39
 		// "Tainted Soul", // 40
+
+		// Other
+		// "Random Baby", // Meme character
 	}
 )
 
