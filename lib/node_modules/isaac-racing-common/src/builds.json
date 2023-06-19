@@ -1,104 +1,501 @@
 [
-  [],
+  {
+    "name": "Cricket's Head",
+    "category": "Treasure Room",
+    "collectibles": [{ "id": 4, "name": "Cricket's Head" }],
+    "bannedCharacters": []
+  },
 
-  [{ "id": 4, "name": "Cricket's Head" }],
-  [{ "id": 52, "name": "Dr. Fetus" }],
-  [{ "id": 168, "name": "Epic Fetus" }],
-  [{ "id": 149, "name": "Ipecac" }],
-  [{ "id": 12, "name": "Magic Mushroom" }],
-  [{ "id": 114, "name": "Mom's Knife" }],
-  [{ "id": 169, "name": "Polyphemus" }],
-  [{ "id": 261, "name": "Proptosis" }],
-  [{ "id": 395, "name": "Tech X", "spacing": true }],
+  {
+    "name": "Dr. Fetus",
+    "category": "Treasure Room",
+    "collectibles": [{ "id": 52, "name": "Dr. Fetus" }],
+    "bannedCharacters": [
+      {
+        "id": 35,
+        "name": "Tainted Forgotten",
+        "reason": "Very annoying to use with the skeleton body."
+      }
+    ]
+  },
 
-  [{ "id": 118, "name": "Brimstone" }],
-  [{ "id": 399, "name": "Maw of the Void", "spacing": true }],
+  {
+    "name": "Epic Fetus",
+    "category": "Treasure Room",
+    "collectibles": [{ "id": 168, "name": "Epic Fetus" }],
+    "bannedCharacters": [
+      {
+        "id": 32,
+        "name": "Tainted Lilith",
+        "reason": "The target keeps moving and you can't control it, making it impossible to target enemies."
+      }
+    ]
+  },
 
-  [{ "id": 415, "name": "Crown of Light" }],
-  [{ "id": 331, "name": "Godhead" }],
-  [{ "id": 182, "name": "Sacred Heart" }],
-  [{ "id": 579, "name": "Spirit Sword" }],
-  [{ "id": 643, "name": "Revelation", "spacing": true }],
+  {
+    "name": "Ipecac",
+    "category": "Treasure Room",
+    "collectibles": [{ "id": 149, "name": "Ipecac" }],
+    "bannedCharacters": [
+      {
+        "id": 7,
+        "name": "Azazel",
+        "reason": "The short-range brimstone causes self-damage."
+      },
+      {
+        "id": 26,
+        "name": "Tainted Eve",
+        "reason": "Can cause unavoidable damage if a clot is behind you or shoots at an obstacle near you."
+      }
+    ]
+  },
 
-  [
-    { "id": 245, "name": "20/20" },
-    { "id": 2, "name": "The Inner Eye" }
-  ],
-  [
-    { "id": 678, "name": "C Section", "spacing": true },
-    { "id": 50, "name": "Steven" }
-  ],
+  {
+    "name": "Magic Mushroom",
+    "category": "Treasure Room",
+    "collectibles": [{ "id": 12, "name": "Magic Mushroom" }],
+    "bannedCharacters": []
+  },
 
-  [
-    { "id": 69, "name": "Chocolate Milk" },
-    { "id": 50, "name": "Steven" }
-  ],
+  {
+    "name": "Polyphemus",
+    "category": "Treasure Room",
+    "collectibles": [{ "id": 169, "name": "Polyphemus" }],
+    "bannedCharacters": []
+  },
 
-  [
-    { "id": 224, "name": "Cricket's Body" },
-    { "id": 50, "name": "Steven" }
-  ],
+  {
+    "name": "Proptosis",
+    "category": "Treasure Room",
+    "collectibles": [{ "id": 261, "name": "Proptosis" }],
+    "bannedCharacters": []
+  },
 
-  [
-    { "id": 373, "name": "Dead Eye" },
-    { "id": 197, "name": "Jesus Juice" }
-  ],
+  {
+    "name": "Tech X",
+    "category": "Treasure Room",
+    "collectibles": [{ "id": 395, "name": "Tech X" }],
+    "bannedCharacters": [
+      {
+        "id": 6,
+        "name": "Samson",
+        "reason": "The shot speed increase reduces damage significantly."
+      }
+    ]
+  },
 
-  [
-    { "id": 237, "name": "Death's Touch" },
-    { "id": 1, "name": "Sad Onion" }
-  ],
+  {
+    "name": "Brimstone",
+    "category": "Devil Room",
+    "collectibles": [{ "id": 118, "name": "Brimstone" }],
+    "bannedCharacters": [
+      {
+        "id": 32,
+        "name": "Tainted Lilith",
+        "reason": "Gello fires the brim very slowly and auto-fire is not always accurate."
+      }
+    ]
+  },
 
-  [
-    { "id": 257, "name": "Fire Mind" },
-    { "id": 1001, "name": "13 Luck" }
-  ],
+  {
+    "name": "Maw of the Void",
+    "category": "Devil Room",
+    "collectibles": [{ "id": 399, "name": "Maw of the Void" }],
+    "bannedCharacters": []
+  },
 
-  [
-    { "id": 531, "name": "Haemolacria" },
-    { "id": 1, "name": "The Sad Onion" }
-  ],
+  {
+    "name": "Mom's Knife",
+    "category": "Devil Room",
+    "collectibles": [{ "id": 114, "name": "Mom's Knife" }],
+    "bannedCharacters": []
+  },
 
-  [
-    { "id": 360, "name": "Incubus" },
-    { "id": 698, "name": "Twisted Pair" }
-  ],
+  {
+    "name": "Crown of Light",
+    "category": "Angel Room",
+    "collectibles": [{ "id": 415, "name": "Crown of Light" }],
+    "bannedCharacters": [
+      {
+        "id": 5,
+        "name": "Eve",
+        "reason": "Eve cannot use the razor with this start."
+      },
+      {
+        "id": 22,
+        "name": "Tainted Magdalene",
+        "reason": "Crown is never activated with the depleting hearts."
+      },
+      {
+        "id": 26,
+        "name": "Tainted Eve",
+        "reason": "Crown can't be active with the clot mechanic."
+      }
+    ]
+  },
 
-  [
-    { "id": 229, "name": "Monstro's Lung" },
-    { "id": 1, "name": "The Sad Onion" }
-  ],
+  {
+    "name": "Godhead",
+    "category": "Angel Room",
+    "collectibles": [{ "id": 331, "name": "Godhead" }],
+    "bannedCharacters": [
+      {
+        "id": 7,
+        "name": "Azazel",
+        "reason": "Small damage up for a tears down, resulting in a loss of DPS overall."
+      },
+      {
+        "id": 16,
+        "name": "The Forgotten",
+        "reason": "Does nothing with the bone club."
+      },
+      {
+        "id": 35,
+        "name": "Tainted Forgotten",
+        "reason": "Does nothing with the bone club."
+      }
+    ]
+  },
 
-  [
-    { "id": 68, "name": "Technology" },
-    { "id": 132, "name": "A Lump of Coal" }
-  ],
+  {
+    "name": "Sacred Heart",
+    "category": "Angel Room",
+    "collectibles": [{ "id": 182, "name": "Sacred Heart" }],
+    "bannedCharacters": []
+  },
 
-  [
-    { "id": 244, "name": "Tech.5" },
-    { "id": 197, "name": "Jesus Juice" }
-  ],
+  {
+    "name": "Spirit Sword",
+    "category": "Angel Room",
+    "collectibles": [{ "id": 579, "name": "Spirit Sword" }],
+    "bannedCharacters": [
+      {
+        "id": 13,
+        "name": "Lilith",
+        "reason": "Annoying because the sword goes to Incubus."
+      },
+      {
+        "id": 16,
+        "name": "The Forgotten",
+        "reason": "No synergy with the bone club."
+      },
+      {
+        "id": 35,
+        "name": "Tainted Forgotten",
+        "reason": "No synergy with the bone club."
+      }
+    ]
+  },
 
-  [
-    { "id": 544, "name": "Pointy Rib" },
-    { "id": 310, "name": "Eve's Mascara" }
-  ],
+  {
+    "name": "Sacred Heart",
+    "category": "Angel Room",
+    "collectibles": [{ "id": 643, "name": "Revelation" }],
+    "bannedCharacters": []
+  },
 
-  [
-    { "id": 1003, "name": "Sawblade" },
-    { "id": 179, "name": "Fate" }
-  ],
+  {
+    "name": "20/20 + The Inner Eye",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 245, "name": "20/20" },
+      { "id": 2, "name": "The Inner Eye" }
+    ],
+    "bannedCharacters": []
+  },
 
-  [
-    { "id": 572, "name": "Eye of the Occult" },
-    { "id": 87, "name": "Loki's Horns" },
-    { "id": 1002, "name": "15 Luck" }
-  ],
+  {
+    "name": "C Section + Steven",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 678, "name": "C Section" },
+      { "id": 50, "name": "Steven" }
+    ],
+    "bannedCharacters": []
+  },
 
-  [
-    { "id": 57, "name": "Distant Admiration" },
-    { "id": 364, "name": "Friend Zone" },
-    { "id": 128, "name": "Forever Alone" },
-    { "id": 247, "name": "BFFS!" }
-  ]
+  {
+    "name": "Chocolate Milk + Steven",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 69, "name": "Chocolate Milk" },
+      { "id": 50, "name": "Steven" }
+    ],
+    "bannedCharacters": []
+  },
+
+  {
+    "name": "Cricket's Body + Steven",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 224, "name": "Cricket's Body" },
+      { "id": 50, "name": "Steven" }
+    ],
+    "bannedCharacters": [
+      {
+        "id": 7,
+        "name": "Azazel",
+        "reason": "The Brimstone beam inherits the split shots but they are not very good."
+      },
+      {
+        "id": 28,
+        "name": "Tainted Azazel",
+        "reason": "The Brimstone beam inherits the split shots but they are not very good."
+      }
+    ]
+  },
+
+  {
+    "name": "Dead Eye + Jesus Juice",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 373, "name": "Dead Eye" },
+      { "id": 197, "name": "Jesus Juice" }
+    ],
+    "bannedCharacters": [
+      {
+        "id": 7,
+        "name": "Azazel",
+        "reason": "The Brimstone beam prevents it from working."
+      },
+      {
+        "id": 13,
+        "name": "Lilith",
+        "reason": "It is hard to be accurate when shots come from Incubus."
+      },
+      {
+        "id": 14,
+        "name": "Keeper",
+        "reason": "It is hard to be accurate with triple shot."
+      },
+      {
+        "id": 28,
+        "name": "Tainted Azazel",
+        "reason": "The Brimstone beam prevents it from working."
+      },
+      {
+        "id": 33,
+        "name": "Tainted Keeper",
+        "reason": "It is hard to be accurate with quad shot."
+      }
+    ]
+  },
+
+  {
+    "name": "Death's Touch + Sad Onion",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 237, "name": "Death's Touch" },
+      { "id": 1, "name": "Sad Onion" }
+    ],
+    "bannedCharacters": [
+      {
+        "id": 7,
+        "name": "Azazel",
+        "reason": "The piercing shots do nothing for Azazel's Brimstone."
+      },
+      {
+        "id": 16,
+        "name": "The Forgotten",
+        "reason": "The piercing shots do nothing for the bone club."
+      },
+      {
+        "id": 28,
+        "name": "Tainted Azazel",
+        "reason": "The piercing shots do nothing for Tainted Azazel's Brimstone."
+      },
+      {
+        "id": 35,
+        "name": "Tainted Forgotten",
+        "reason": "The piercing shots do nothing for the bone club."
+      }
+    ]
+  },
+
+  {
+    "name": "Fire Mind + 13 Luck",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 257, "name": "Fire Mind" },
+      { "id": 1001, "name": "13 Luck" }
+    ],
+    "bannedCharacters": [
+      {
+        "id": 7,
+        "name": "Azazel",
+        "reason": "The synergy is only useful with a tear build."
+      },
+      {
+        "id": 13,
+        "name": "Lilith",
+        "reason": "Luck does not apply to Incubus for some reason."
+      },
+      {
+        "id": 16,
+        "name": "The Forgotten",
+        "reason": "The synergy is only useful with a tear build."
+      },
+      {
+        "id": 28,
+        "name": "Tainted Azazel",
+        "reason": "The synergy is only useful with a tear build."
+      },
+      {
+        "id": 31,
+        "name": "Tainted Lost",
+        "reason": "Too dangerous to be synergistic."
+      },
+      {
+        "id": 35,
+        "name": "Tainted Forgotten",
+        "reason": "The synergy is only useful with a tear build."
+      }
+    ]
+  },
+
+  {
+    "name": "Haemolacria + The Sad Onion",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 531, "name": "Haemolacria" },
+      { "id": 1, "name": "The Sad Onion" }
+    ],
+    "bannedCharacters": []
+  },
+
+  {
+    "name": "Incubus + Twisted Pair",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 360, "name": "Incubus" },
+      { "id": 698, "name": "Twisted Pair" }
+    ],
+    "bannedCharacters": []
+  },
+
+  {
+    "name": "Monstro's Lung + The Sad Onion",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 229, "name": "Monstro's Lung" },
+      { "id": 1, "name": "The Sad Onion" }
+    ],
+    "bannedCharacters": [
+      {
+        "id": 14,
+        "name": "Keeper",
+        "reason": "Huge tears down, resulting in a loss of DPS overall."
+      },
+      {
+        "id": 32,
+        "name": "Tainted Lilith",
+        "reason": "Tears down, worse than having no starter with the fetus."
+      },
+      {
+        "id": 33,
+        "name": "Tainted Keeper",
+        "reason": "Huge tears down, resulting in a loss of DPS overall."
+      }
+    ]
+  },
+
+  {
+    "name": "Technology + A Lump of Coal",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 68, "name": "Technology" },
+      { "id": 132, "name": "A Lump of Coal" }
+    ],
+    "bannedCharacters": []
+  },
+
+  {
+    "name": "Tech.5 + Jesus Juice",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 244, "name": "Tech.5" },
+      { "id": 197, "name": "Jesus Juice" }
+    ],
+    "bannedCharacters": []
+  },
+
+  {
+    "name": "Pointy Rib + Eve's Mascara",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 544, "name": "Pointy Rib" },
+      { "id": 310, "name": "Eve's Mascara" }
+    ],
+    "bannedCharacters": []
+  },
+
+  {
+    "name": "Sawblade + Fate",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 1003, "name": "Sawblade" },
+      { "id": 179, "name": "Fate" }
+    ],
+    "bannedCharacters": [
+      {
+        "id": 18,
+        "name": "Bethany",
+        "reason": "Very complicated to play orbitals with her because she can't protect herself from losing the deal with soul hearts."
+      },
+      {
+        "id": 26,
+        "name": "Tainted Eve",
+        "reason": "Impossible to play orbitals with Tainted Eve's clots, they will disappear very quickly."
+      },
+      {
+        "id": 31,
+        "name": "Tainted Lost",
+        "reason": "With his health mechanic, it is too dangerous to use orbitals."
+      }
+    ]
+  },
+
+  {
+    "name": "Eye of the Occult + Loki's Horns + 15 Luck",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 572, "name": "Eye of the Occult" },
+      { "id": 87, "name": "Loki's Horns" },
+      { "id": 1002, "name": "15 Luck" }
+    ],
+    "bannedCharacters": [
+      {
+        "id": 7,
+        "name": "Azazel",
+        "reason": "Homing brimstone is too powerful, resulting in a build with a low-skill requirement."
+      },
+      {
+        "id": 16,
+        "name": "The Forgotten",
+        "reason": "It is only a damage up on the bone club."
+      },
+      {
+        "id": 28,
+        "name": "Tainted Azazel",
+        "reason": "Homing brimstone is too powerful, resulting in a build with a low-skill requirement."
+      },
+      {
+        "id": 35,
+        "name": "Tainted Forgotten",
+        "reason": "It is only a damage up on the bone club."
+      }
+    ]
+  },
+
+  {
+    "name": "Distant Admiration + Friend Zone + Forever Alone + BFFS!",
+    "category": "Builds",
+    "collectibles": [
+      { "id": 57, "name": "Distant Admiration" },
+      { "id": 364, "name": "Friend Zone" },
+      { "id": 128, "name": "Forever Alone" },
+      { "id": 247, "name": "BFFS!" }
+    ],
+    "bannedCharacters": []
+  }
 ]
