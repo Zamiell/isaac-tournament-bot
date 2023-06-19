@@ -80,12 +80,6 @@ func matchInit() {
 		numBuildVetos = v
 	}
 
-	// Make sure the build exceptions match the builds.
-	if len(builds) != len(buildExceptions) {
-		log.Fatal("The builds were updated without also modifying the build exceptions.")
-		return
-	}
-
 	// Schedule Discord pings for when each scheduled match starts.
 	var channelIDs []string
 	if v, err := modals.Races.GetAllScheduled(); err != nil {

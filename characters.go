@@ -241,11 +241,11 @@ func charactersEnd(race *Race, msg string) {
 
 func assignRandomCharacter(race *Race) string {
 	// Get a random character.
-	randCharacterNum := getRandomInt(0, len(race.CharactersRemaining)-1)
-	randCharacter := race.CharactersRemaining[randCharacterNum]
+	randomCharacter, randomCharacterIndex := getRandomArrayElement(race.CharactersRemaining)
+	randomCharacterNum := randomCharacterIndex + 1
 
 	// Add it to the characters.
-	race.Characters = append(race.Characters, randCharacter)
+	race.Characters = append(race.Characters, randomCharacter)
 	if err := modals.Races.SetCharacters(race.ChannelID, race.Characters); err != nil {
 		msg := "Failed to set the characters for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
@@ -253,7 +253,7 @@ func assignRandomCharacter(race *Race) string {
 	}
 
 	// Remove it from the available characters.
-	race.CharactersRemaining = deleteFromSlice(race.CharactersRemaining, randCharacterNum)
+	race.CharactersRemaining = deleteFromSlice(race.CharactersRemaining, randomCharacterNum)
 	if err := modals.Races.SetCharactersRemaining(race.ChannelID, race.CharactersRemaining); err != nil {
 		msg := "Failed to set the characters for race \"" + race.Name() + "\": " + err.Error()
 		log.Error(msg)
@@ -262,6 +262,6 @@ func assignRandomCharacter(race *Race) string {
 
 	roundNum := len(race.Characters)
 	msg := "**Round " + strconv.Itoa(roundNum) + "**:\n"
-	msg += "- Character: *" + randCharacter + "*\n\n"
+	msg += "- Character: *" + randomCharacter + "*\n\n"
 	return msg
 }
