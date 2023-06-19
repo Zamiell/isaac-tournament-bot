@@ -23,8 +23,8 @@ func commandHelpGetMsg() string {
 	msg += "!stream [url]            Set your stored stream URL\n"
 	msg += "!getstream [username]    Get the stream of the specified person\n"
 	msg += "!random [min] [max]      Get a random number\n"
-	msg += "!randchar                Get a random character\n"
-	msg += "!randbuild               Get a random build\n"
+	msg += "!randomchar              Get a random character\n"
+	msg += "!randombuild             Get a random build\n"
 	msg += "!getnext                 Get the time of the next scheduled match\n"
 	msg += "!schedule                Get a list of all of the currently scheduled matches\n"
 	msg += "```\n"
@@ -94,10 +94,14 @@ func commandInit() {
 	commandHandlerMap["random"] = commandRandom
 	commandHandlerMap["rand"] = commandRandom
 	commandHandlerMap["roll"] = commandRandom
-	commandHandlerMap["randchar"] = commandRandChar
-	commandHandlerMap["randcharacter"] = commandRandChar
-	commandHandlerMap["randbuild"] = commandRandBuild
-	commandHandlerMap["randitem"] = commandRandBuild
+	commandHandlerMap["randomchar"] = commandRandomChar
+	commandHandlerMap["randomcharacter"] = commandRandomChar
+	commandHandlerMap["randchar"] = commandRandomChar
+	commandHandlerMap["randcharacter"] = commandRandomChar
+	commandHandlerMap["randombuild"] = commandRandomBuild
+	commandHandlerMap["randomitem"] = commandRandomBuild
+	commandHandlerMap["randbuild"] = commandRandomBuild
+	commandHandlerMap["randitem"] = commandRandomBuild
 	commandHandlerMap["getnext"] = commandGetNext
 	commandHandlerMap["schedule"] = commandSchedule
 
