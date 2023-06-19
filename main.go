@@ -18,7 +18,7 @@ var (
 	projectPath string
 	log         *logging.Logger
 	modals      *Models
-	builds      = make([][]IsaacItem, 0)
+	builds      = make([]Build, 0)
 )
 
 func main() {
